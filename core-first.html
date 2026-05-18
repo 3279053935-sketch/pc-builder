@@ -601,6 +601,32 @@
 
       .disclaimer-actions { grid-template-columns: 1fr; }
     }
+  
+    .custom-fields {
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px dashed #bfdbfe;
+      border-radius: 16px;
+      background: #f8fbff;
+    }
+
+    .custom-fields.hidden { display: none; }
+
+    .manual-hint {
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.65;
+      font-weight: 800;
+    }
+
+    @media (max-width: 760px) {
+      .custom-fields { grid-template-columns: 1fr; }
+    }
+
   </style>
 </head>
 <body>
@@ -624,6 +650,7 @@
     </section>
 
     <section class="panel">
+      <div class="notice">显卡型号已经尽量标注显存；同名显卡可能有 8G/16G 等不同版本，下单前要确认。</div>
       <h2>核心优先计算器</h2>
       <p class="panel-desc">先填预算和用途。推荐组合会自动按预算变化；手动选择放在下面，避免一上来就让小白面对一长串下拉框。</p>
       <div class="form-grid">
@@ -664,6 +691,26 @@
             </label>
             <button type="button" onclick="manualApply()">用这组核心计算</button>
           </div>
+
+          <div id="customCpuFields" class="custom-fields hidden">
+            <label>自定义 CPU 型号
+              <input id="customCpuModel" type="text" placeholder="例如 AMD Ryzen 7 5700X3D" />
+            </label>
+            <label>CPU 价格
+              <input id="customCpuPrice" type="number" min="0" step="10" placeholder="例如 1099" />
+            </label>
+          </div>
+
+          <div id="customGpuFields" class="custom-fields hidden">
+            <label>自定义显卡型号
+              <input id="customGpuModel" type="text" placeholder="例如 RTX 4070 SUPER 12G" />
+            </label>
+            <label>显卡价格
+              <input id="customGpuPrice" type="number" min="0" step="10" placeholder="例如 3899" />
+            </label>
+          </div>
+
+          <div class="manual-hint">找不到型号时选“自定义”，自己填型号和价格。价格只用于计算剩余预算，真正下单还要复核当天价。</div>
         </div>
       </details>
       <div class="notice">经验规则：核心硬件占比超过 70% 就要小心，可能会挤压电源、散热、SSD 和主板。核心优先不是“基础件随便买”。</div>
@@ -724,39 +771,82 @@
       ["r5_5500", "AMD Ryzen 5 5500", C.r5_5500, "低预算"],
       ["r5_5600", "AMD Ryzen 5 5600", C.r5_5600, "AM4 甜点"],
       ["i5_12400f", "Intel Core i5-12400F", C.i5_12400f, "全新稳妥"],
+      ["i5_12600kf", "Intel Core i5-12600KF", C.i5_12600kf, "游戏/多核"],
       ["i5_13400f", "Intel Core i5-13400F", C.i5_13400f, "多核更强"],
+      ["i5_13600kf", "Intel Core i5-13600KF", C.i5_13600kf, "中高端"],
+      ["i5_14600kf", "Intel Core i5-14600KF", C.i5_14600kf, "中高端"],
       ["r5_7500f", "AMD Ryzen 5 7500F", C.r5_7500f, "AM5 新平台"],
-      ["r5_9600x", "AMD Ryzen 5 9600X", C.r5_9600x, "高预算 AM5"]
+      ["r5_7600", "AMD Ryzen 5 7600", C.r5_7600, "AM5 带核显"],
+      ["r5_9600x", "AMD Ryzen 5 9600X", C.r5_9600x, "高预算 AM5"],
+      ["r7_7700", "AMD Ryzen 7 7700", C.r7_7700, "8 核均衡"],
+      ["r7_7800x3d", "AMD Ryzen 7 7800X3D", C.r7_7800x3d, "游戏强"],
+      ["r7_9700x", "AMD Ryzen 7 9700X", C.r7_9700x, "新 8 核"],
+      ["r7_9800x3d", "AMD Ryzen 7 9800X3D", C.r7_9800x3d, "高端游戏"],
+      ["i7_13700kf", "Intel Core i7-13700KF", C.i7_13700kf, "高多核"],
+      ["i7_14700kf", "Intel Core i7-14700KF", C.i7_14700kf, "生产力"]
     ].filter(row => row[2]);
+
+    cpuOptions.push(["customCpu", "自定义 CPU", { model: "自定义 CPU（请填写型号和价格）", price: 0, custom: true }, "手填"]);
 
     const gpuOptions = [
       ["igpu", "核显/暂不买独显", G.igpu, "办公过渡", false],
       ["rx580Used", "二手 RX 580 8GB", G.rx580Used, "极限低预算", true],
-      ["gtx1660sUsed", "二手 GTX 1660 Super", G.gtx1660sUsed, "低预算网游", true],
-      ["rx6600Used", "二手 RX 6600", G.rx6600Used, "二手甜点", true],
-      ["rx6600New", "RX 6600", G.rx6600New, "全新入门", false],
-      ["rx6650xt", "RX 6650 XT", G.rx6650xt, "1080P 性价比", false],
-      ["rx7600", "RX 7600", G.rx7600, "全新主流", false],
-      ["rx6750gre", "RX 6750 XT / GRE", G.rx6750gre, "2K 入门", false],
-      ["rtx4060", "RTX 4060", G.rtx4060, "省电/DLSS", false],
-      ["rtx5060", "RTX 5060", G.rtx5060, "新 N 卡", false],
-      ["rtx4060ti", "RTX 4060 Ti", G.rtx4060ti, "N 卡进阶", false],
-      ["rx7800xt", "RX 7800 XT", G.rx7800xt, "2K 性能", false],
-      ["rx9070gre", "RX 9070 GRE", G.rx9070gre, "价格波动大", false],
+      ["gtx1660sUsed", "二手 GTX 1660 Super 6GB", G.gtx1660sUsed, "低预算网游", true],
+      ["rx6600Used", "二手 RX 6600 8GB", G.rx6600Used, "二手甜点", true],
+      ["rx6700xtUsed", "二手 RX 6700 XT 12GB", G.rx6700xtUsed, "二手 2K 入门", true],
+      ["rx6800Used", "二手 RX 6800 16G", G.rx6800Used, "二手大显存", true],
+      ["rx6600New", "RX 6600 8G", G.rx6600New, "全新入门", false],
+      ["rx6650xt", "RX 6650 XT 8G", G.rx6650xt, "1080P 性价比", false],
+      ["rx7600", "RX 7600 8G", G.rx7600, "全新主流", false],
+      ["rx6750gre", "RX 6750 GRE 10G", G.rx6750gre, "2K 入门", false],
+      ["rtx4060", "RTX 4060 8G", G.rtx4060, "省电/DLSS", false],
+      ["rtx5060", "RTX 5060 8G", G.rtx5060, "新 N 卡", false],
+      ["rtx4060ti", "RTX 4060 Ti 8G", G.rtx4060ti, "N 卡进阶", false],
+      ["rtx5060ti8", "RTX 5060 Ti 8G", G.rtx5060ti8, "注意 8G 版", false],
       ["rtx5060ti16", "RTX 5060 Ti 16G", G.rtx5060ti16, "大显存", false],
-      ["rtx5070", "RTX 5070", G.rtx5070, "高预算", false]
+      ["rx7800xt", "RX 7800 XT 16G", G.rx7800xt, "2K 性能", false],
+      ["rtx4070", "RTX 4070 12G", G.rtx4070, "2K N 卡", false],
+      ["rtx4070super", "RTX 4070 SUPER 12G", G.rtx4070super, "2K 甜点", false],
+      ["rtx4070ti", "RTX 4070 Ti 12G", G.rtx4070ti, "性能强/显存谨慎", false],
+      ["rtx4070tis", "RTX 4070 Ti SUPER 16G", G.rtx4070tis, "高端大显存", false],
+      ["rx9070gre", "RX 9070 GRE 12G", G.rx9070gre, "价格波动大", false],
+      ["rx9070", "RX 9070 16G", G.rx9070, "高性能", false],
+      ["rx9070xt", "RX 9070 XT 16G", G.rx9070xt, "高性能", false],
+      ["rtx5070", "RTX 5070 12G", G.rtx5070, "高预算", false]
     ].filter(row => row[2]);
+
+    gpuOptions.push(["customGpu", "自定义显卡", { model: "自定义显卡（请填写型号和价格）", price: 0, custom: true }, "手填", false]);
 
     function money(value) {
       return "¥" + Math.round(Number(value || 0));
     }
 
+    function readCustomPart(kind) {
+      const modelEl = document.getElementById(kind === "cpu" ? "customCpuModel" : "customGpuModel");
+      const priceEl = document.getElementById(kind === "cpu" ? "customCpuPrice" : "customGpuPrice");
+      const fallback = kind === "cpu" ? "自定义 CPU（未填型号）" : "自定义显卡（未填型号）";
+      const model = (modelEl?.value || "").trim() || fallback;
+      const price = Math.max(0, Number(priceEl?.value || 0));
+      return { model, price, custom: true };
+    }
+
     function selectedPart(list, key) {
+      if (key === "customCpu") return readCustomPart("cpu");
+      if (key === "customGpu") return readCustomPart("gpu");
       return list.find(row => row[0] === key)?.[2] || list[0]?.[2];
     }
 
     function selectedLabel(list, key) {
+      if (key === "customCpu") return readCustomPart("cpu").model;
+      if (key === "customGpu") return readCustomPart("gpu").model;
       return list.find(row => row[0] === key)?.[1] || list[0]?.[1] || "未知";
+    }
+
+    function updateCustomFields() {
+      const cpuCustom = document.getElementById("cpuSelect")?.value === "customCpu";
+      const gpuCustom = document.getElementById("gpuSelect")?.value === "customGpu";
+      document.getElementById("customCpuFields")?.classList.toggle("hidden", !cpuCustom);
+      document.getElementById("customGpuFields")?.classList.toggle("hidden", !gpuCustom);
     }
 
     function getInput() {
@@ -778,17 +868,17 @@
     }
 
     function isAm5Cpu(cpu) {
-      return /7500F|7600|9600X|9700X/i.test(cpu.model);
+      return /7500F|7600|7700|7800X3D|9600X|9700X|9800X3D/i.test(cpu.model);
     }
 
     function isIntelLga1700Cpu(cpu) {
-      return /12100|12400|13400|14100|13500/i.test(cpu.model);
+      return /12100|12400|12600|13400|13600|14100|14600|13500|13700|14700/i.test(cpu.model);
     }
 
     function gpuTier(gpu) {
       const t = String(gpu?.model || "");
-      if (/RTX 5070|RX 9070|RX 7800 XT|RX 6800 XT/i.test(t)) return "high";
-      if (/RTX 5060 Ti|RTX 4060 Ti|RX 6750|RTX 5060|RTX 4060/i.test(t)) return "mid";
+      if (/RTX 5070|RTX 4070 Ti|RX 9070|RX 7800 XT|RX 6800 XT/i.test(t)) return "high";
+      if (/RTX 4070|RTX 5060 Ti|RTX 4060 Ti|RX 6750|RTX 5060|RTX 4060/i.test(t)) return "mid";
       if (/RX 6650|RX 7600|RX 6600|1660/i.test(t)) return "low";
       if (/RX 580|5500|核显/i.test(t)) return "basic";
       return "low";
@@ -796,7 +886,7 @@
 
     function chooseCooler(cpu, gpu) {
       const cpuText = String(cpu?.model || "");
-      if (/9600X|i5-13500|i5-13400F/i.test(cpuText)) return K.plus;
+      if (/7800X3D|9800X3D|9700X|i7-|14600|13600|9600X|i5-13500|i5-13400F/i.test(cpuText)) return K.plus;
       if (/7500F/i.test(cpuText)) return K.basic;
       if (gpuTier(gpu) === "high") return K.plus;
       return K.basic;
@@ -912,8 +1002,8 @@
         return seeds;
       }
 
-      seeds.push(["r5_9600x", "rx9070gre", "高预算均衡", "平台、显卡都上一个台阶"]);
-      seeds.push(["r5_7500f", "rtx5060ti16", "N 卡大显存", "兼顾创作/AI 入门"]);
+      seeds.push(["r5_9600x", "rx9070", "高预算均衡", "平台、显卡都上一个台阶"]);
+      seeds.push(["r7_7700", "rtx4070super", "N 卡 2K", "兼顾游戏和创作"]);
       seeds.push(["r5_9600x", "rtx5070", "高预算 N 卡", "适合偏 N 卡生态"]);
       return seeds;
     }
@@ -942,8 +1032,9 @@
     function fillOptions() {
       const cpuSelect = document.getElementById("cpuSelect");
       const gpuSelect = document.getElementById("gpuSelect");
-      cpuSelect.innerHTML = cpuOptions.map(([key, label, part, tag]) => `<option value="${key}">${label}（${money(part.price)}）· ${tag}</option>`).join("");
-      gpuSelect.innerHTML = gpuOptions.map(([key, label, part, tag, used]) => `<option value="${key}">${used ? "二手 " : ""}${label}（${money(part.price)}）· ${tag}</option>`).join("");
+      cpuSelect.innerHTML = cpuOptions.map(([key, label, part, tag]) => key === "customCpu" ? `<option value="${key}">${label} · ${tag}</option>` : `<option value="${key}">${label}（${money(part.price)}）· ${tag}</option>`).join("");
+      gpuSelect.innerHTML = gpuOptions.map(([key, label, part, tag, used]) => key === "customGpu" ? `<option value="${key}">${label} · ${tag}</option>` : `<option value="${key}">${used ? "二手 " : ""}${label}（${money(part.price)}）· ${tag}</option>`).join("");
+      updateCustomFields();
     }
 
     function renderCombos() {
@@ -976,6 +1067,7 @@
         cpuKey: document.getElementById("cpuSelect").value,
         gpuKey: document.getElementById("gpuSelect").value
       };
+      updateCustomFields();
       renderCombos();
       generateCoreFirst();
     }
@@ -1016,6 +1108,8 @@
 
     function adviceText(calc, input) {
       const advice = [];
+      if (calc.cpu.custom || calc.gpu.custom) advice.push("你使用了自定义核心硬件：请确认型号、价格、平台接口和功耗，不要只看总价。");
+      if ((calc.cpu.custom && calc.cpu.price <= 0) || (calc.gpu.custom && calc.gpu.price <= 0)) advice.push("自定义价格为 0 会让剩余预算失真，请补上真实参考价。");
       if (input.budget < 2800 && input.used === "不接受" && input.purpose !== "办公学习") {
         advice.push("低于 2800 又不接受二手时，全新独显主机很难舒服，建议回主生成器看核显/过渡方案。");
       }
@@ -1046,6 +1140,7 @@
       const calc = buildParts(selectedCombo.cpuKey, selectedCombo.gpuKey, input);
       document.getElementById("cpuSelect").value = selectedCombo.cpuKey;
       document.getElementById("gpuSelect").value = selectedCombo.gpuKey;
+      updateCustomFields();
       renderCombos();
 
       const result = document.getElementById("coreResult");
@@ -1100,6 +1195,29 @@
       });
       ["cpuSelect", "gpuSelect"].forEach(id => {
         const el = document.getElementById(id);
+        el.addEventListener("change", () => {
+          updateCustomFields();
+          manualApply();
+        });
+        el.addEventListener("keydown", event => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            manualApply();
+          }
+        });
+      });
+      ["customCpuModel", "customCpuPrice", "customGpuModel", "customGpuPrice"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("input", () => {
+          if (document.getElementById("cpuSelect").value === "customCpu" || document.getElementById("gpuSelect").value === "customGpu") {
+            selectedCombo = {
+              cpuKey: document.getElementById("cpuSelect").value,
+              gpuKey: document.getElementById("gpuSelect").value
+            };
+            generateCoreFirst(false);
+          }
+        });
         el.addEventListener("keydown", event => {
           if (event.key === "Enter") {
             event.preventDefault();
@@ -1148,6 +1266,7 @@
     });
 
     fillOptions();
+    updateCustomFields();
     bindEvents();
     renderCombos();
     generateCoreFirst(false);

@@ -2297,6 +2297,24 @@ function compactPartText(part, type) {
       ];
     }
 
+    
+    function extractGpuVram(gpuText) {
+      const text = String(gpuText || "");
+      const match = text.match(/(?:^|[\s（(])(\d{1,2}\s*(?:GB|G))(?:[\s）),，/]|$)/i);
+      return match ? match[1].replace(/\s+/g, "").replace("GB", "G") : "";
+    }
+
+    function gpuVramTip(build) {
+      const vram = extractGpuVram(build.gpu);
+      if (!vram) return "显存未标注：下单时必须确认具体版本。";
+      if (/4G/i.test(vram)) return `${vram} 显存：只适合轻网游/过渡，不建议新 3A。`;
+      if (/6G/i.test(vram)) return `${vram} 显存：1080P 网游还能用，3A 要降画质。`;
+      if (/8G/i.test(vram)) return `${vram} 显存：1080P 主流够用，重 3A/2K 要谨慎。`;
+      if (/10G|11G|12G/i.test(vram)) return `${vram} 显存：1080P 更稳，部分 2K 也更舒服。`;
+      if (/16G|20G|24G|32G/i.test(vram)) return `${vram} 显存：更适合 2K、重 3A 或生产力。`;
+      return `${vram} 显存：按具体游戏和画质判断。`;
+    }
+
     function getBuildKeyPoints(build, input) {
       const points = [];
       const gpu = String(build.gpu || "");
@@ -2890,6 +2908,8 @@ function compactPartText(part, type) {
         tips.push("A620M 够用但扩展一般；预算够、想长期用，可以加钱换 B650M。");
       }
 
+      tips.push("显卡别只看型号，也要看显存版本；同名显卡可能有 8G/16G 等不同版本。");
+
       if (!tips.length) {
         tips.push("这套没有明显必须替换的大件；下单时主要复核当天价格、售后和具体品牌型号。");
       }
@@ -2915,6 +2935,7 @@ function compactPartText(part, type) {
       const tips = [];
 
       tips.push("复核当天价格和店铺售后，别只看配置单总价。");
+      tips.push("确认显卡显存容量，别把 8G/16G 版本买错。");
       if (text.includes("电源")) tips.push("电源看具体型号和售后，别只看瓦数。");
       tips.push("散热器看 CPU 功耗和机箱高度，别漏买或买了装不下。");
       if (text.includes("B650") || text.includes("A620")) tips.push("AM5 平台注意主板 BIOS、内存兼容和售后。");

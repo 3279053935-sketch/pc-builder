@@ -1,8 +1,9 @@
 {
-  "version": "2.9.0-rc",
-  "name": "trial-deploy",
-  "built_at": "2026-05-18 16:08:58",
+  "version": "2.9.2-rc",
+  "name": "custom-core-and-mainstream-gpu-fix",
+  "built_at": "2026-05-18 16:53:21",
   "status": "release-candidate",
   "entry": "index.html",
-  "preflight": "preflight.html"
+  "preflight": "preflight.html",
+  "note": "核心优先页支持自定义 CPU/GPU 型号价格，扩展 CPU/GPU 选项。"
 }
