@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>装机策略｜小白电脑配置生成器</title>
+  <meta name="description" content="解释均衡装机、核心硬件优先、省钱够用等不同装机策略，避免把所有功能堆在一个页面。" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --blue: #2563eb;
+      --green: #059669;
+      --orange: #f97316;
+      --red: #dc2626;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+      overscroll-behavior-x: contain;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .page {
+      width: min(100% - 24px, 1120px);
+      margin: 0 auto;
+      padding: 18px 0 44px;
+    }
+
+    .hero {
+      border-radius: 28px;
+      padding: 26px;
+      color: white;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: #dbeafe;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0;
+      color: rgba(239,246,255,0.92);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .top-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .top-link {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: #eff6ff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 23px;
+      letter-spacing: -0.03em;
+    }
+
+    .panel-desc {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .strategy-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .strategy-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .strategy-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .budget-split {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .split-row {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr) 50px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: #0ea5e9;
+    }
+
+    .warning {
+      margin-top: 12px;
+      border: 1px solid #fde68a;
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: #fffbeb;
+      color: #7c4a03;
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 800;
+    }
+
+    .floating-nav {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      display: grid;
+      gap: 8px;
+      width: 132px;
+    }
+
+    .floating-nav a,
+    .floating-nav button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 12px;
+      background: #0f172a;
+      color: #fff;
+      text-decoration: none;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+      cursor: pointer;
+    }
+
+    .floating-nav .secondary-float {
+      background: #ffffff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    @media (max-width: 900px) {
+      .strategy-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body { padding-bottom: 76px; }
+      .page { width: min(100% - 18px, 1120px); }
+      .hero, .panel { border-radius: 22px; padding: 18px; }
+      .top-links { display: grid; grid-template-columns: 1fr; }
+      .split-row { grid-template-columns: 76px minmax(0, 1fr) 44px; }
+
+      .floating-nav {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: auto;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 8px;
+        border: 1px solid rgba(226, 232, 240, 0.92);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+      }
+
+      .floating-nav a,
+      .floating-nav button {
+        min-height: 44px;
+        box-shadow: none;
+      }
+    }
+  
+    .site-nav {
+      width: min(100% - 24px, 1120px);
+      margin: 14px auto 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid rgba(226, 232, 240, 0.92);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .site-nav a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 13px;
+      border-radius: 999px;
+      color: #334155;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .site-nav a.active {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .site-nav .nav-spacer {
+      flex: 1;
+    }
+
+    .site-nav .nav-current {
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+
+    .page-location {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.16);
+      color: #dbeafe;
+      font-size: 12px;
+      font-weight: 950;
+      border: 1px solid rgba(255,255,255,0.14);
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 760px) {
+      .site-nav {
+        width: min(100% - 18px, 1120px);
+        margin: 10px auto 8px;
+        border-radius: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+
+      .site-nav a {
+        width: 100%;
+        min-height: 38px;
+        padding: 0 8px;
+      }
+
+      .site-nav .nav-spacer,
+      .site-nav .nav-current {
+        display: none;
+      }
+    }
+
+  
+    .disclaimer-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(15, 23, 42, 0.56);
+    }
+
+    .disclaimer-mask.show {
+      display: flex;
+    }
+
+    .disclaimer-box {
+      width: min(100%, 560px);
+      border-radius: 24px;
+      border: 1px solid #dbeafe;
+      background: #ffffff;
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.28);
+      overflow: hidden;
+    }
+
+    .disclaimer-head {
+      padding: 18px 18px 12px;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      color: #fff;
+    }
+
+    .disclaimer-head strong {
+      display: block;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .disclaimer-head span {
+      display: block;
+      margin-top: 6px;
+      color: rgba(239, 246, 255, 0.86);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .disclaimer-body {
+      padding: 16px 18px;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .disclaimer-body ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .disclaimer-body li {
+      margin: 4px 0;
+    }
+
+    .disclaimer-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 14px 18px 18px;
+      border-top: 1px solid #eef2f7;
+    }
+
+    .disclaimer-actions label {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .disclaimer-actions input {
+      width: 16px;
+      height: 16px;
+      min-height: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .disclaimer-actions button {
+      min-height: 40px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 16px;
+      background: #2563eb;
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .ai-disclaimer-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      margin: 8px 0 0;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    @media (max-width: 760px) {
+      .disclaimer-box {
+        border-radius: 20px;
+      }
+
+      .disclaimer-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .disclaimer-actions button {
+        width: 100%;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <nav class="site-nav" aria-label="页面导航">
+    <a class="" href="./index.html">生成器</a>
+    <a class="" href="./reference.html">参考表</a>
+    <a class="active" href="./strategy.html">装机策略</a>
+    <a class="" href="./core-first.html">核心优先</a>
+    <a href="./preflight.html">自检报告</a>
+    <span class="nav-spacer"></span>
+    <button class="ai-disclaimer-link" type="button" onclick="showDisclaimer(true)">免责声明</button>
+    <span class="nav-current">当前：装机策略</span>
+  </nav>
+
+
+  <main class="page">
+    <section class="hero">
+      <div class="page-location">当前页：装机策略</div>
+      <div class="eyebrow">装机策略 · 不把所有东西塞进一个页面</div>
+      <h1>预算到底应该怎么分？</h1>
+      <p>同样 5000 元，可以均衡配，也可以把钱更多压到 CPU 和显卡。这个页面专门解释“装机思路”，主生成器继续保持简单。</p>
+      <div class="top-links">
+        <a class="top-link" href="#core-first">看核心优先</a>
+        <a class="top-link" href="#when">适合谁</a>
+      </div>
+    </section>
+
+    <section class="panel" id="core-first">
+      <h2>三种装机策略</h2>
+      <p class="panel-desc">成熟的网站不会把所有按钮堆到一个页面。这里先把策略拆出来，避免主页面变成说明书。</p>
+      <div class="strategy-grid">
+        <article class="strategy-card">
+          <h3>均衡推荐</h3>
+          <p>适合大多数小白。CPU、显卡、SSD、电源和平台都不太偏，风险最低。</p>
+          <div class="budget-split">
+            <div class="split-row"><span>显卡</span><div class="bar"><span style="width:42%"></span></div><span>42%</span></div>
+            <div class="split-row"><span>CPU/平台</span><div class="bar"><span style="width:30%"></span></div><span>30%</span></div>
+            <div class="split-row"><span>其他</span><div class="bar"><span style="width:28%"></span></div><span>28%</span></div>
+          </div>
+        </article>
+
+        <article class="strategy-card">
+          <h3>CPU + 显卡优先</h3>
+          <p>适合游戏优先、懂得后续补 SSD/内存/机箱的人。不是无脑缩水，电源和散热不能瞎省。</p>
+          <div class="budget-split">
+            <div class="split-row"><span>显卡</span><div class="bar"><span style="width:50%"></span></div><span>50%</span></div>
+            <div class="split-row"><span>CPU/平台</span><div class="bar"><span style="width:32%"></span></div><span>32%</span></div>
+            <div class="split-row"><span>其他</span><div class="bar"><span style="width:18%"></span></div><span>18%</span></div>
+          </div>
+        </article>
+
+        <article class="strategy-card">
+          <h3>省钱够用</h3>
+          <p>适合不想花满预算的人。能用就行，预算留给显示器、外设或者后续升级。</p>
+          <div class="budget-split">
+            <div class="split-row"><span>显卡</span><div class="bar"><span style="width:35%"></span></div><span>35%</span></div>
+            <div class="split-row"><span>CPU/平台</span><div class="bar"><span style="width:28%"></span></div><span>28%</span></div>
+            <div class="split-row"><span>其他</span><div class="bar"><span style="width:37%"></span></div><span>37%</span></div>
+          </div>
+        </article>
+      </div>
+      <div class="warning">注意：CPU + 显卡优先不是“电源随便买、硬盘随便砍”。电源、主板和散热属于底线，不能为了跑分把基础安全省掉。</div>
+    </section>
+
+    <section class="panel" id="when">
+      <h2>什么时候适合“核心硬件优先”？</h2>
+      <div class="strategy-grid">
+        <article class="strategy-card">
+          <h3>适合</h3>
+          <p>主要玩游戏；知道后面会加 SSD/内存；愿意复核电源和散热；不追求机箱外观。</p>
+        </article>
+        <article class="strategy-card">
+          <h3>不适合</h3>
+          <p>完全小白；不想后续升级；对售后很敏感；办公/学习为主；需要稳定安静。</p>
+        </article>
+        <article class="strategy-card">
+          <h3>怎么落地</h3>
+          <p>主生成器先按“性价比版”看，再用参考页检查显卡/CPU 天梯和预算档位。</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <nav class="floating-nav" aria-label="快捷操作">
+    <a href="./index.html">回生成器</a>
+    <button type="button" class="secondary-float" onclick="window.scrollTo({top:0,behavior:'smooth'})">回顶部</button>
+  </nav>
+
+  <div class="disclaimer-mask" id="aiDisclaimer" role="dialog" aria-modal="true" aria-label="入站提示和免责声明">
+    <div class="disclaimer-box">
+      <div class="disclaimer-head">
+        <strong>入站提示：这是 AI 辅助制作的装机参考工具</strong>
+        <span>它适合帮你快速理解预算和取舍，但不能替代下单前的人工核验。</span>
+      </div>
+      <div class="disclaimer-body">
+        使用前先记住这几件事：
+        <ul>
+          <li>配置、价格、帧数都是参考，不保证实时准确。</li>
+          <li>下单前一定要复核当天价格、具体型号、店铺售后和兼容性。</li>
+          <li>二手显卡、矿卡、翻新卡、缩水电源都有风险。</li>
+          <li>本站不收集你的个人信息，也不直接卖货。</li>
+        </ul>
+      </div>
+      <div class="disclaimer-actions">
+        <label><input id="disclaimerDontShow" type="checkbox" /> 下次不再自动弹出</label>
+        <button type="button" onclick="closeDisclaimer()">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    function safeStorageGet(area, key) {
+      try {
+        return window[area].getItem(key);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function safeStorageSet(area, key, value) {
+      try {
+        window[area].setItem(key, value);
+      } catch (error) {
+        // file:// 或部分浏览器隐私模式可能禁用 storage，忽略即可
+      }
+    }
+
+    function showDisclaimer(force = false) {
+      const mask = document.getElementById("aiDisclaimer");
+      if (!mask) return;
+
+      if (force) {
+        mask.classList.add("show");
+        return;
+      }
+
+      const hiddenForever = safeStorageGet("localStorage", "pc_builder_disclaimer_ok") === "1";
+      const seenThisSession = safeStorageGet("sessionStorage", "pc_builder_disclaimer_seen") === "1";
+
+      if (!hiddenForever && !seenThisSession) {
+        mask.classList.add("show");
+        safeStorageSet("sessionStorage", "pc_builder_disclaimer_seen", "1");
+      }
+    }
+
+    function closeDisclaimer() {
+      const mask = document.getElementById("aiDisclaimer");
+      const dontShow = document.getElementById("disclaimerDontShow");
+
+      safeStorageSet("sessionStorage", "pc_builder_disclaimer_seen", "1");
+
+      if (dontShow && dontShow.checked) {
+        safeStorageSet("localStorage", "pc_builder_disclaimer_ok", "1");
+      }
+
+      if (mask) mask.classList.remove("show");
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        document.getElementById("aiDisclaimer")?.classList.remove("show");
+        safeStorageSet("sessionStorage", "pc_builder_disclaimer_seen", "1");
+      }
+    });
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => showDisclaimer(false));
+    } else {
+      showDisclaimer(false);
+    }
+  </script>
+
+</body>
+</html>

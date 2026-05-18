@@ -1,0 +1,8 @@
+{
+  "version": "2.9.0-rc",
+  "name": "trial-deploy",
+  "built_at": "2026-05-18 16:08:58",
+  "status": "release-candidate",
+  "entry": "index.html",
+  "preflight": "preflight.html"
+}

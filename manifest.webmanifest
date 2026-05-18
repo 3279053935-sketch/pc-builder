@@ -1,0 +1,17 @@
+{
+  "name": "小白电脑配置生成器",
+  "short_name": "装机生成器",
+  "description": "按预算和用途生成电脑配置参考。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

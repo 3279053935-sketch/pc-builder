@@ -1,0 +1,9 @@
+{
+  "name": "小白电脑配置生成器",
+  "short_name": "装机参考",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f8fc",
+  "theme_color": "#2563eb",
+  "description": "AI 辅助制作的装机参考工具，按预算和用途生成电脑配置建议。"
+}

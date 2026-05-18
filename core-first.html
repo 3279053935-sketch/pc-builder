@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>核心优先配法｜小白电脑配置生成器</title>
+  <meta name="description" content="先确定 CPU 和显卡，再用剩余预算搭配主板、内存、SSD、电源、散热和机箱。" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --blue: #2563eb;
+      --green: #059669;
+      --orange: #f97316;
+      --red: #dc2626;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+      overscroll-behavior-x: contain;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      padding-bottom: 76px;
+    }
+
+    .site-nav {
+      width: min(100% - 24px, 1120px);
+      margin: 14px auto 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid rgba(226, 232, 240, 0.92);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .site-nav a,
+    .site-nav button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 13px;
+      border-radius: 999px;
+      color: #334155;
+      text-decoration: none;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 950;
+      white-space: nowrap;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .site-nav a.active {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .site-nav .nav-spacer { flex: 1; }
+
+    .site-nav .nav-current {
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+
+    .ai-disclaimer-link {
+      border: 1px solid #bfdbfe !important;
+      background: #eff6ff !important;
+      color: #1d4ed8 !important;
+    }
+
+    .page {
+      width: min(100% - 24px, 1120px);
+      margin: 0 auto;
+      padding: 0 0 44px;
+    }
+
+    .hero {
+      border-radius: 28px;
+      padding: 26px;
+      color: white;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .page-location,
+    .eyebrow {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      color: #dbeafe;
+      font-size: 13px;
+      font-weight: 950;
+      border: 1px solid rgba(255,255,255,0.14);
+      margin-right: 6px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 10px 0;
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+    }
+
+    .hero p {
+      max-width: 820px;
+      margin: 0;
+      color: rgba(239,246,255,0.92);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 23px;
+      letter-spacing: -0.03em;
+    }
+
+    .panel-desc {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 0 12px;
+      color: var(--text);
+      background: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 15px;
+      background: #2563eb;
+      color: white;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0 0;
+    }
+
+    .mode-tabs button {
+      background: #eef2ff;
+      color: #3730a3;
+      min-height: 38px;
+    }
+
+    .mode-tabs button.active {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .combo-card {
+      text-align: left;
+      min-height: 0;
+      border: 1px solid #dbeafe;
+      border-radius: 18px;
+      padding: 12px;
+      background: #fff;
+      color: #0f172a;
+      box-shadow: none;
+    }
+
+    .combo-card strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .combo-card span {
+      display: block;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 800;
+    }
+
+    .combo-card.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .split-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .summary-card,
+    .parts-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .card-head {
+      padding: 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .card-head h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .total {
+      color: #059669;
+      font-size: 25px;
+      font-weight: 1000;
+    }
+
+    .total.bad-total { color: #dc2626; }
+
+    .pill-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 14px;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .pill {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .meter {
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .meter-line {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) 48px;
+      gap: 8px;
+      align-items: center;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: #0ea5e9;
+      max-width: 100%;
+    }
+
+    .parts {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .parts li {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr) 64px;
+      gap: 8px;
+      padding: 11px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .parts li:last-child { border-bottom: 0; }
+
+    .part-name {
+      color: #64748b;
+      font-weight: 950;
+    }
+
+    .part-price {
+      text-align: right;
+      color: #0f172a;
+      font-weight: 950;
+    }
+
+    .notice {
+      margin: 12px;
+      border: 1px solid #fde68a;
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: #fffbeb;
+      color: #7c4a03;
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 800;
+    }
+
+    .notice.ok {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: #047857;
+    }
+
+    .notice.bad {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .manual-details {
+      margin-top: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .manual-details summary {
+      list-style: none;
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      color: #1d4ed8;
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .manual-details summary::-webkit-details-marker { display: none; }
+
+    .manual-body { padding: 0 14px 14px; }
+
+    .floating-nav {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      display: grid;
+      gap: 8px;
+      width: 132px;
+    }
+
+    .floating-nav a,
+    .floating-nav button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 12px;
+      background: #0f172a;
+      color: #fff;
+      text-decoration: none;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+      cursor: pointer;
+    }
+
+    .floating-nav .secondary-float {
+      background: #ffffff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    .disclaimer-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(15, 23, 42, 0.56);
+    }
+
+    .disclaimer-mask.show { display: flex; }
+
+    .disclaimer-box {
+      width: min(100%, 560px);
+      border-radius: 24px;
+      border: 1px solid #dbeafe;
+      background: #ffffff;
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.28);
+      overflow: hidden;
+    }
+
+    .disclaimer-head {
+      padding: 18px 18px 12px;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      color: #fff;
+    }
+
+    .disclaimer-head strong {
+      display: block;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .disclaimer-head span {
+      display: block;
+      margin-top: 6px;
+      color: rgba(239, 246, 255, 0.86);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .disclaimer-body {
+      padding: 16px 18px;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .disclaimer-body ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .disclaimer-body li { margin: 4px 0; }
+
+    .disclaimer-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 14px 18px 18px;
+      border-top: 1px solid #eef2f7;
+    }
+
+    .disclaimer-actions label {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .disclaimer-actions input {
+      width: 16px;
+      height: 16px;
+      min-height: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    @media (max-width: 900px) {
+      .form-grid,
+      .split-layout,
+      .recommend-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .site-nav {
+        width: min(100% - 18px, 1120px);
+        margin: 10px auto 8px;
+        border-radius: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+
+      .site-nav a,
+      .site-nav button {
+        width: 100%;
+        min-height: 38px;
+        padding: 0 8px;
+      }
+
+      .site-nav .nav-spacer,
+      .site-nav .nav-current { display: none; }
+
+      .page { width: min(100% - 18px, 1120px); }
+      .hero, .panel { border-radius: 22px; padding: 18px; }
+      .mode-tabs { grid-template-columns: 1fr; }
+
+      .parts li {
+        grid-template-columns: 52px minmax(0, 1fr) 54px;
+        padding: 10px 12px;
+      }
+
+      .floating-nav {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: auto;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 8px;
+        border: 1px solid rgba(226, 232, 240, 0.92);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+      }
+
+      .floating-nav a,
+      .floating-nav button {
+        min-height: 44px;
+        box-shadow: none;
+      }
+
+      .disclaimer-actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav" aria-label="页面导航">
+    <a href="./index.html">生成器</a>
+    <a href="./reference.html">参考表</a>
+    <a href="./strategy.html">装机策略</a>
+    <a class="active" href="./core-first.html">核心优先</a>
+    <a href="./preflight.html">自检报告</a>
+    <span class="nav-spacer"></span>
+    <button class="ai-disclaimer-link" type="button" onclick="showDisclaimer(true)">免责声明</button>
+    <span class="nav-current">当前：核心优先</span>
+  </nav>
+
+  <main class="page">
+    <section class="hero">
+      <div class="page-location">当前页：核心优先配法</div>
+      <div class="eyebrow">先定 CPU + 显卡，再算剩余配件</div>
+      <h1>先选核心，但不能把基础件饿死。</h1>
+      <p>这个页面不是让你硬塞最贵 CPU 和显卡，而是检查“核心硬件选完后，剩下的钱还能不能安全补齐主板、内存、SSD、电源、散热和机箱”。预算太低时，它会直接告诉你别这么配。</p>
+    </section>
+
+    <section class="panel">
+      <h2>核心优先计算器</h2>
+      <p class="panel-desc">先填预算和用途。推荐组合会自动按预算变化；手动选择放在下面，避免一上来就让小白面对一长串下拉框。</p>
+      <div class="form-grid">
+        <label>总预算
+          <input id="budget" type="number" value="5000" min="2000" max="10000" step="100" />
+        </label>
+        <label>用途
+          <select id="purpose">
+            <option value="网游">网游</option>
+            <option value="3A游戏">3A游戏</option>
+            <option value="办公学习">办公学习</option>
+            <option value="剪辑设计">剪辑设计</option>
+          </select>
+        </label>
+        <label>二手显卡
+          <select id="used">
+            <option value="不接受">不接受</option>
+            <option value="可接受">可接受</option>
+          </select>
+        </label>
+        <button type="button" onclick="generateCoreFirst()">重新计算</button>
+      </div>
+      <div class="mode-tabs" role="tablist" aria-label="核心优先模式">
+        <button type="button" class="active" data-mode="auto" onclick="setMode('auto')">自动推荐</button>
+        <button type="button" data-mode="gpu" onclick="setMode('gpu')">显卡优先</button>
+        <button type="button" data-mode="cpu" onclick="setMode('cpu')">CPU 优先</button>
+      </div>
+      <div id="comboList" class="recommend-grid" aria-label="推荐核心组合"></div>
+      <details class="manual-details">
+        <summary>我想手动指定 CPU / 显卡</summary>
+        <div class="manual-body">
+          <div class="form-grid">
+            <label>CPU
+              <select id="cpuSelect"></select>
+            </label>
+            <label>显卡
+              <select id="gpuSelect"></select>
+            </label>
+            <button type="button" onclick="manualApply()">用这组核心计算</button>
+          </div>
+        </div>
+      </details>
+      <div class="notice">经验规则：核心硬件占比超过 70% 就要小心，可能会挤压电源、散热、SSD 和主板。核心优先不是“基础件随便买”。</div>
+    </section>
+
+    <section class="panel" id="result">
+      <h2>搭配结果</h2>
+      <p class="panel-desc">会显示核心预算、剩余预算、自动补齐的基础配件，以及这套搭配是否建议。</p>
+      <div id="coreResult"></div>
+    </section>
+  </main>
+
+  <nav class="floating-nav" aria-label="快捷操作">
+    <a href="./index.html">回生成器</a>
+    <button type="button" class="secondary-float" onclick="window.scrollTo({top:0,behavior:'smooth'})">回顶部</button>
+  </nav>
+
+  <div class="disclaimer-mask" id="aiDisclaimer" role="dialog" aria-modal="true" aria-label="入站提示和免责声明">
+    <div class="disclaimer-box">
+      <div class="disclaimer-head">
+        <strong>入站提示：这是 AI 辅助制作的装机参考工具</strong>
+        <span>它适合帮你快速理解预算和取舍，但不能替代下单前的人工核验。</span>
+      </div>
+      <div class="disclaimer-body">
+        使用前先记住这几件事：
+        <ul>
+          <li>配置、价格、帧数都是参考，不保证实时准确。</li>
+          <li>下单前一定要复核当天价格、具体型号、店铺售后和兼容性。</li>
+          <li>二手显卡、矿卡、翻新卡、缩水电源都有风险。</li>
+          <li>本站不收集你的个人信息，也不直接卖货。</li>
+        </ul>
+      </div>
+      <div class="disclaimer-actions">
+        <label><input id="disclaimerDontShow" type="checkbox" /> 下次不再自动弹出</label>
+        <button type="button" onclick="closeDisclaimer()">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./parts.js"></script>
+  <script>
+    const db = window.PC_BUILDER_PARTS;
+    const C = db.cpu;
+    const G = db.gpu;
+    const M = db.board;
+    const R = db.ram;
+    const S = db.storage;
+    const P = db.psu;
+    const X = db.case;
+    const K = db.cooler;
+
+    let currentMode = "auto";
+    let selectedCombo = null;
+
+    const cpuOptions = [
+      ["i3_12100f", "Intel Core i3-12100F", C.i3_12100f, "入门独显"],
+      ["i3_14100f", "Intel Core i3-14100F", C.i3_14100f, "入门网游"],
+      ["r5_5500", "AMD Ryzen 5 5500", C.r5_5500, "低预算"],
+      ["r5_5600", "AMD Ryzen 5 5600", C.r5_5600, "AM4 甜点"],
+      ["i5_12400f", "Intel Core i5-12400F", C.i5_12400f, "全新稳妥"],
+      ["i5_13400f", "Intel Core i5-13400F", C.i5_13400f, "多核更强"],
+      ["r5_7500f", "AMD Ryzen 5 7500F", C.r5_7500f, "AM5 新平台"],
+      ["r5_9600x", "AMD Ryzen 5 9600X", C.r5_9600x, "高预算 AM5"]
+    ].filter(row => row[2]);
+
+    const gpuOptions = [
+      ["igpu", "核显/暂不买独显", G.igpu, "办公过渡", false],
+      ["rx580Used", "二手 RX 580 8GB", G.rx580Used, "极限低预算", true],
+      ["gtx1660sUsed", "二手 GTX 1660 Super", G.gtx1660sUsed, "低预算网游", true],
+      ["rx6600Used", "二手 RX 6600", G.rx6600Used, "二手甜点", true],
+      ["rx6600New", "RX 6600", G.rx6600New, "全新入门", false],
+      ["rx6650xt", "RX 6650 XT", G.rx6650xt, "1080P 性价比", false],
+      ["rx7600", "RX 7600", G.rx7600, "全新主流", false],
+      ["rx6750gre", "RX 6750 XT / GRE", G.rx6750gre, "2K 入门", false],
+      ["rtx4060", "RTX 4060", G.rtx4060, "省电/DLSS", false],
+      ["rtx5060", "RTX 5060", G.rtx5060, "新 N 卡", false],
+      ["rtx4060ti", "RTX 4060 Ti", G.rtx4060ti, "N 卡进阶", false],
+      ["rx7800xt", "RX 7800 XT", G.rx7800xt, "2K 性能", false],
+      ["rx9070gre", "RX 9070 GRE", G.rx9070gre, "价格波动大", false],
+      ["rtx5060ti16", "RTX 5060 Ti 16G", G.rtx5060ti16, "大显存", false],
+      ["rtx5070", "RTX 5070", G.rtx5070, "高预算", false]
+    ].filter(row => row[2]);
+
+    function money(value) {
+      return "¥" + Math.round(Number(value || 0));
+    }
+
+    function selectedPart(list, key) {
+      return list.find(row => row[0] === key)?.[2] || list[0]?.[2];
+    }
+
+    function selectedLabel(list, key) {
+      return list.find(row => row[0] === key)?.[1] || list[0]?.[1] || "未知";
+    }
+
+    function getInput() {
+      return {
+        budget: Number(document.getElementById("budget").value || 0),
+        purpose: document.getElementById("purpose").value,
+        used: document.getElementById("used").value
+      };
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll(".mode-tabs button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mode === mode);
+      });
+      selectedCombo = null;
+      renderCombos();
+      generateCoreFirst(false);
+    }
+
+    function isAm5Cpu(cpu) {
+      return /7500F|7600|9600X|9700X/i.test(cpu.model);
+    }
+
+    function isIntelLga1700Cpu(cpu) {
+      return /12100|12400|13400|14100|13500/i.test(cpu.model);
+    }
+
+    function gpuTier(gpu) {
+      const t = String(gpu?.model || "");
+      if (/RTX 5070|RX 9070|RX 7800 XT|RX 6800 XT/i.test(t)) return "high";
+      if (/RTX 5060 Ti|RTX 4060 Ti|RX 6750|RTX 5060|RTX 4060/i.test(t)) return "mid";
+      if (/RX 6650|RX 7600|RX 6600|1660/i.test(t)) return "low";
+      if (/RX 580|5500|核显/i.test(t)) return "basic";
+      return "low";
+    }
+
+    function chooseCooler(cpu, gpu) {
+      const cpuText = String(cpu?.model || "");
+      if (/9600X|i5-13500|i5-13400F/i.test(cpuText)) return K.plus;
+      if (/7500F/i.test(cpuText)) return K.basic;
+      if (gpuTier(gpu) === "high") return K.plus;
+      return K.basic;
+    }
+
+    function choosePsu(gpu) {
+      const tier = gpuTier(gpu);
+      if (tier === "high") return P.p750;
+      if (tier === "mid") return P.p650;
+      if (tier === "low") return P.p550;
+      return P.p500;
+    }
+
+    function chooseBoard(cpu, gpu, remaining) {
+      const tier = gpuTier(gpu);
+      if (isAm5Cpu(cpu)) return remaining >= 2600 || tier === "high" ? M.b650m : M.a620m;
+      if (isIntelLga1700Cpu(cpu)) return remaining >= 2200 || tier !== "basic" ? (M.b660m || M.h610m) : M.h610m;
+      if (tier === "high" || remaining >= 2100) return M.b550m;
+      return M.b450m || M.a520m;
+    }
+
+    function chooseRam(cpu, purpose, remaining) {
+      const am5 = isAm5Cpu(cpu);
+      if (am5) return (purpose === "剪辑设计" && remaining >= 3600) ? R.d5_32 : R.d5_16;
+      if ((purpose === "剪辑设计" || purpose === "办公学习") && remaining >= 2600) return R.d4_32;
+      return R.d4_16;
+    }
+
+    function chooseStorage(purpose, remaining, gapPressure) {
+      if (purpose === "剪辑设计" && remaining >= 2500 && S.ssd1tHigh) return S.ssd1tHigh;
+      if (remaining >= 1700 && !gapPressure) return S.ssd1t;
+      if (remaining >= 1050) return S.ssd500;
+      return S.ssd256;
+    }
+
+    function chooseCase(gpu, remaining) {
+      const tier = gpuTier(gpu);
+      if (tier === "high") return X.airflow || X.normal;
+      if (remaining >= 1800) return X.normal;
+      return X.black;
+    }
+
+    function chooseRest(cpu, gpu, budget, coreTotal, purpose) {
+      const remaining = budget - coreTotal;
+      const gapPressure = remaining < 1700;
+      const psu = choosePsu(gpu);
+      const board = chooseBoard(cpu, gpu, remaining);
+      const ram = chooseRam(cpu, purpose, remaining);
+      const storage = chooseStorage(purpose, remaining, gapPressure);
+      const cooler = chooseCooler(cpu, gpu);
+      const caseBox = chooseCase(gpu, remaining);
+      return { board, ram, storage, psu, cooler, case: caseBox };
+    }
+
+    function buildParts(cpuKey, gpuKey, input) {
+      const cpu = selectedPart(cpuOptions, cpuKey);
+      const gpu = selectedPart(gpuOptions, gpuKey);
+      const coreTotal = cpu.price + gpu.price;
+      const rest = chooseRest(cpu, gpu, input.budget, coreTotal, input.purpose);
+      const parts = { cpu, gpu, ...rest };
+      const restTotal = rest.board.price + rest.ram.price + rest.storage.price + rest.psu.price + rest.cooler.price + rest.case.price;
+      const total = coreTotal + restTotal;
+      const gap = input.budget - total;
+      const coreRatio = input.budget > 0 ? Math.round(coreTotal / input.budget * 100) : 0;
+      return { cpuKey, gpuKey, cpu, gpu, parts, coreTotal, restTotal, total, gap, coreRatio };
+    }
+
+    function getComboSeeds(input) {
+      const b = input.budget;
+      const usedOk = input.used === "可接受";
+      const purpose = input.purpose;
+      const seeds = [];
+
+      if (purpose === "办公学习") {
+        seeds.push(["i3_12100f", "igpu", "核显办公", "不硬塞独显，把钱留给内存和 SSD"]);
+        seeds.push(["r5_5500", usedOk ? "rx580Used" : "rx6600New", "轻娱乐", usedOk ? "低预算二手独显过渡" : "全新入门独显"]);
+        seeds.push(["i5_13400f", "igpu", "多开办公", "CPU 优先，适合多任务"]);
+        return seeds;
+      }
+
+      if (b < 2800) {
+        seeds.push(["i3_12100f", usedOk ? "rx580Used" : "rx6600New", usedOk ? "极限二手" : "全新会很紧", usedOk ? "预算低只能靠二手独显" : "全新独显会压缩基础件"]);
+        seeds.push(["r5_5500", usedOk ? "gtx1660sUsed" : "rx6600New", "压性能", "只适合愿意后续补硬盘/内存的人"]);
+        seeds.push(["r5_5600", usedOk ? "rx6600Used" : "rx6600New", "更稳 CPU", "预算大概率偏紧"]);
+        return seeds;
+      }
+
+      if (b < 4000) {
+        seeds.push(["r5_5500", "rx6600New", "全新入门", "1080P 网游入门更稳"]);
+        seeds.push(["r5_5500", "rx6650xt", "显卡优先", "帧数更好，但基础件会紧"]);
+        seeds.push(["r5_5600", usedOk ? "rx6600Used" : "rx6600New", "CPU 稳一点", "适合 CS2/网游低帧"]);
+        return seeds;
+      }
+
+      if (b < 5500) {
+        seeds.push(["i5_12400f", "rtx5060", "全新 N 卡", "DLSS/低功耗/驱动生态"]);
+        seeds.push(["r5_5600", "rx6750gre", "显卡更强", "更偏 1080P 高画质/2K 入门"]);
+        seeds.push(["r5_5600", "rx6650xt", "稳妥省钱", "预算留给 SSD/电源"]);
+        return seeds;
+      }
+
+      if (b < 7200) {
+        seeds.push(["r5_5600", "rx7800xt", "极限显卡", "AM4 压平台换显卡，不是主流高预算"]);
+        seeds.push(["r5_7500f", "rx6750gre", "AM5 均衡", "平台更新，显卡略保守"]);
+        seeds.push(["i5_12400f", "rtx5060", "N 卡稳妥", "低功耗，预算余量更多"]);
+        return seeds;
+      }
+
+      if (b < 9000) {
+        seeds.push(["r5_7500f", "rx7800xt", "AM5 + 2K", "更像 7000+ 主流思路"]);
+        seeds.push(["r5_7500f", "rx9070gre", "显卡上探", "价格波动大，适合复核当天价"]);
+        seeds.push(["r5_9600x", "rx7800xt", "CPU 更强", "网游低帧和平台更舒服"]);
+        return seeds;
+      }
+
+      seeds.push(["r5_9600x", "rx9070gre", "高预算均衡", "平台、显卡都上一个台阶"]);
+      seeds.push(["r5_7500f", "rtx5060ti16", "N 卡大显存", "兼顾创作/AI 入门"]);
+      seeds.push(["r5_9600x", "rtx5070", "高预算 N 卡", "适合偏 N 卡生态"]);
+      return seeds;
+    }
+
+    function scoreBuild(calc, input, label) {
+      let score = 100;
+      if (calc.gap < 0) score -= Math.min(70, Math.abs(calc.gap) / 10);
+      if (calc.coreRatio > 72) score -= (calc.coreRatio - 72) * 2;
+      if (calc.coreRatio < 45 && input.purpose !== "办公学习") score -= 10;
+      if (label.includes("全新会很紧")) score -= 15;
+      if (input.used === "不接受" && String(calc.gpu.model).includes("二手")) score -= 60;
+      return Math.round(score);
+    }
+
+    function getCombos(input) {
+      return getComboSeeds(input).map(([cpuKey, gpuKey, label, note]) => {
+        const calc = buildParts(cpuKey, gpuKey, input);
+        return { cpuKey, gpuKey, label, note, score: scoreBuild(calc, input, label), calc };
+      }).sort((a, b) => {
+        if (currentMode === "gpu") return b.calc.gpu.price - a.calc.gpu.price;
+        if (currentMode === "cpu") return b.calc.cpu.price - a.calc.cpu.price;
+        return b.score - a.score;
+      });
+    }
+
+    function fillOptions() {
+      const cpuSelect = document.getElementById("cpuSelect");
+      const gpuSelect = document.getElementById("gpuSelect");
+      cpuSelect.innerHTML = cpuOptions.map(([key, label, part, tag]) => `<option value="${key}">${label}（${money(part.price)}）· ${tag}</option>`).join("");
+      gpuSelect.innerHTML = gpuOptions.map(([key, label, part, tag, used]) => `<option value="${key}">${used ? "二手 " : ""}${label}（${money(part.price)}）· ${tag}</option>`).join("");
+    }
+
+    function renderCombos() {
+      const input = getInput();
+      const combos = getCombos(input);
+      const list = document.getElementById("comboList");
+      if (!selectedCombo && combos[0]) selectedCombo = { cpuKey: combos[0].cpuKey, gpuKey: combos[0].gpuKey };
+      list.innerHTML = combos.map((combo, index) => {
+        const active = selectedCombo && selectedCombo.cpuKey === combo.cpuKey && selectedCombo.gpuKey === combo.gpuKey;
+        const c = combo.calc;
+        const fitText = c.gap >= 0 ? `余 ${money(c.gap)}` : `超 ${money(Math.abs(c.gap))}`;
+        return `<button type="button" class="combo-card ${active ? "active" : ""}" onclick="selectCombo('${combo.cpuKey}','${combo.gpuKey}')">
+          <strong>${combo.label} · ${fitText}</strong>
+          <span>${selectedLabel(cpuOptions, combo.cpuKey)} + ${selectedLabel(gpuOptions, combo.gpuKey)}</span>
+          <span>${combo.note} · 核心占比 ${c.coreRatio}%</span>
+        </button>`;
+      }).join("");
+    }
+
+    function selectCombo(cpuKey, gpuKey) {
+      selectedCombo = { cpuKey, gpuKey };
+      document.getElementById("cpuSelect").value = cpuKey;
+      document.getElementById("gpuSelect").value = gpuKey;
+      renderCombos();
+      generateCoreFirst();
+    }
+
+    function manualApply() {
+      selectedCombo = {
+        cpuKey: document.getElementById("cpuSelect").value,
+        gpuKey: document.getElementById("gpuSelect").value
+      };
+      renderCombos();
+      generateCoreFirst();
+    }
+
+    function renderParts(parts) {
+      const rows = [
+        ["CPU", parts.cpu.model, parts.cpu.price],
+        ["显卡", parts.gpu.model, parts.gpu.price],
+        ["主板", parts.board.model, parts.board.price],
+        ["内存", parts.ram.model, parts.ram.price],
+        ["硬盘", parts.storage.model, parts.storage.price],
+        ["电源", parts.psu.model, parts.psu.price],
+        ["散热", parts.cooler.model, parts.cooler.price],
+        ["机箱", parts.case.model, parts.case.price]
+      ];
+
+      return `<ul class="parts">${rows.map(row => `
+        <li>
+          <span class="part-name">${row[0]}</span>
+          <span>${row[1]}</span>
+          <span class="part-price">${money(row[2])}</span>
+        </li>
+      `).join("")}</ul>`;
+    }
+
+    function statusNotice(calc, input) {
+      if (calc.gap >= 0 && calc.coreRatio <= 72) {
+        return `<div class="notice ok">建议可行：核心硬件占预算约 ${calc.coreRatio}%，剩余 ${money(calc.gap)}。基础配件没有被压到太危险。</div>`;
+      }
+      if (calc.gap >= 0 && calc.coreRatio > 72) {
+        return `<div class="notice">能配但偏科：核心占比 ${calc.coreRatio}%，剩余 ${money(calc.gap)}。以后优先补 SSD / 内存，别再省电源和散热。</div>`;
+      }
+      if (calc.gap >= -300) {
+        return `<div class="notice">略超预算：超出 ${money(Math.abs(calc.gap))}。可以等活动价，或者降显卡/SSD 一档。</div>`;
+      }
+      return `<div class="notice bad">不建议：超出 ${money(Math.abs(calc.gap))}。这组 CPU + 显卡把预算吃太满，剩余配件已经不够安全补齐。</div>`;
+    }
+
+    function adviceText(calc, input) {
+      const advice = [];
+      if (input.budget < 2800 && input.used === "不接受" && input.purpose !== "办公学习") {
+        advice.push("低于 2800 又不接受二手时，全新独显主机很难舒服，建议回主生成器看核显/过渡方案。");
+      }
+      if (calc.coreRatio > 72) advice.push("核心占比过高：会挤压主板、电源、散热、SSD。核心优先不是基础件随便买。");
+      if (calc.parts.storage === S.ssd256 || calc.parts.storage === S.ssd500) advice.push("硬盘偏过渡：游戏多后续优先补 1TB SSD。");
+      if (calc.parts.board === M.a620m) advice.push("AM5 + A620M 能用，但长期升级/扩展更建议 B650M。");
+      if (gpuTier(calc.gpu) === "high" && calc.parts.case !== X.airflow) advice.push("高功耗显卡最好配风道更好的机箱。");
+      if (String(calc.gpu.model).includes("二手")) advice.push("二手显卡必须验温度、噪音、接口、烤机和退换。");
+      if (calc.gap < -300) advice.push("真正要改的是核心组合，不要靠杂牌电源和无散热硬凑。");
+      return advice.length ? advice.join(" ") : "这套比例比较正常，可以和主生成器里的稳妥版/性价比版互相对照。";
+    }
+
+    function renderMeters(calc) {
+      const corePct = Math.min(100, Math.max(0, calc.coreRatio));
+      const restPct = Math.min(100, Math.max(0, Math.round(calc.restTotal / calc.total * 100)));
+      return `<div class="meter">
+        <div class="meter-line"><span>核心</span><div class="bar"><span style="width:${corePct}%"></span></div><b>${calc.coreRatio}%</b></div>
+        <div class="meter-line"><span>基础件</span><div class="bar"><span style="width:${restPct}%"></span></div><b>${restPct}%</b></div>
+      </div>`;
+    }
+
+    function generateCoreFirst(scroll = true) {
+      const input = getInput();
+      if (!selectedCombo) {
+        const combos = getCombos(input);
+        selectedCombo = combos[0] ? { cpuKey: combos[0].cpuKey, gpuKey: combos[0].gpuKey } : { cpuKey: "r5_5600", gpuKey: "rx6600New" };
+      }
+      const calc = buildParts(selectedCombo.cpuKey, selectedCombo.gpuKey, input);
+      document.getElementById("cpuSelect").value = selectedCombo.cpuKey;
+      document.getElementById("gpuSelect").value = selectedCombo.gpuKey;
+      renderCombos();
+
+      const result = document.getElementById("coreResult");
+      const totalClass = calc.gap < -300 ? "bad-total" : "";
+      result.innerHTML = `
+        <div class="split-layout">
+          <article class="summary-card">
+            <div class="card-head">
+              <h3>核心优先结果</h3>
+              <div class="total ${totalClass}">${money(calc.total)}</div>
+            </div>
+            <div class="pill-line">
+              <span class="pill">预算 ${money(input.budget)}</span>
+              <span class="pill">CPU + 显卡 ${money(calc.coreTotal)}</span>
+              <span class="pill">基础件 ${money(calc.restTotal)}</span>
+              <span class="pill">差额 ${calc.gap >= 0 ? "+" : "-"}${money(Math.abs(calc.gap))}</span>
+            </div>
+            ${renderMeters(calc)}
+            ${statusNotice(calc, input)}
+            <div class="notice">${adviceText(calc, input)}</div>
+          </article>
+
+          <article class="parts-card">
+            <div class="card-head">
+              <h3>自动补齐的完整配置</h3>
+            </div>
+            ${renderParts(calc.parts)}
+          </article>
+        </div>
+      `;
+
+      if (scroll) document.getElementById("result").scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+
+    function onInputChanged() {
+      selectedCombo = null;
+      renderCombos();
+      generateCoreFirst(false);
+    }
+
+    function bindEvents() {
+      ["budget", "purpose", "used"].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener("change", onInputChanged);
+        el.addEventListener("keydown", event => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            onInputChanged();
+            generateCoreFirst();
+          }
+        });
+      });
+      ["cpuSelect", "gpuSelect"].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener("keydown", event => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            manualApply();
+          }
+        });
+      });
+    }
+
+    function safeStorageGet(area, key) {
+      try { return window[area].getItem(key); } catch (error) { return null; }
+    }
+
+    function safeStorageSet(area, key, value) {
+      try { window[area].setItem(key, value); } catch (error) {}
+    }
+
+    function showDisclaimer(force = false) {
+      const mask = document.getElementById("aiDisclaimer");
+      if (!mask) return;
+      if (force) {
+        mask.classList.add("show");
+        return;
+      }
+      const hiddenForever = safeStorageGet("localStorage", "pc_builder_disclaimer_ok") === "1";
+      const seenThisSession = safeStorageGet("sessionStorage", "pc_builder_disclaimer_seen") === "1";
+      if (!hiddenForever && !seenThisSession) {
+        mask.classList.add("show");
+        safeStorageSet("sessionStorage", "pc_builder_disclaimer_seen", "1");
+      }
+    }
+
+    function closeDisclaimer() {
+      const mask = document.getElementById("aiDisclaimer");
+      const dontShow = document.getElementById("disclaimerDontShow");
+      safeStorageSet("sessionStorage", "pc_builder_disclaimer_seen", "1");
+      if (dontShow && dontShow.checked) safeStorageSet("localStorage", "pc_builder_disclaimer_ok", "1");
+      if (mask) mask.classList.remove("show");
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        document.getElementById("aiDisclaimer")?.classList.remove("show");
+        safeStorageSet("sessionStorage", "pc_builder_disclaimer_seen", "1");
+      }
+    });
+
+    fillOptions();
+    bindEvents();
+    renderCombos();
+    generateCoreFirst(false);
+    showDisclaimer(false);
+  </script>
+</body>
+</html>
