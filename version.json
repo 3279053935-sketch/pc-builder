@@ -1,9 +1,9 @@
 {
-  "version": "2.9.2-rc",
-  "name": "custom-core-and-mainstream-gpu-fix",
-  "built_at": "2026-05-18 16:53:21",
+  "version": "2.9.3-rc",
+  "name": "board-psu-qc-fix",
+  "built_at": "2026-05-18 17:33:06",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "核心优先页支持自定义 CPU/GPU 型号价格，扩展 CPU/GPU 选项。"
+  "note": "主板/电源搭配重算，R5 5600 不再默认上 B550；新增基础件风控提示。"
 }

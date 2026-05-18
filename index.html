@@ -1857,6 +1857,25 @@
       }
     }
 
+  
+    .qc-hint {
+      margin: 8px 14px 0;
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .qc-hint.good { background: #f0fdf4; color: #047857; border-color: #bbf7d0; }
+    .qc-hint.watch { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+    .qc-hint.care { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+
   </style>
   <meta name="description" content="面向小白的电脑配置生成器，按预算、用途、是否接受二手显卡生成办公、网游、3A、剪辑设计装机参考。" />
   <meta name="theme-color" content="#2563eb" />
@@ -2313,6 +2332,44 @@ function compactPartText(part, type) {
       if (/10G|11G|12G/i.test(vram)) return `${vram} 显存：1080P 更稳，部分 2K 也更舒服。`;
       if (/16G|20G|24G|32G/i.test(vram)) return `${vram} 显存：更适合 2K、重 3A 或生产力。`;
       return `${vram} 显存：按具体游戏和画质判断。`;
+    }
+
+    
+    function partRiskScore(part, type) {
+      const text = String(part?.model || "");
+      let score = 0;
+
+      if (type === "board") {
+        if (/B450M|A520M|H610M/i.test(text)) score += 1;
+        if (/A620M/i.test(text)) score += 1;
+        if (/B550M|B650M|B760M|B660M/i.test(text)) score += 0;
+        if (/华硕|微星|技嘉|华擎/i.test(text)) score -= 1;
+        if (/精粤|昂达|铭瑄|七彩虹/i.test(text)) score += 1;
+      }
+
+      if (type === "psu") {
+        if (/500W|550W/i.test(text)) score += 1;
+        if (/大水牛|驿晨宇|金河田|先马|白牌/i.test(text)) score += 2;
+        if (/微星|长城|安钛克|酷冷|海韵|振华|TT|Tt|鑫谷|利民|九州风神|航嘉/i.test(text)) score -= 1;
+      }
+
+      return Math.max(0, score);
+    }
+
+    function getBuildQualityHint(build) {
+      let risk = 0;
+      risk += partRiskScore(build.parts.board, "board");
+      risk += partRiskScore(build.parts.psu, "psu");
+      if (buildUsesUsedGpu(build)) risk += 2;
+
+      const gpuText = String(build.gpu || "");
+      const psuText = String(build.psu || "");
+      if (/RX 7800 XT|RX 9070|RTX 5070|RTX 4070 Ti/i.test(gpuText) && !/750W|850W/i.test(psuText)) risk += 2;
+      if (/RX 7700 XT|RX 9060 XT|RTX 4070|RTX 5060 Ti/i.test(gpuText) && /500W|550W/i.test(psuText)) risk += 2;
+
+      if (risk <= 1) return { level: "good", text: "基础件风控：正常，仍需复核具体型号" };
+      if (risk <= 3) return { level: "watch", text: "基础件风控：需复核主板/电源具体型号" };
+      return { level: "care", text: "基础件风控：谨慎，重点查电源/二手/售后" };
     }
 
     function getBuildKeyPoints(build, input) {
@@ -2860,9 +2917,7 @@ function compactPartText(part, type) {
       if (partModelIncludes(next.parts.storage, "512GB")) {
         next = tryUpgradePart(next, input, { storage: S.ssd1t }, "把 SSD 升到 1TB，游戏容量更宽裕");
       }
-      if (partModelIncludes(next.parts.board, "B450M")) {
-        next = tryUpgradePart(next, input, { board: M.b550m }, "把 B450M 升到 B550M，平台和扩展更舒服");
-      }
+      // R5 5500/5600 这类 AM4 低中预算配置，B450M 已经够用；不再为了“看起来更高端”自动升 B550M。
       if (partModelIncludes(next.parts.ram, "16GB DDR4")) {
         next = tryUpgradePart(next, input, { ram: R.d4_32 }, "预算充足时把内存升到 32GB，多开和部分游戏更稳");
       }
@@ -2909,6 +2964,8 @@ function compactPartText(part, type) {
       }
 
       tips.push("显卡别只看型号，也要看显存版本；同名显卡可能有 8G/16G 等不同版本。");
+      tips.push("R5 5600 配 B450M 已经够用，想省钱可看 A520M；B550M 主要买扩展和更好供电。");
+      tips.push("RX9060XT / RX7700XT 这类中端卡价格波动大，重点对比 RX6750GRE、RX7800XT 和 RTX5060Ti。");
 
       if (!tips.length) {
         tips.push("这套没有明显必须替换的大件；下单时主要复核当天价格、售后和具体品牌型号。");
@@ -3239,6 +3296,7 @@ function classifyDecisionType(build) {
       ];
       const visualTiles = getBuildVisualTiles(build);
       const keyPoints = getBuildKeyPoints(build, window.latestInput || getInput());
+      const qcHint = getBuildQualityHint(build);
 
       if (build.monitorPlan && build.monitorPlan.price > 0) {
         rows.push(["显示器", `${build.monitorPlan.model}（${aboutMoney(build.monitorPlan.price)}）`]);
@@ -3269,6 +3327,7 @@ function classifyDecisionType(build) {
             `).join("")}
           </ul>
           <div class="parts-compact-note">上面先显示精简型号，具体品牌/系列以下单页面为准。</div>
+          <div class="qc-hint ${qcHint.level}">${qcHint.text}</div>
           <div class="desc">
             <div class="good-alert"><strong>适合谁：</strong>${build.people}</div>
             <div class="key-points">

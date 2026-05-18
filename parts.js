@@ -44,10 +44,12 @@ window.PC_BUILDER_PARTS = {
         rx6600New: { model: "RX 6600 8GB（撼讯/瀚铠/盈通/讯景/蓝宝石等）", price: 989 },
         rx6650xt: { model: "RX 6650 XT 8GB（1000–1200 元档重点参考）", price: 1150 },
         rx7600: { model: "RX 7600 8GB（全新主流 1080P）", price: 1499 },
+        rx9060xt16: { model: "RX 9060 XT 16G（全新大显存，价格波动大）", price: 2599 },
         rx6750gre: { model: "RX 6750 GRE 10GB（全新/清仓，2K 入门）", price: 1999 },
         rtx4060: { model: "RTX 4060 8GB（全新省电，DLSS 友好）", price: 1999 },
         rtx5060: { model: "RTX 5060 8GB（全新，5000 元档可考虑）", price: 2399 },
         rtx4060ti: { model: "RTX 4060 Ti 8GB", price: 2599 },
+        rx7700xt: { model: "RX 7700 XT 12G（2K 入门/中端性能）", price: 2699 },
         rx7800xt: { model: "RX 7800 XT 16G", price: 3099 },
         rtx4070: { model: "RTX 4070 12G（全新/二手价格差异大）", price: 3299 },
         rtx4070super: { model: "RTX 4070 SUPER 12G（2K N 卡甜点）", price: 3899 },
@@ -61,15 +63,15 @@ window.PC_BUILDER_PARTS = {
         rx9070gre: { model: "RX 9070 GRE 12GB（全新/价格波动大）", price: 3499 }
       },
       board: {
-        h610m: { model: "H610M DDR4 主板（LGA1700：铭瑄/华擎/微星/技嘉等）", price: 429 },
-        b660m: { model: "B660M DDR4 主板（LGA1700：华硕/微星/技嘉/华擎等）", price: 560 },
-        b760m: { model: "B760M DDR4 主板（LGA1700：铭瑄/华硕/微星/技嘉等）", price: 649 },
+        h610m: { model: "H610M DDR4 主板（LGA1700 入门：技嘉/长城/铭瑄/微星等，按具体型号）", price: 479 },
+        b660m: { model: "B660M DDR4 主板（LGA1700 主流：技嘉/华硕/微星等）", price: 676 },
+        b760m: { model: "B760M DDR4 主板（LGA1700 主流：技嘉/铭瑄/微星/华硕等）", price: 676 },
         b760mD5: { model: "B760M DDR5 主板（LGA1700：微星/技嘉/华硕等）", price: 999 },
-        a520m: { model: "A520M 主板（AM4 入门：华擎/铭瑄/七彩虹等）", price: 380 },
-        b450m: { model: "B450M 主板（AM4 性价比：七彩虹/铭瑄/华擎等）", price: 459 },
-        b550m: { model: "B550M 入门/主流主板（AM4：华擎/铭瑄/七彩虹/技嘉等，按具体型号）", price: 550 },
+        a520m: { model: "A520M 主板（AM4 省钱：华擎/铭瑄/七彩虹等，R5 5500/5600 可用）", price: 359 },
+        b450m: { model: "B450M 主板（AM4 性价比：微星迫击炮MAX/技嘉DS3H/华擎等）", price: 449 },
+        b550m: { model: "B550M 主流主板（AM4 扩展/PCIe4：技嘉/微星/华硕等，非低预算刚需）", price: 699 },
         a620m: { model: "A620M 主板（AM5 入门/DDR5）", price: 499 },
-        b650m: { model: "B650M 主板（AM5/DDR5：微星/技嘉/华硕等）", price: 699 }
+        b650m: { model: "B650M 主板（AM5/DDR5：技嘉/微星/华硕等）", price: 749 }
       },
       ram: {
         d4_8: { model: "8GB DDR4 2666/3200 单条（极限办公/过渡）", price: 300 },
@@ -87,10 +89,10 @@ window.PC_BUILDER_PARTS = {
       },
       psu: {
         p500: { model: "500W 电源（驿晨宇玄武500K / 大水牛 / 先马等，注意具体型号和售后）", price: 155 },
-        p550: { model: "550W 电源（驿晨宇玄武550 / 鑫谷 AN550W / 同级有售后型号）", price: 210 },
-        p650: { model: "650W 电源（微星 A650BN / 艾湃 A650 / 长城 X6 等）", price: 289 },
-        p750: { model: "750W 电源（鑫谷 GM750W / TT GF1 / 同级型号）", price: 429 },
-        p850: { model: "850W 电源（艾湃电竞/爱国者/微星等，适合高功耗卡）", price: 499 }
+        p550: { model: "550W 电源（鑫谷 AN550W / 安钛克 NE550 / 航嘉 WD500K 等，按具体型号）", price: 219 },
+        p650: { model: "650W 电源（微星 A650BN / 安耐美 GM650W / 长城 X6 / 安钛克 NE650 等）", price: 289 },
+        p750: { model: "750W 电源（鑫谷 GM750W / TT GF1 / 利民 TR-TG750 / 金河田金牌A+ 等）", price: 399 },
+        p850: { model: "850W 电源（长城/微星/爱国者/振华/酷冷等，适合高功耗卡）", price: 499 }
       },
       cooler: {
         stock: { model: "盒装自带散热/原装散热（低功耗办公可用）", price: 0 },

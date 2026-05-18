@@ -798,12 +798,14 @@
       ["rx6600New", "RX 6600 8G", G.rx6600New, "全新入门", false],
       ["rx6650xt", "RX 6650 XT 8G", G.rx6650xt, "1080P 性价比", false],
       ["rx7600", "RX 7600 8G", G.rx7600, "全新主流", false],
+      ["rx9060xt16", "RX 9060 XT 16G", G.rx9060xt16, "大显存新卡", false],
       ["rx6750gre", "RX 6750 GRE 10G", G.rx6750gre, "2K 入门", false],
       ["rtx4060", "RTX 4060 8G", G.rtx4060, "省电/DLSS", false],
       ["rtx5060", "RTX 5060 8G", G.rtx5060, "新 N 卡", false],
       ["rtx4060ti", "RTX 4060 Ti 8G", G.rtx4060ti, "N 卡进阶", false],
       ["rtx5060ti8", "RTX 5060 Ti 8G", G.rtx5060ti8, "注意 8G 版", false],
       ["rtx5060ti16", "RTX 5060 Ti 16G", G.rtx5060ti16, "大显存", false],
+      ["rx7700xt", "RX 7700 XT 12G", G.rx7700xt, "2K 入门/中端", false],
       ["rx7800xt", "RX 7800 XT 16G", G.rx7800xt, "2K 性能", false],
       ["rtx4070", "RTX 4070 12G", G.rtx4070, "2K N 卡", false],
       ["rtx4070super", "RTX 4070 SUPER 12G", G.rtx4070super, "2K 甜点", false],
@@ -878,7 +880,7 @@
     function gpuTier(gpu) {
       const t = String(gpu?.model || "");
       if (/RTX 5070|RTX 4070 Ti|RX 9070|RX 7800 XT|RX 6800 XT/i.test(t)) return "high";
-      if (/RTX 4070|RTX 5060 Ti|RTX 4060 Ti|RX 6750|RTX 5060|RTX 4060/i.test(t)) return "mid";
+      if (/RTX 4070|RTX 5060 Ti|RTX 4060 Ti|RX 9060 XT|RX 7700 XT|RX 6750|RTX 5060|RTX 4060/i.test(t)) return "mid";
       if (/RX 6650|RX 7600|RX 6600|1660/i.test(t)) return "low";
       if (/RX 580|5500|核显/i.test(t)) return "basic";
       return "low";
@@ -895,6 +897,7 @@
     function choosePsu(gpu) {
       const tier = gpuTier(gpu);
       if (tier === "high") return P.p750;
+      if (/RX 7700 XT|RX 9060 XT/i.test(String(gpu?.model || ""))) return P.p650;
       if (tier === "mid") return P.p650;
       if (tier === "low") return P.p550;
       return P.p500;
@@ -904,7 +907,11 @@
       const tier = gpuTier(gpu);
       if (isAm5Cpu(cpu)) return remaining >= 2600 || tier === "high" ? M.b650m : M.a620m;
       if (isIntelLga1700Cpu(cpu)) return remaining >= 2200 || tier !== "basic" ? (M.b660m || M.h610m) : M.h610m;
-      if (tier === "high" || remaining >= 2100) return M.b550m;
+      if (/Ryzen 5 5500|Ryzen 5 5600/i.test(String(cpu?.model || ""))) {
+        if (remaining < 1400) return M.a520m;
+        return M.b450m || M.a520m;
+      }
+      if (tier === "high" || remaining >= 2400) return M.b550m;
       return M.b450m || M.a520m;
     }
 
@@ -989,9 +996,9 @@
       }
 
       if (b < 7200) {
-        seeds.push(["r5_5600", "rx7800xt", "极限显卡", "AM4 压平台换显卡，不是主流高预算"]);
+        seeds.push(["r5_5600", "rx7700xt", "显卡优先", "AM4 压平台但不硬拉到 7800XT"]);
         seeds.push(["r5_7500f", "rx6750gre", "AM5 均衡", "平台更新，显卡略保守"]);
-        seeds.push(["i5_12400f", "rtx5060", "N 卡稳妥", "低功耗，预算余量更多"]);
+        seeds.push(["i5_12400f", "rx9060xt16", "大显存新卡", "16G 显存，价格要复核"]);
         return seeds;
       }
 
@@ -1116,6 +1123,7 @@
       if (calc.coreRatio > 72) advice.push("核心占比过高：会挤压主板、电源、散热、SSD。核心优先不是基础件随便买。");
       if (calc.parts.storage === S.ssd256 || calc.parts.storage === S.ssd500) advice.push("硬盘偏过渡：游戏多后续优先补 1TB SSD。");
       if (calc.parts.board === M.a620m) advice.push("AM5 + A620M 能用，但长期升级/扩展更建议 B650M。");
+      if (calc.parts.board === M.b450m && /Ryzen 5 5500|Ryzen 5 5600/i.test(calc.cpu.model)) advice.push("R5 5600 + B450M 够用，不必为了面子硬上贵 B550。");
       if (gpuTier(calc.gpu) === "high" && calc.parts.case !== X.airflow) advice.push("高功耗显卡最好配风道更好的机箱。");
       if (String(calc.gpu.model).includes("二手")) advice.push("二手显卡必须验温度、噪音、接口、烤机和退换。");
       if (calc.gap < -300) advice.push("真正要改的是核心组合，不要靠杂牌电源和无散热硬凑。");
