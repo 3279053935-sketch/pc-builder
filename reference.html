@@ -1217,6 +1217,363 @@
       }
     }
 
+  
+    /* v2.10.1 全站悬浮快捷球 + 夜间模式 + 截图退出 */
+    :root {
+      --fab-bg: #2563eb;
+      --fab-text: #ffffff;
+      --fab-panel-bg: rgba(255,255,255,.92);
+      --fab-panel-border: rgba(226,232,240,.9);
+      --fab-shadow: 0 18px 45px rgba(15,23,42,.18);
+    }
+
+    body.dark-mode {
+      background: #0b1220 !important;
+      color: #e5edf8 !important;
+    }
+
+    body.dark-mode .panel,
+    body.dark-mode .hero,
+    body.dark-mode .build,
+    body.dark-mode .card,
+    body.dark-mode .site-nav,
+    body.dark-mode .decision-card,
+    body.dark-mode .notice,
+    body.dark-mode .combo-card,
+    body.dark-mode .page-card,
+    body.dark-mode section,
+    body.dark-mode .visual-collapse,
+    body.dark-mode .reference-card {
+      background-color: #111827 !important;
+      color: #e5edf8 !important;
+      border-color: #263449 !important;
+    }
+
+    body.dark-mode .hero,
+    body.dark-mode .hero-card,
+    body.dark-mode .blue-hero {
+      background: linear-gradient(135deg, #111827, #1e3a8a) !important;
+      color: #fff !important;
+    }
+
+    body.dark-mode p,
+    body.dark-mode .muted,
+    body.dark-mode .panel-desc,
+    body.dark-mode .desc,
+    body.dark-mode .sub,
+    body.dark-mode .tiny,
+    body.dark-mode .note,
+    body.dark-mode .part-name {
+      color: #aebbd0 !important;
+    }
+
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background: #0f172a !important;
+      color: #e5edf8 !important;
+      border-color: #334155 !important;
+    }
+
+    body.dark-mode table,
+    body.dark-mode th,
+    body.dark-mode td,
+    body.dark-mode .parts li,
+    body.dark-mode .part-row {
+      border-color: #263449 !important;
+      color: #e5edf8 !important;
+    }
+
+    body.dark-mode th {
+      background: #182235 !important;
+    }
+
+    body.dark-mode .site-nav a:not(.active) {
+      color: #cbd5e1 !important;
+    }
+
+    body.dark-mode .pill,
+    body.dark-mode .tag,
+    body.dark-mode .chip,
+    body.dark-mode .badge {
+      background: #172554 !important;
+      color: #dbeafe !important;
+      border-color: #1d4ed8 !important;
+    }
+
+    .global-fab-root {
+      position: fixed;
+      right: max(16px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 9999;
+      pointer-events: none;
+      font-family: inherit;
+    }
+
+    .global-fab-root * { box-sizing: border-box; }
+
+    .global-fab-menu {
+      position: absolute;
+      right: 0;
+      bottom: 74px;
+      display: grid;
+      gap: 10px;
+      width: min(270px, calc(100vw - 32px));
+      padding: 14px;
+      border-radius: 28px;
+      background: var(--fab-panel-bg);
+      border: 1px solid var(--fab-panel-border);
+      box-shadow: var(--fab-shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transform: translateY(14px) scale(.94);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .24s cubic-bezier(.2,.8,.2,1), opacity .2s ease;
+    }
+
+    .global-fab-root.open .global-fab-menu {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .global-fab-action,
+    .global-top-action,
+    .global-fab-main,
+    .share-exit-pill {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 950;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .global-fab-action {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 54px;
+      padding: 0 14px;
+      border-radius: 18px;
+      color: #0f172a;
+      background: #f8fafc;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+      box-shadow: 0 8px 18px rgba(15,23,42,.05);
+    }
+
+    .global-fab-action:hover,
+    .global-fab-action:active {
+      transform: translateY(-1px);
+      background: #eff6ff;
+    }
+
+    .global-fab-action .ico {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: #eaf2ff;
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .global-fab-main {
+      width: 66px;
+      height: 66px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--fab-bg);
+      color: var(--fab-text);
+      box-shadow: 0 18px 38px rgba(37,99,235,.34);
+      font-size: 30px;
+      transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .2s ease;
+    }
+
+    .global-fab-root.open .global-fab-main {
+      transform: rotate(45deg);
+      box-shadow: 0 16px 30px rgba(37,99,235,.24);
+    }
+
+    .global-top-action {
+      position: absolute;
+      right: 0;
+      bottom: 78px;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.96);
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      box-shadow: 0 12px 28px rgba(15,23,42,.12);
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .18s ease, transform .18s ease;
+      white-space: nowrap;
+    }
+
+    .global-fab-root.open .global-top-action {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .share-exit-pill {
+      position: fixed;
+      left: 50%;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      transform: translateX(-50%) translateY(18px);
+      z-index: 10001;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: #fff;
+      box-shadow: 0 16px 38px rgba(15,23,42,.28);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    body.share-mode .share-exit-pill {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    body.share-mode .global-fab-root {
+      display: none !important;
+    }
+
+    body.dark-mode .global-fab-menu {
+      background: rgba(15,23,42,.94);
+      border-color: #334155;
+    }
+
+    body.dark-mode .global-fab-action {
+      background: #111827;
+      color: #e5edf8;
+      box-shadow: 0 8px 18px rgba(0,0,0,.2);
+    }
+
+    body.dark-mode .global-fab-action:hover,
+    body.dark-mode .global-fab-action:active {
+      background: #172554;
+    }
+
+    body.dark-mode .global-fab-action .ico {
+      background: #1e293b;
+    }
+
+    body.dark-mode .global-top-action {
+      background: #0f172a;
+      color: #bfdbfe;
+      border-color: #334155;
+    }
+
+    body.dark-mode .share-exit-pill {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    @media (max-width: 760px) {
+      .global-fab-root {
+        right: max(14px, env(safe-area-inset-right));
+        bottom: max(16px, env(safe-area-inset-bottom));
+      }
+
+      .global-fab-main {
+        width: 62px;
+        height: 62px;
+        font-size: 28px;
+      }
+
+      .global-fab-menu {
+        bottom: 72px;
+      }
+    }
+
+  
+    .fab-root:not(.global-fab-root), .quick-fab, .floating-actions { display: none !important; }
+
+  
+    /* v2.10.2 回顶部按钮点击后纯蓝/失字修复 */
+    .global-fab-root .global-top-action {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      min-width: 104px !important;
+      min-height: 44px !important;
+      padding: 0 18px !important;
+      border-radius: 999px !important;
+      background: rgba(255,255,255,.96) !important;
+      color: #1d4ed8 !important;
+      border: 1px solid #bfdbfe !important;
+      box-shadow: 0 12px 28px rgba(15,23,42,.12) !important;
+      opacity: 1 !important;
+      white-space: nowrap !important;
+      text-indent: 0 !important;
+      line-height: 1 !important;
+      font-size: 15px !important;
+      font-weight: 950 !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      background-image: none !important;
+    }
+
+    .global-fab-root .global-top-action::before {
+      content: "↑";
+      display: inline-block;
+      font-weight: 950;
+      color: currentColor;
+    }
+
+    .global-fab-root .global-top-action::after {
+      content: "回顶部";
+      display: inline-block;
+      color: currentColor;
+    }
+
+    .global-fab-root .global-top-action:focus,
+    .global-fab-root .global-top-action:active,
+    .global-fab-root .global-top-action:hover {
+      background: rgba(239,246,255,.98) !important;
+      color: #1d4ed8 !important;
+      border-color: #93c5fd !important;
+      outline: none !important;
+      transform: translateY(-1px);
+    }
+
+    .global-fab-root.open .global-top-action {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(8px) !important;
+    }
+
+    body.dark-mode .global-fab-root .global-top-action {
+      background: rgba(15,23,42,.96) !important;
+      color: #bfdbfe !important;
+      border-color: #334155 !important;
+    }
+
+    body.dark-mode .global-fab-root .global-top-action:focus,
+    body.dark-mode .global-fab-root .global-top-action:active,
+    body.dark-mode .global-fab-root .global-top-action:hover {
+      background: #172554 !important;
+      color: #dbeafe !important;
+      border-color: #3b82f6 !important;
+    }
+
   </style>
 </head>
 <body>
@@ -2005,6 +2362,111 @@
       showDisclaimer(false);
     }
   </script>
+
+
+<script id="global-fab-script">
+(function () {
+  function applyDarkMode(enabled) {
+    document.body.classList.toggle("dark-mode", enabled);
+    localStorage.setItem("pc_builder_dark_mode", enabled ? "1" : "0");
+    const label = document.querySelector("[data-dark-label]");
+    if (label) label.textContent = enabled ? "关闭夜间模式" : "夜间模式";
+  }
+
+  function setShareMode(enabled) {
+    const shouldEnable = Boolean(enabled);
+    if (typeof window.setShareMode === "function" && window.setShareMode !== setShareMode) {
+      try {
+        window.setShareMode(shouldEnable);
+      } catch (error) {
+        document.body.classList.toggle("share-mode", shouldEnable);
+      }
+    } else {
+      document.body.classList.toggle("share-mode", shouldEnable);
+    }
+
+    document.body.classList.toggle("share-mode", shouldEnable);
+
+    const shareLabel = document.querySelector("[data-share-label]");
+    if (shareLabel) shareLabel.textContent = shouldEnable ? "退出截图模式" : "截图模式";
+
+    const root = document.querySelector(".global-fab-root");
+    if (root) root.classList.remove("open");
+  }
+
+  function toggleGlobalShareMode() {
+    setShareMode(!document.body.classList.contains("share-mode"));
+  }
+
+  window.exitShareMode = function () {
+    setShareMode(false);
+  };
+
+  function createFab() {
+    if (document.querySelector(".global-fab-root")) return;
+
+    const root = document.createElement("div");
+    root.className = "global-fab-root";
+    root.innerHTML = `
+      <div class="global-fab-menu" role="menu" aria-label="快捷菜单">
+        <button class="global-fab-action" type="button" data-action="share"><span class="ico">📸</span><span data-share-label>截图模式</span></button>
+        <button class="global-fab-action" type="button" data-action="dark"><span class="ico">🌙</span><span data-dark-label>夜间模式</span></button>
+        <a class="global-fab-action" href="./index.html"><span class="ico">🧩</span><span>生成器</span></a>
+        <a class="global-fab-action" href="./reference.html"><span class="ico">📊</span><span>参考表</span></a>
+        <a class="global-fab-action" href="./strategy.html"><span class="ico">🧠</span><span>装机策略</span></a>
+        <a class="global-fab-action" href="./core-first.html"><span class="ico">🎯</span><span>核心优先</span></a>
+      </div>
+      <button class="global-top-action" type="button" data-action="top" aria-label="回到顶部"></button>
+      <button class="global-fab-main" type="button" aria-label="打开快捷菜单">＋</button>
+    `;
+    document.body.appendChild(root);
+
+    const exit = document.createElement("button");
+    exit.type = "button";
+    exit.className = "share-exit-pill";
+    exit.textContent = "退出截图模式";
+    document.body.appendChild(exit);
+
+    const main = root.querySelector(".global-fab-main");
+    main.addEventListener("click", () => root.classList.toggle("open"));
+
+    root.querySelector('[data-action="top"]').addEventListener("click", (event) => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      root.classList.remove("open");
+      if (event.currentTarget && typeof event.currentTarget.blur === "function") event.currentTarget.blur();
+    });
+
+    root.querySelector('[data-action="share"]').addEventListener("click", () => {
+      toggleGlobalShareMode();
+    });
+
+    root.querySelector('[data-action="dark"]').addEventListener("click", () => {
+      applyDarkMode(!document.body.classList.contains("dark-mode"));
+      root.classList.remove("open");
+    });
+
+    exit.addEventListener("click", () => setShareMode(false));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.body.classList.contains("share-mode")) {
+        setShareMode(false);
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!root.contains(event.target)) root.classList.remove("open");
+    });
+
+    applyDarkMode(localStorage.getItem("pc_builder_dark_mode") === "1");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", createFab);
+  } else {
+    createFab();
+  }
+})();
+</script>
 
 </body>
 </html>

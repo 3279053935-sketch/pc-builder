@@ -1,9 +1,9 @@
 {
-  "version": "2.9.9-rc",
-  "name": "core-recommend-badge-visual-fix",
-  "built_at": "2026-05-19 08:19:18",
+  "version": "2.10.2-rc",
+  "name": "top-button-focus-visual-fix",
+  "built_at": "2026-05-19 08:43:09",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "修复核心优先推荐标签显示成绿色长条的问题，改为小徽章。"
+  "note": "修复移动端点击回顶部后按钮变成纯蓝色、文字消失的问题。"
 }
