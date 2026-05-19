@@ -49,6 +49,7 @@ window.PC_BUILDER_PARTS = {
         rx9060xt16: { model: "RX 9060 XT 16G（全新大显存，价格波动大）", price: 2800 },
         rx6750gre: { model: "RX 6750 GRE 10GB（全新/清仓，2K 入门）", price: 1999 },
         rtx4060: { model: "RTX 4060 8GB（全新省电，DLSS 友好）", price: 1999 },
+        rtx5050: { model: "RTX 5050 8GB（全新低功耗轻网游，不主推性能）", price: 2100 },
         rtx5060: { model: "RTX 5060 8GB（全新 N 卡入门，差价小时优先看 5060Ti）", price: 2200 },
         rtx4060ti: { model: "RTX 4060 Ti 8GB", price: 2599 },
         rx7700xt: { model: "RX 7700 XT 12G（2K 入门/中端性能）", price: 2699 },

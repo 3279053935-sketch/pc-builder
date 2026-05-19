@@ -954,6 +954,154 @@
       }
     }
 
+  
+    .mb-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+    .mb-column{border:1px solid #dbeafe;border-radius:20px;padding:16px;background:#fbfdff}
+    .mb-column h3{margin:0 0 8px;font-size:20px;letter-spacing:-.03em}
+    .mb-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 12px}
+    .mb-chip{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:950;border:1px solid #dbeafe}
+    .mb-mini-table{display:grid;gap:8px}
+    .mb-row{display:grid;grid-template-columns:112px minmax(0,1fr);gap:10px;padding:10px;border-radius:14px;border:1px solid #e2e8f0;background:#fff;line-height:1.6;font-size:13px}
+    .mb-row strong{color:#0f172a;font-size:14px}
+    .mb-note-box{margin-top:14px;padding:14px;border-radius:18px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;line-height:1.75;font-size:14px;font-weight:850}
+    body.dark-mode .mb-column{background:#111827!important;border-color:#263449!important}
+    body.dark-mode .mb-row{background:#0f172a!important;border-color:#263449!important}
+    body.dark-mode .mb-row strong{color:#e5edf8!important}
+    body.dark-mode .mb-chip{background:#172554!important;color:#dbeafe!important;border-color:#1d4ed8!important}
+    body.dark-mode .mb-note-box{background:#2a1b0b!important;border-color:#92400e!important;color:#fed7aa!important}
+    @media(max-width:820px){.mb-guide-grid{grid-template-columns:1fr}.mb-row{grid-template-columns:92px minmax(0,1fr)}}
+
+  
+    .simple-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .simple-guide-card {
+      border: 1px solid #dbeafe;
+      border-radius: 20px;
+      padding: 16px;
+      background: #fbfdff;
+      line-height: 1.75;
+    }
+
+    .simple-guide-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .simple-guide-card p {
+      margin: 0;
+      color: #475569;
+      font-size: 14px;
+    }
+
+    .simple-guide-card strong {
+      color: #0f172a;
+    }
+
+    .guide-warn {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      line-height: 1.75;
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    body.dark-mode .simple-guide-card {
+      background: #111827 !important;
+      border-color: #263449 !important;
+    }
+
+    body.dark-mode .simple-guide-card h3,
+    body.dark-mode .simple-guide-card strong {
+      color: #e5edf8 !important;
+    }
+
+    body.dark-mode .simple-guide-card p {
+      color: #aebbd0 !important;
+    }
+
+    body.dark-mode .guide-warn {
+      background: #2a1b0b !important;
+      border-color: #92400e !important;
+      color: #fed7aa !important;
+    }
+
+    @media (max-width: 900px) {
+      .simple-guide-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  
+    /* v2.10.7 装机策略页布局修复：所有知识板块收回 main.page 内 */
+    .page > .panel,
+    .page > .hero {
+      width: 100%;
+    }
+
+    .hero .top-links {
+      margin-top: 18px;
+    }
+
+    .hero .top-link {
+      background: rgba(255,255,255,.14);
+      border-color: rgba(255,255,255,.18);
+      color: #fff;
+    }
+
+    .hero .top-link:hover {
+      background: rgba(255,255,255,.22);
+    }
+
+    #budget-priority-guide,
+    #motherboard-guide,
+    #power-guide,
+    #gpu-vram-guide,
+    #used-gpu-guide {
+      scroll-margin-top: 16px;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 12px;
+      }
+
+      .hero {
+        padding: 22px;
+        border-radius: 24px;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      .hero .top-links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero .top-link {
+        width: 100%;
+        min-height: 38px;
+        justify-content: center;
+      }
+
+      .panel {
+        border-radius: 22px;
+        padding: 16px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -966,17 +1114,138 @@
     <button class="ai-disclaimer-link" type="button" onclick="showDisclaimer(true)">免责声明</button>
     <span class="nav-current">当前：装机策略</span>
   </nav>
-
-
-  <main class="page">
+<main class="page">
     <section class="hero">
       <div class="page-location">当前页：装机策略</div>
-      <div class="eyebrow">装机策略 · 不把所有东西塞进一个页面</div>
-      <h1>预算到底应该怎么分？</h1>
-      <p>同样 5000 元，可以均衡配，也可以把钱更多压到 CPU 和显卡。这个页面专门解释“装机思路”，主生成器继续保持简单。</p>
+      <div class="eyebrow">装机策略 · 先看用途，再看配件</div>
+      <h1>装机之前，先搞懂钱该花在哪</h1>
+      <p>这里不讲网站后台规则，专门给小白解释预算、主板、电源、显存和二手显卡这些最容易踩坑的地方。看懂这些，再回生成器选配置会轻松很多。</p>
       <div class="top-links">
-        <a class="top-link" href="#core-first">看核心优先</a>
-        <a class="top-link" href="#when">适合谁</a>
+        <a class="top-link" href="#budget-priority-guide">预算怎么分</a>
+        <a class="top-link" href="#motherboard-guide">主板怎么选</a>
+        <a class="top-link" href="#power-guide">电源怎么看</a>
+        <a class="top-link" href="#gpu-vram-guide">显存怎么看</a>
+        <a class="top-link" href="#core-first">三种策略</a>
+      </div>
+    </section>
+
+<section class="panel" id="budget-priority-guide">
+      <h2>预算先看用途，再决定钱花哪</h2>
+      <p class="panel-desc">不是所有电脑都应该把钱全堆到显卡，也不是所有电脑都该上贵 CPU。用途不同，预算重点也不同。</p>
+      <div class="simple-guide-grid">
+        <div class="simple-guide-card">
+          <h3>网游</h3>
+          <p>CPU 和显卡都不能太偏。低预算纯网游，可以考虑 i3-14100F / i3-12100F + H610M 这种省钱路线。</p>
+        </div>
+        <div class="simple-guide-card">
+          <h3>3A 游戏</h3>
+          <p>显卡优先级更高，但也不能让 CPU、内存和硬盘太拖后腿。画质和分辨率越高，显卡越重要。</p>
+        </div>
+        <div class="simple-guide-card">
+          <h3>办公 / 剪辑设计</h3>
+          <p>办公更看 CPU、内存、硬盘体验；剪辑设计则要同时看 CPU、内存、SSD 和显卡，不是只看显卡。</p>
+        </div>
+      </div>
+    </section>
+
+<section class="panel" id="motherboard-guide">
+      <h2>主板怎么选：先分 AMD / Intel</h2>
+      <p class="panel-desc">主板是小白最难懂的硬件之一。先别管贵不贵，第一步先看你的 CPU 是 AMD 还是 Intel，再看 AM4 / AM5 或 H610 / B760 这些平台。</p>
+
+      <div class="mb-guide-grid">
+        <div class="mb-column">
+          <h3>AMD CPU 看这一栏</h3>
+          <p class="panel-desc">常见 Ryzen 处理器会分 AM4 和 AM5，名字很像，但主板不是一回事。</p>
+          <div class="mb-chip-row">
+            <span class="mb-chip">R5 5500 / R5 5600：AM4</span>
+            <span class="mb-chip">R5 7500F / R5 7600：AM5</span>
+          </div>
+          <div class="mb-mini-table">
+            <div class="mb-row"><strong>A520M</strong><span>AM4 省钱板，适合 R5 5500 / R5 5600 低预算方案，够用但扩展一般。</span></div>
+            <div class="mb-row"><strong>B450M</strong><span>AM4 性价比常用选择，R5 5600 搭它很常见，下单要看具体型号、BIOS 和售后。</span></div>
+            <div class="mb-row"><strong>B550M</strong><span>AM4 更舒服，扩展和 PCIe 4.0 更好。预算够、显卡档位更高时再考虑，不是低预算必需品。</span></div>
+            <div class="mb-row"><strong>A620M</strong><span>AM5 入门省钱板，适合 R5 7500F / R5 7600 想压预算的新平台方案。</span></div>
+            <div class="mb-row"><strong>B650M / B850M</strong><span>AM5 主流选择，更适合新平台、后续升级、更多接口和更舒服的供电。</span></div>
+          </div>
+        </div>
+
+        <div class="mb-column">
+          <h3>Intel CPU 看这一栏</h3>
+          <p class="panel-desc">Intel 主要看 CPU 代数和接口。低预算 i3 / i5 可以省，但高端 CPU 不要配太丐。</p>
+          <div class="mb-chip-row">
+            <span class="mb-chip">i3-12100F / i3-14100F</span>
+            <span class="mb-chip">i5-12400F / i5-13400F</span>
+          </div>
+          <div class="mb-mini-table">
+            <div class="mb-row"><strong>H610M</strong><span>Intel 低预算够用板，适合 i3-12100F / i3-14100F / i5-12400F 这类不折腾升级的方案。</span></div>
+            <div class="mb-row"><strong>B660M</strong><span>Intel 主流选择，比 H610M 更舒服，适合 i5-12400F / i5-13400F 这类主流配置。</span></div>
+            <div class="mb-row"><strong>B760M</strong><span>Intel 近几年常见主流板，接口和扩展更好，适合预算够、想稳一点的 i5 方案。</span></div>
+            <div class="mb-row"><strong>Z 系列</strong><span>更偏高端和超频，不是小白低预算首选。除非 CPU 和用途真的需要，不然容易把钱花在看不见的地方。</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-note-box">
+        小白先记住：AMD CPU 不能插 Intel 主板，Intel CPU 也不能插 AMD 主板。低预算别为了面子硬上贵板；高端配置也别用太丐的板。主板和电源要一起看，别一边说主板限制升级，一边又为了未来升级硬塞大瓦数电源。
+      </div>
+    </section>
+
+<section class="panel" id="power-guide">
+      <h2>电源不是瓦数越大越好</h2>
+      <p class="panel-desc">很多小白看到 650W / 750W 会觉得更高级，其实电源更重要的是型号、用料、保护、接口和售后。瓦数够用就行，别为了面子硬加。</p>
+      <div class="simple-guide-grid">
+        <div class="simple-guide-card">
+          <h3>低功耗网游机</h3>
+          <p><strong>整机不到 400W</strong> 的配置，550W 有售后型号通常够用。比如 i3 / R5 + 入门到中低端显卡，不必为了“未来升级”硬上 650W。</p>
+        </div>
+        <div class="simple-guide-card">
+          <h3>中端显卡</h3>
+          <p>RX6750GRE、RX7700XT、RTX5060Ti、RX9060XT 这类，要结合整机功耗和电源具体型号看。550W / 650W 都可能合理。</p>
+        </div>
+        <div class="simple-guide-card">
+          <h3>高功耗显卡</h3>
+          <p>RX7800XT、RX9070、RTX4070Ti 往上，再认真看 650W / 750W 甚至更高，同时主板也别太丐。</p>
+        </div>
+      </div>
+      <div class="guide-warn">关键点：如果主板只是 A520 / B450 / H610 这种省钱平台，就别一边说“升级受限”，一边又为了未来升级硬塞大瓦数电源。</div>
+    </section>
+
+<section class="panel" id="gpu-vram-guide">
+      <h2>显存大不等于显卡强</h2>
+      <p class="panel-desc">8G、12G、16G 是显存容量，不代表显卡一定更强。小白最容易被“超大显存”这几个字带偏。</p>
+      <div class="simple-guide-grid">
+        <div class="simple-guide-card">
+          <h3>8G 显存</h3>
+          <p>1080P 网游和部分轻 3A 可以用，但重 3A、2K、高材质要谨慎。RTX5050 / RTX5060 这类要看用途，不是只看新不新。</p>
+        </div>
+        <div class="simple-guide-card">
+          <h3>12G 显存</h3>
+          <p>1080P 更稳，部分 2K 也更舒服，是中端卡比较常见的安全线。具体还要看核心性能。</p>
+        </div>
+        <div class="simple-guide-card">
+          <h3>16G 以上</h3>
+          <p>更适合 2K、重 3A、大材质包、剪辑设计和部分 AI / 生产力需求。但同样 16G，也要看显卡本身强不强。</p>
+        </div>
+      </div>
+      <div class="guide-warn">RTX5050 可以作为全新、低功耗、轻网游、低预算过渡方案，但不要拿它当性能性价比主推，更不要拿去主打 3A / 2K。</div>
+    </section>
+
+<section class="panel" id="used-gpu-guide">
+      <h2>全新省心，二手看验卡能力</h2>
+      <p class="panel-desc">二手显卡确实可能更划算，但小白不会验卡时，风险也会跟着来。别为了省几百块，把售后和稳定性全赌进去。</p>
+      <div class="simple-guide-grid">
+        <div class="simple-guide-card">
+          <h3>全新显卡</h3>
+          <p>贵一点，但售后清楚，更适合纯小白。预算够时，全新省心通常比极限性价比更重要。</p>
+        </div>
+        <div class="simple-guide-card">
+          <h3>熟人二手</h3>
+          <p>如果来源靠谱、能看使用情况，比陌生平台更安心。但也要看温度、噪音、拆修和剩余保修。</p>
+        </div>
+        <div class="simple-guide-card">
+          <h3>平台二手</h3>
+          <p>性价比可能高，但要会验卡。不会看成色、矿卡、维修、烤机和售后的人，不建议硬冲。</p>
+        </div>
       </div>
     </section>
 

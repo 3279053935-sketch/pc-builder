@@ -2761,6 +2761,66 @@
       }
     }
 
+  
+    /* v2.10.8 配置卡阅读顺序优化 */
+    .build-understand {
+      margin: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid #dbeafe;
+      background: #f8fbff;
+      display: grid;
+      gap: 8px;
+      line-height: 1.65;
+      font-size: 13px;
+      color: #0f172a;
+    }
+
+    .build-understand strong {
+      color: #0f3b8f;
+      font-weight: 950;
+    }
+
+    .build-understand-title {
+      font-size: 14px;
+      font-weight: 950;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+
+    .build-understand-row {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .build-understand-label {
+      font-weight: 950;
+      color: #64748b;
+    }
+
+    body.dark-mode .build-understand {
+      background: #0f172a !important;
+      border-color: #263449 !important;
+      color: #e5edf8 !important;
+    }
+
+    body.dark-mode .build-understand-title,
+    body.dark-mode .build-understand strong {
+      color: #dbeafe !important;
+    }
+
+    body.dark-mode .build-understand-label {
+      color: #aebbd0 !important;
+    }
+
+    @media (max-width: 760px) {
+      .build-understand {
+        margin: 12px;
+        padding: 12px;
+      }
+    }
+
   </style>
   <meta name="description" content="面向小白的电脑配置生成器，按预算、用途、是否接受二手显卡生成办公、网游、3A、剪辑设计装机参考。" />
   <meta name="theme-color" content="#2563eb" />
@@ -3202,7 +3262,7 @@
       return [
         { icon: "🧠", label: "CPU", value: compactPartText(build.parts.cpu, "cpu") },
         { icon: "🎮", label: "显卡", value: compactPartText(build.parts.gpu, "gpu") },
-        { icon: "🌬️", label: "散热", value: compactPartText(build.parts.cooler, "cooler") },
+        { icon: "🧩", label: "内存", value: compactPartText(build.parts.ram, "ram") },
         { icon: "💾", label: "硬盘", value: compactPartText(build.parts.storage, "storage") }
       ];
     }
@@ -4064,7 +4124,11 @@
         </div>
 
         <div class="share-hint">
-          截图建议：直接截下面三张配置卡片，再配上“复制提问文案”，发给朋友或社交平台更容易收到有用反馈。
+          下面先看三张配置卡；结论和取舍放在卡片后面。
+        </div>
+
+        <div class="builds">
+          ${builds.map(build => renderBuild(build)).join("")}
         </div>
 
         ${renderDecisionGuide(input, builds)}
@@ -4077,10 +4141,6 @@
         <div class="caution-alert">
           <strong>方案策略说明：</strong>
           三套方案不是简单按价格从低到高排列。稳妥版优先省心低风险；性价比版必须说明性能或容量强在哪里；省钱版则明确少花钱、省在哪里。6000–7000 这类中间预算会优先使用进阶档模板；多出 100–300 元时通常不硬换大件，而是给出预算微调建议。
-        </div>
-
-        <div class="builds">
-          ${builds.map(build => renderBuild(build)).join("")}
         </div>
 
         <div class="caution-alert current-market-alert">
@@ -4488,19 +4548,19 @@ function classifyDecisionType(build) {
 
       return `
         <section class="decision-panel" aria-label="三套方案选择建议">
-          <h3>先看结论：三套怎么选</h3>
+          <h3>看完配置后：三套怎么选</h3>
           <div class="decision-main">
             <div class="decision-pick">
               <strong>默认更推荐：${pick.name} · ${pickTotal}</strong>
               ${getDecisionOneLine(pick, input)}
-              <br>如果你懒得纠结，先重点看这套；另外两套分别用来对比“更省心”和“更省钱”。
+              <br>如果你已经看完上面的三张配置卡，可以按这个结论快速取舍；另外两套分别用来对比“更省心”和“更省钱”。
             </div>
             <ul class="decision-list">${list}</ul>
           </div>
           <div class="decision-jump-row">
             ${builds.map((build, index) => {
               const schemeClass = index === 0 ? "scheme-safe" : (index === 1 ? "scheme-value" : "scheme-save");
-              return `<button type="button" class="jump-build-btn ${schemeClass}" onclick="document.querySelectorAll('.build')[${index}]?.scrollIntoView({block:'start',behavior:'smooth'})">看${build.name}配置</button>`;
+              return `<button type="button" class="jump-build-btn ${schemeClass}" onclick="document.querySelectorAll('.build')[${index}]?.scrollIntoView({block:'start',behavior:'smooth'})">回看${build.name}配置</button>`;
             }).join("")}
           </div>
         </section>
@@ -4512,6 +4572,43 @@ function classifyDecisionType(build) {
       if (!Number.isFinite(score)) return "--";
       if (score < 60) return "需加预算";
       return `${score} 分`;
+    }
+
+
+
+    function getPsuReason(build) {
+      const watts = typeof estimateSystemWatts === "function" ? estimateSystemWatts(build) : 0;
+      const psu = String(build.psu || "");
+      if (/550W/i.test(psu)) return `电源说明：整机约 ${watts || "低功耗"}W，550W 好型号够用，重点看具体型号和售后。`;
+      if (/650W/i.test(psu)) return `电源说明：整机约 ${watts || "中等功耗"}W，650W 属于主流余量，适合中端显卡或更稳一点的方案。`;
+      if (/750W|850W/i.test(psu)) return `电源说明：高功耗显卡才更需要大瓦数，同时主板也别太丐。`;
+      return "电源说明：电源不是瓦数越大越好，先看整机功耗、具体型号、保护和售后。";
+    }
+
+    function getBoardReason(build) {
+      const board = String(build.board || "");
+      if (/A520M/i.test(board)) return "A520M 是 AMD AM4 省钱板，适合 R5 5500/5600 低预算方案，扩展一般。";
+      if (/B450M/i.test(board)) return "B450M 是 AMD AM4 性价比板，R5 5600 搭它常见；不主打大升级。";
+      if (/B550M/i.test(board)) return "B550M 是 AMD AM4 更舒服的选择，扩展和 PCIe 4.0 更好，适合预算够或显卡档位更高。";
+      if (/A620M/i.test(board)) return "A620M 是 AMD AM5 入门板，适合新平台压预算。";
+      if (/B650M|B850M/i.test(board)) return "B650/B850 是 AMD AM5 主流板，更适合新平台和后续升级。";
+      if (/H610M/i.test(board)) return "H610M 是 Intel 低预算够用板，适合 i3/i5 不折腾升级的方案。";
+      if (/B660M/i.test(board)) return "B660M 是 Intel 主流板，比 H610M 扩展更舒服。";
+      if (/B760M/i.test(board)) return "B760M 是 Intel 常见主流板，适合预算够、想稳一点的 i5 方案。";
+      return "先确认 CPU 平台和主板接口一致，再看扩展、供电、M.2 和售后。";
+    }
+
+
+    function getBuildTradeoffLine(build, input) {
+      const storage = String(build.storage || "");
+      const gpu = String(build.gpu || "");
+      const name = String(build.name || "");
+
+      if (name.includes("稳妥")) return "省心和风险控制优先，价格通常不会压到最低。";
+      if (name.includes("省钱")) return "少花钱优先，能用但会保留一些后续加硬盘或升级空间。";
+      if (/512GB|256GB/i.test(storage)) return "钱主要给核心性能，硬盘先过渡，游戏多后面优先加 1TB SSD。";
+      if (/RX 6750|RX 7700|RX 7800|RTX 5060 Ti/i.test(gpu)) return "预算更多压到显卡和帧率表现，基础件不乱堆料。";
+      return "这套主打均衡，不把预算全部堆到单个配件。";
     }
 
     function renderBuild(build) {
@@ -4545,7 +4642,7 @@ function classifyDecisionType(build) {
           <div class="visual-collapse ${visualDefaultOpen ? "open" : ""}">
             <button type="button" class="visual-collapse-toggle" onclick="toggleVisualCollapse(this)" aria-label="展开或收起硬件摘要">
               <span>硬件摘要</span>
-              <span class="toggle-sub">CPU / 显卡 / 散热 / 硬盘</span>
+              <span class="toggle-sub">CPU / 显卡 / 内存 / 硬盘</span>
               <span class="toggle-icon">⌄</span>
             </button>
             <div class="visual-collapse-body">
@@ -4569,10 +4666,26 @@ function classifyDecisionType(build) {
             `).join("")}
           </ul>
           <div class="parts-compact-note">下方直接显示参考品牌/系列，具体下单仍要按商品页型号复核。</div>
-          <div class="qc-hint ${qcHint.level}">${qcHint.text}</div>
-          <div class="recommendation-hint ${build.isRecommended ? "best" : ""}"><strong>${build.isRecommended ? "为什么推荐：" : "推荐判断："}</strong>${build.recommendationSummary || "作为对比方案保留"}</div>
+          <div class="build-understand">
+            <div class="build-understand-title">这套怎么理解</div>
+            <div class="build-understand-row">
+              <span class="build-understand-label">适合</span>
+              <span>${build.people}</span>
+            </div>
+            <div class="build-understand-row">
+              <span class="build-understand-label">平台</span>
+              <span>${getBoardReason(build)}</span>
+            </div>
+            <div class="build-understand-row">
+              <span class="build-understand-label">电源</span>
+              <span>${getPsuReason(build).replace(/^电源说明：/, "")}</span>
+            </div>
+            <div class="build-understand-row">
+              <span class="build-understand-label">取舍</span>
+              <span>${build.recommendationSummary || getBuildTradeoffLine(build, window.latestInput || getInput())}</span>
+            </div>
+          </div>
           <div class="desc">
-            <div class="good-alert"><strong>适合谁：</strong>${build.people}</div>
             <div class="key-points">
               ${keyPoints.map(point => `<div class="key-point">${point}</div>`).join("")}
             </div>
