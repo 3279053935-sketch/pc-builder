@@ -627,6 +627,38 @@
       .custom-fields { grid-template-columns: 1fr; }
     }
 
+  
+    .combo-rec {
+      display: inline-flex;
+      min-height: 22px;
+      align-items: center;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: #16a34a;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 950;
+      margin-left: 6px;
+    }
+
+    .recommend-box {
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 16px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #047857;
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+
+    .recommend-box.warn {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #92400e;
+    }
+
   </style>
 </head>
 <body>
@@ -635,7 +667,6 @@
     <a href="./reference.html">参考表</a>
     <a href="./strategy.html">装机策略</a>
     <a class="active" href="./core-first.html">核心优先</a>
-    <a href="./preflight.html">自检报告</a>
     <span class="nav-spacer"></span>
     <button class="ai-disclaimer-link" type="button" onclick="showDisclaimer(true)">免责声明</button>
     <span class="nav-current">当前：核心优先</span>
@@ -801,9 +832,9 @@
       ["rx9060xt16", "RX 9060 XT 16G", G.rx9060xt16, "大显存新卡", false],
       ["rx6750gre", "RX 6750 GRE 10G", G.rx6750gre, "2K 入门", false],
       ["rtx4060", "RTX 4060 8G", G.rtx4060, "省电/DLSS", false],
-      ["rtx5060", "RTX 5060 8G", G.rtx5060, "新 N 卡", false],
+      ["rtx5060", "RTX 5060 8G", G.rtx5060, "差价小时别优先", false],
       ["rtx4060ti", "RTX 4060 Ti 8G", G.rtx4060ti, "N 卡进阶", false],
-      ["rtx5060ti8", "RTX 5060 Ti 8G", G.rtx5060ti8, "注意 8G 版", false],
+      ["rtx5060ti8", "RTX 5060 Ti 8G", G.rtx5060ti8, "差价小时优先", false],
       ["rtx5060ti16", "RTX 5060 Ti 16G", G.rtx5060ti16, "大显存", false],
       ["rx7700xt", "RX 7700 XT 12G", G.rx7700xt, "2K 入门/中端", false],
       ["rx7800xt", "RX 7800 XT 16G", G.rx7800xt, "2K 性能", false],
@@ -909,6 +940,7 @@
       if (isIntelLga1700Cpu(cpu)) return remaining >= 2200 || tier !== "basic" ? (M.b660m || M.h610m) : M.h610m;
       if (/Ryzen 5 5500|Ryzen 5 5600/i.test(String(cpu?.model || ""))) {
         if (remaining < 1400) return M.a520m;
+        if (/RX 7700 XT|RX 7800 XT|RX 6800 XT/i.test(String(gpu?.model || ""))) return M.b550m;
         return M.b450m || M.a520m;
       }
       if (tier === "high" || remaining >= 2400) return M.b550m;
@@ -1015,25 +1047,100 @@
       return seeds;
     }
 
+    function coreRiskPoints(calc, input) {
+      let risk = 0;
+      const gpuText = String(calc.gpu?.model || "");
+      const boardText = String(calc.parts?.board?.model || "");
+      const psuText = String(calc.parts?.psu?.model || "");
+
+      if (calc.gap < -300) risk += 5;
+      else if (calc.gap < 0) risk += 1.5;
+
+      if (calc.coreRatio > 72) risk += (calc.coreRatio - 72) / 8;
+      if (/RX 7700 XT|RX 7800 XT|RX 9070|RTX 4070 Ti|RTX 5070/i.test(gpuText) && /B450M|H610M|A520M/i.test(boardText)) risk += 3;
+      if (/RX 7800 XT|RX 9070|RTX 4070 Ti|RTX 5070/i.test(gpuText) && !/750W|850W/i.test(psuText)) risk += 3;
+      if (/RTX 5060 8/i.test(gpuText) && !/Ti/i.test(gpuText)) risk += 1;
+      if (String(gpuText).includes("二手")) risk += input.used === "可接受" ? 1.5 : 5;
+
+      return Math.max(0, risk);
+    }
+
+    function corePerformancePoints(calc, input) {
+      const gpuPrice = calc.gpu?.price || 0;
+      const cpuPrice = calc.cpu?.price || 0;
+      let points = 0;
+
+      if (input.purpose === "办公学习") {
+        points += Math.min(30, cpuPrice / 45);
+        if (String(calc.gpu?.model || "").includes("核显")) points += 8;
+        return points;
+      }
+
+      if (input.purpose === "剪辑设计") {
+        points += Math.min(28, cpuPrice / 55);
+        points += Math.min(28, gpuPrice / 90);
+        if (/16G|20G|24G|32G/i.test(String(calc.gpu?.model || ""))) points += 6;
+        return points;
+      }
+
+      points += Math.min(42, gpuPrice / 75);
+      points += Math.min(14, cpuPrice / 95);
+
+      if (/RTX 5060 Ti|RX 6750 GRE|RX 7700 XT|RX 9060 XT|RX 7800 XT/i.test(String(calc.gpu?.model || ""))) points += 5;
+      if (/RTX 5060 8/i.test(String(calc.gpu?.model || "")) && !/Ti/i.test(String(calc.gpu?.model || ""))) points -= 6;
+
+      return points;
+    }
+
     function scoreBuild(calc, input, label) {
-      let score = 100;
-      if (calc.gap < 0) score -= Math.min(70, Math.abs(calc.gap) / 10);
-      if (calc.coreRatio > 72) score -= (calc.coreRatio - 72) * 2;
-      if (calc.coreRatio < 45 && input.purpose !== "办公学习") score -= 10;
+      let score = 60;
+      score += corePerformancePoints(calc, input);
+
+      if (calc.gap < -400) score -= 90;
+      else if (calc.gap < -250) score -= 45;
+      else if (calc.gap < -100) score -= 22;
+      else if (calc.gap < 0) score -= 8;
+      else if (calc.gap <= 400) score += 24;
+      else if (calc.gap <= 900) score += 12;
+      else score -= 10;
+
+      score -= coreRiskPoints(calc, input) * 9;
+
+      if (currentMode === "gpu") score += Math.min(18, (calc.gpu?.price || 0) / 170);
+      if (currentMode === "cpu") score += Math.min(18, (calc.cpu?.price || 0) / 110);
       if (label.includes("全新会很紧")) score -= 15;
       if (input.used === "不接受" && String(calc.gpu.model).includes("二手")) score -= 60;
+
       return Math.round(score);
     }
 
+    function coreRecommendReason(combo, combos, input) {
+      const calc = combo.calc;
+      const reasons = [];
+      const maxScore = Math.max(...combos.map(item => item.score || 0));
+
+      if (combo.score === maxScore) reasons.push("当前模式综合最优");
+      if (calc.gap >= -150 && calc.gap <= 500) reasons.push("预算贴合");
+      if (coreRiskPoints(calc, input) <= 1.5) reasons.push("基础件压力低");
+      if (calc.coreRatio <= 72) reasons.push("核心占比正常");
+      if (/RTX 5060 Ti/i.test(calc.gpu.model)) reasons.push("5060Ti 优先级高");
+      if (/RX 7700 XT|RX 7800 XT|RX 9070/i.test(calc.gpu.model)) reasons.push("显卡性能更强");
+      if (String(calc.gpu.model).includes("二手")) reasons.push("二手需验卡");
+
+      return reasons.slice(0, 4).join(" / ") || "作为对比组合保留";
+    }
+
     function getCombos(input) {
-      return getComboSeeds(input).map(([cpuKey, gpuKey, label, note]) => {
+      const combos = getComboSeeds(input).map(([cpuKey, gpuKey, label, note]) => {
         const calc = buildParts(cpuKey, gpuKey, input);
         return { cpuKey, gpuKey, label, note, score: scoreBuild(calc, input, label), calc };
-      }).sort((a, b) => {
-        if (currentMode === "gpu") return b.calc.gpu.price - a.calc.gpu.price;
-        if (currentMode === "cpu") return b.calc.cpu.price - a.calc.cpu.price;
-        return b.score - a.score;
+      }).sort((a, b) => b.score - a.score);
+
+      combos.forEach(combo => {
+        combo.reason = coreRecommendReason(combo, combos, input);
       });
+
+      return combos;
     }
 
     function fillOptions() {
@@ -1054,9 +1161,10 @@
         const c = combo.calc;
         const fitText = c.gap >= 0 ? `余 ${money(c.gap)}` : `超 ${money(Math.abs(c.gap))}`;
         return `<button type="button" class="combo-card ${active ? "active" : ""}" onclick="selectCombo('${combo.cpuKey}','${combo.gpuKey}')">
-          <strong>${combo.label} · ${fitText}</strong>
+          <strong>${combo.label} · ${fitText}${index === 0 ? '<span class="combo-rec">推荐</span>' : ''}</strong>
           <span>${selectedLabel(cpuOptions, combo.cpuKey)} + ${selectedLabel(gpuOptions, combo.gpuKey)}</span>
-          <span>${combo.note} · 核心占比 ${c.coreRatio}%</span>
+          <span>${combo.note} · 核心占比 ${c.coreRatio}% · 推荐 ${combo.score} 分</span>
+          <span>${combo.reason}</span>
         </button>`;
       }).join("");
     }
@@ -1124,6 +1232,8 @@
       if (calc.parts.storage === S.ssd256 || calc.parts.storage === S.ssd500) advice.push("硬盘偏过渡：游戏多后续优先补 1TB SSD。");
       if (calc.parts.board === M.a620m) advice.push("AM5 + A620M 能用，但长期升级/扩展更建议 B650M。");
       if (calc.parts.board === M.b450m && /Ryzen 5 5500|Ryzen 5 5600/i.test(calc.cpu.model)) advice.push("R5 5600 + B450M 够用，不必为了面子硬上贵 B550。");
+      if (/RTX 5060 8/i.test(calc.gpu.model)) advice.push("RTX5060 和 5060Ti 差价不大时，优先看 5060Ti。");
+      if (/RX 7700 XT/i.test(calc.gpu.model) && /B450M/i.test(calc.parts.board.model)) advice.push("RX7700XT + B450M 属于压平台方案，预算够建议 B550M 或 AM5。");
       if (gpuTier(calc.gpu) === "high" && calc.parts.case !== X.airflow) advice.push("高功耗显卡最好配风道更好的机箱。");
       if (String(calc.gpu.model).includes("二手")) advice.push("二手显卡必须验温度、噪音、接口、烤机和退换。");
       if (calc.gap < -300) advice.push("真正要改的是核心组合，不要靠杂牌电源和无散热硬凑。");
@@ -1149,10 +1259,14 @@
       document.getElementById("cpuSelect").value = selectedCombo.cpuKey;
       document.getElementById("gpuSelect").value = selectedCombo.gpuKey;
       updateCustomFields();
+      const combosNow = getCombos(input);
+      const recommendedCombo = combosNow[0];
+      const currentCombo = combosNow.find(item => item.cpuKey === selectedCombo.cpuKey && item.gpuKey === selectedCombo.gpuKey) || { score: scoreBuild(calc, input, "手动"), reason: "手动指定组合，重点复核预算和基础件" };
       renderCombos();
 
       const result = document.getElementById("coreResult");
       const totalClass = calc.gap < -300 ? "bad-total" : "";
+      const isCoreRecommended = recommendedCombo && recommendedCombo.cpuKey === selectedCombo.cpuKey && recommendedCombo.gpuKey === selectedCombo.gpuKey;
       result.innerHTML = `
         <div class="split-layout">
           <article class="summary-card">
@@ -1168,6 +1282,10 @@
             </div>
             ${renderMeters(calc)}
             ${statusNotice(calc, input)}
+            <div class="recommend-box ${isCoreRecommended ? "" : "warn"}">
+              <strong>${isCoreRecommended ? "系统推荐这组：" : "当前不是系统首推："}</strong>
+              ${isCoreRecommended ? currentCombo.reason : `系统更推荐「${recommendedCombo?.label || "自动组合"}」：${recommendedCombo?.reason || "预算和基础件更均衡"}。你当前这组推荐 ${currentCombo.score} 分。`}
+            </div>
             <div class="notice">${adviceText(calc, input)}</div>
           </article>
 

@@ -150,11 +150,11 @@ window.createPcBuilderTemplates = function({ C, G, M, R, S, P, X, makeParts, mak
             reason: "3500 档不应该继续用 3000 档的小硬盘配置。这套保留全新 RX6600，同时把 SSD 升到 512GB，基础体验更完整。",
             risk: "显卡仍是 1080P 网游取向；想明显提升画质和寿命，继续看 4000/4500 档。"
           }),
-          makeBuild("性价比版", makeParts(C.r5_5600, G.rx6650xt, M.b450m, R.d4_16, S.ssd256, P.p550, X.black), {
+          makeBuild("性价比版", makeParts(C.r5_5600, G.rx6650xtUsed, M.b450m, R.d4_16, S.ssd500, P.p550, X.black), {
             confidence: "中", priceVolatility: "中", secondHandRisk: "低",
             people: "预算 3500 左右，想把钱优先换成游戏性能的人。",
-            reason: "这套的性价比来自显卡提升到 RX6650XT 级别，同时 CPU 也给到 R5 5600；代价是 SSD 先用 256GB 过渡。",
-            risk: "硬盘容量偏小，游戏多了后续优先加 1TB SSD。"
+            reason: "这套的性价比来自二手 RX6650XT，适合愿意验卡、想在低预算冲帧数的人。",
+            risk: "二手显卡一定要验卡，确认成色、拆修和售后；不想折腾就看稳妥全新版。"
           }),
           makeBuild("省钱够用版", makeParts(C.r5_5500, G.rx6600New, M.b450m, R.d4_16, S.ssd256, P.p550, X.black), {
             confidence: "高", priceVolatility: "中", secondHandRisk: "低",
@@ -204,50 +204,50 @@ window.createPcBuilderTemplates = function({ C, G, M, R, S, P, X, makeParts, mak
           })
         ]),
         5000: makeTemplate("5000 网游", [
-          makeBuild("稳妥全新版", makeParts(C.i5_12400f, G.rtx5060, M.h610m, R.d4_16, S.ssd500, P.p650, X.normal), {
+          makeBuild("稳妥全新版", makeParts(C.i5_12400f, G.rx6750gre, M.b660m, R.d4_16, S.ssd500, P.p650, X.normal), {
             confidence: "高", priceVolatility: "中", secondHandRisk: "低",
             people: "预算 5000 左右，不接受二手，想要全新省心网游主机的人。",
-            reason: "按照你给的显卡天梯，RTX5060 分数约 4000，已经高于 RTX4060Ti 接近档位；5000 档可以优先考虑 RTX5060，而不是继续停在 RTX4060。",
-            risk: "这套为了上 RTX5060，SSD 先用 512GB 过渡；游戏多了后续再加 1TB。"
+            reason: "5000 档不再默认硬推 RTX5060。这里用 RX6750GRE 这类更强的游戏卡，显存和性能更适合网游/轻 3A。",
+            risk: "A 卡更看具体游戏和驱动偏好；如果你明确要 N 卡生态，再看 RTX5060Ti 或 RTX5060。"
           }),
-          makeBuild("性价比版", makeParts(C.r5_5500, G.rtx5060, M.b450m, R.d4_16, S.ssd500, P.p650, X.black), {
+          makeBuild("性价比版", makeParts(C.r5_5600, G.rx6750gre, M.b450m, R.d4_16, S.ssd500, P.p650, X.black), {
             confidence: "高", priceVolatility: "中", secondHandRisk: "低",
-            people: "想在 5000 内尽量上 RTX5060，同时压住平台成本的人。",
-            reason: "R5 5500 够带主流网游，省下来的钱给 RTX5060，游戏体验比把钱堆到 CPU 上更直接。",
-            risk: "CPU 平台比较省，后续升级空间不如 AM5。"
+            people: "预算 5000 左右，想把钱尽量换成游戏性能的人。",
+            reason: "这套不再硬塞 RTX5060Ti 导致超预算，而是用 R5 5600 + RX6750GRE，把性能、价格和基础件压到更合理的位置。",
+            risk: "A 卡更看具体游戏和驱动偏好；如果你明确要 N 卡生态，再把预算提高到 5500/6000 看 5060Ti。"
           }),
           makeBuild("省钱够用版", makeParts(C.r5_5600, G.rx6650xt, M.b450m, R.d4_16, S.ssd500, P.p550, X.black), {
             confidence: "中", priceVolatility: "中", secondHandRisk: "低",
             people: "预算 5000 但不想花满，主要玩 1080P 网游的人。",
             reason: "RX6650XT 依旧是 1000–1200 元档很实用的选择；省下的钱可以留给显示器或后续加硬盘。",
-            risk: "如果你追 2K 或更高画质，稳妥版 RTX5060 更合适。"
+            risk: "如果你追 2K 或更高画质，优先看 RX6750GRE / RX7700XT / 5060Ti 这类更高一档显卡。"
           })
         ]),
         6000: makeTemplate("6000 网游进阶", [
-          makeBuild("稳妥全新版", makeParts(C.i5_12400f, G.rtx5060, M.b660m, R.d4_32, S.ssd1t, P.p650, X.normal), {
+          makeBuild("稳妥全新版", makeParts(C.i5_12400f, G.rtx5060ti8, M.b660m, R.d4_16, S.ssd1t, P.p650, X.normal), {
             confidence: "高", priceVolatility: "中", secondHandRisk: "低",
             people: "预算 6000 左右、不接受二手，希望比 5000 档更舒适、更耐用的网游用户。",
-            reason: "6000 网游不能继续吃 5000 模板。这套把多出来的预算用到 32GB 内存、1TB SSD 和更稳的 B660M 主板上，而不是空着不解释。",
-            risk: "显卡仍是 RTX5060 级别，优势是全新省心和整体舒适；如果你只追游戏帧数，看性价比版。"
+            reason: "6000 网游不再继续停在 RTX5060。这套换到 RTX5060Ti 8G，同时保留 1TB SSD 和主流 B660M 主板。",
+            risk: "5060Ti 8G 仍要注意显存压力；如果只追游戏帧数，可以看 RX7700XT / RX7800XT 方向。"
           }),
-          makeBuild("性价比版", makeParts(C.r5_5600, G.rx7700xt, M.b450m, R.d4_16, S.ssd500, P.p650, X.black), {
+          makeBuild("性价比版", makeParts(C.r5_5600, G.rx7700xt, M.b550m, R.d4_16, S.ssd500, P.p650, X.black), {
             confidence: "中", priceVolatility: "中", secondHandRisk: "低",
             people: "预算 6000 左右，想把钱尽量换成游戏帧数的人。",
-            reason: "这套的性价比来自显卡大幅升级：把内存和 SSD 先控制住，预算优先给 RX7800XT 级别显卡，游戏性能明显高于 5000 档。",
-            risk: "SSD 只有 512GB，游戏多了后续要加盘；显卡功耗更高，所以电源给到 750W。"
+            reason: "这套的性价比来自显卡大幅升级：把内存和 SSD 先控制住，预算优先给 RX7700XT 这类中端显卡，游戏性能明显高于 5000 档。",
+            risk: "SSD 只有 512GB，游戏多了后续要加盘；RX7700XT 可用 650W 主流电源，但要复核具体型号和售后。"
           }),
-          makeBuild("省钱够用版", makeParts(C.i5_12400f, G.rtx5060, M.h610m, R.d4_16, S.ssd1t, P.p650, X.black), {
+          makeBuild("省钱够用版", makeParts(C.i5_12400f, G.rx6750gre, M.h610m, R.d4_16, S.ssd1t, P.p650, X.black), {
             confidence: "高", priceVolatility: "中", secondHandRisk: "低",
             people: "预算 6000，但不想硬花满，主要玩 1080P 网游的人。",
-            reason: "这套保留 RTX5060，把 5000 档最短板的 512GB SSD 升到 1TB；它不是满血 6000 性能配置，而是省钱舒适方案。",
+            reason: "这套保留 RX6750GRE 级别性能，把 5000 档最短板的 512GB SSD 升到 1TB；它不是满血 6000 性能配置，而是省钱舒适方案。",
             risk: "如果你希望预算都转成游戏性能，优先看性价比版。"
           })
         ]),
         6500: makeTemplate("6500 网游进阶", [
-          makeBuild("稳妥全新版", makeParts(C.r5_5600, G.rx7700xt, M.b450m, R.d4_16, S.ssd1t, P.p650, X.normal), {
+          makeBuild("稳妥全新版", makeParts(C.r5_5600, G.rx7700xt, M.b550m, R.d4_16, S.ssd1t, P.p650, X.normal), {
             confidence: "中", priceVolatility: "中", secondHandRisk: "低",
             people: "预算 6500 左右，想要 2K 网游/轻度 3A 都更稳的人。",
-            reason: "6500 档已经不该停在 RTX5060。这里用 RX7800XT + 1TB SSD，把预算明显转成显卡性能和容量。",
+            reason: "6500 档已经不该停在 RTX5060。这里用 RX7700XT + 1TB SSD，并把主板补到 B550M，避免中端显卡方案基础件太寒酸。",
             risk: "如果只玩 LOL、瓦、CS2，这套可能偏猛；预算也可以留给显示器。"
           }),
           makeBuild("性价比版", makeParts(C.i5_12400f, G.rx7800xt, M.b660m, R.d4_16, S.ssd1t, P.p750, X.black), {

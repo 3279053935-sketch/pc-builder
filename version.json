@@ -1,9 +1,9 @@
 {
-  "version": "2.9.3-rc",
-  "name": "board-psu-qc-fix",
-  "built_at": "2026-05-18 17:33:06",
+  "version": "2.9.6-rc",
+  "name": "ui-logic-cleanup",
+  "built_at": "2026-05-19 07:53:24",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "主板/电源搭配重算，R5 5600 不再默认上 B550；新增基础件风控提示。"
+  "note": "套餐跳转按钮按方案颜色显示；硬件摘要可收纳；低分配置自动修复；后台页不再展示；价格口径更新为京东/拼多多近期参考。"
 }

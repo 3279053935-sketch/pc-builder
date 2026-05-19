@@ -1311,6 +1311,7 @@
       .parts li {
         grid-template-columns: 52px minmax(0, 1fr);
         padding: 9px 12px;
+        align-items: start;
       }
 
       .desc {
@@ -1876,6 +1877,184 @@
     .qc-hint.watch { background: #fffbeb; color: #92400e; border-color: #fde68a; }
     .qc-hint.care { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
 
+  
+    .recommendation-hint {
+      margin: 8px 14px 0;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+
+    .recommendation-hint.best {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #047857;
+    }
+
+    .recommendation-score {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 950;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+  
+    .decision-jump-row .jump-build-btn {
+      position: relative;
+      overflow: hidden;
+      min-height: 38px;
+      border: 1px solid transparent;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    .decision-jump-row .jump-build-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.22), transparent);
+      transform: translateX(-120%);
+      transition: transform .42s ease;
+    }
+
+    .decision-jump-row .jump-build-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .decision-jump-row .jump-build-btn:hover::after {
+      transform: translateX(120%);
+    }
+
+    .jump-build-btn.scheme-safe {
+      background: #2563eb;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(37,99,235,.16);
+    }
+
+    .jump-build-btn.scheme-value {
+      background: #059669;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(5,150,105,.16);
+    }
+
+    .jump-build-btn.scheme-save {
+      background: #f97316;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(249,115,22,.16);
+    }
+
+    .visual-collapse {
+      border-bottom: 1px solid #eef2f7;
+      background: #fbfdff;
+    }
+
+    .visual-collapse-toggle {
+      display: none;
+      width: calc(100% - 28px);
+      margin: 11px 14px;
+      min-height: 38px;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 950;
+      cursor: pointer;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 13px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .visual-collapse-toggle:active {
+      transform: scale(.985);
+    }
+
+    .visual-collapse-toggle .toggle-sub {
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .visual-collapse-toggle .toggle-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #dbeafe;
+      transition: transform .28s ease;
+    }
+
+    .visual-collapse.open .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .visual-collapse-body {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateY(-4px);
+      transition: max-height .32s ease, opacity .24s ease, transform .24s ease;
+    }
+
+    .visual-collapse.open .visual-collapse-body {
+      max-height: 260px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .visual-collapse .visual-strip {
+      border-bottom: 0;
+    }
+
+    @media (max-width: 760px) {
+      .visual-collapse-toggle {
+        display: flex;
+      }
+
+      .visual-collapse {
+        background: #fff;
+      }
+
+      .visual-collapse-body {
+        max-height: 0;
+      }
+
+      .visual-collapse.open .visual-collapse-body {
+        max-height: 360px;
+      }
+    }
+
+    body.share-mode .visual-collapse-toggle {
+      display: flex;
+      background: #eff6ff;
+    }
+
+    body.share-mode .visual-collapse:not(.open) {
+      border-bottom: 0;
+    }
+
+    .recommendation-score.low-hidden {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
   </style>
   <meta name="description" content="面向小白的电脑配置生成器，按预算、用途、是否接受二手显卡生成办公、网游、3A、剪辑设计装机参考。" />
   <meta name="theme-color" content="#2563eb" />
@@ -1893,7 +2072,6 @@
     <a class="" href="./reference.html">参考表</a>
     <a class="" href="./strategy.html">装机策略</a>
     <a class="" href="./core-first.html">核心优先</a>
-    <a href="./preflight.html">自检报告</a>
     <span class="nav-spacer"></span>
     <button class="ai-disclaimer-link" type="button" onclick="showDisclaimer(true)">免责声明</button>
     <span class="nav-current">当前：生成器</span>
@@ -2017,7 +2195,7 @@
     </section>
 
     <footer class="site-footer">
-      <strong>提示：</strong>本工具只提供装机参考，不代表实时最低价。下单前请复核当天价格、店铺售后、具体型号和保修政策。也可以看 <a class="plain-link" href="./reference.html">装机参考表</a> 理解每个价位的取舍。
+      <strong>提示：</strong>本工具只提供装机参考，行情价不是实时抓取，而是人工维护的参考价；新卡价格主要参考京东/拼多多近期数据。下单前请复核当天价格、店铺售后、具体型号和保修政策。也可以看 <a class="plain-link" href="./reference.html">装机参考表</a> 理解每个价位的取舍。
     </footer>
   </main>
 
@@ -2249,7 +2427,14 @@
       return notices.join("");
     }
 
-function compactPartText(part, type) {
+
+    function fullPartText(part, type) {
+      const raw = String(part?.model || part || "").trim();
+      if (!raw) return "型号待确认";
+      return raw;
+    }
+
+    function compactPartText(part, type) {
       const raw = String(part?.model || part || "");
       let text = raw
         .replace(/（[^）]*）/g, "")
@@ -2391,7 +2576,8 @@ function compactPartText(part, type) {
         points.push("剪辑优先 CPU、内存、SSD，再看显卡加速。");
       }
 
-      if (gpu.includes("RTX 5060")) points.push("RTX5060：省电、DLSS 友好，适合全新 N 卡路线。");
+      if (gpu.includes("RTX 5060 Ti")) points.push("RTX5060Ti：如果和 RTX5060 差价不大，优先看 Ti。");
+      else if (gpu.includes("RTX 5060")) points.push("RTX5060：只有差价明显低于 5060Ti 时才更值得考虑。");
       else if (gpu.includes("RX 7800 XT")) points.push("RX7800XT：2K 游戏性能强，但电源和机箱风道要跟上。");
       else if (gpu.includes("RX 6650 XT")) points.push("RX6650XT：1080P 网游性价比卡。");
       else if (gpu.includes("核显")) points.push("核显：适合办公过渡，不是正经游戏主机。");
@@ -3131,6 +3317,13 @@ function compactPartText(part, type) {
         build.microBudgetAdvice = getMicroBudgetAdvice(build, input);
       });
 
+      const optimizedBuilds = optimizeWeakBuilds(builds, input);
+      builds.splice(0, builds.length, ...optimizedBuilds);
+      builds.forEach(build => {
+        build.strategyText = getStrategyText(build, builds, input);
+        build.microBudgetAdvice = getMicroBudgetAdvice(build, input);
+      });
+      assignRecommendationScores(builds, input);
       const recommendedBuild = pickRecommendedBuild(builds, input);
       builds.forEach(build => {
         build.isRecommended = build === recommendedBuild;
@@ -3154,6 +3347,7 @@ function compactPartText(part, type) {
             <span class="pill">总预算 ${money(input.budget)} · 主机预算 ${money(hostBudget)}</span>
             <span class="pill">二手显卡：${input.used}</span>
             <span class="pill">选用 ${selection.template.label} 模板</span>
+            <span class="pill">价格更新时间：2026.05 京东/拼多多参考</span>
             <div class="result-actions">
               <button type="button" onclick="copyAllBuilds(this)" data-original-text="复制全部方案">复制全部方案</button>
               <button type="button" class="secondary-action" onclick="copySharePrompt(this)" data-original-text="复制提问文案">复制提问文案</button>
@@ -3232,20 +3426,245 @@ function classifyDecisionType(build) {
       return `适合想均衡看看的人：配置没有明显偏科。`;
     }
 
-    function pickRecommendedBuild(builds, input) {
-      if (!builds || !builds.length) return null;
-      const purpose = input?.purpose || "";
-      const safe = builds.find(build => String(build.name || "").includes("稳妥"));
-      const value = builds.find(build => String(build.name || "").includes("性价比"));
-      const save = builds.find(build => String(build.name || "").includes("省钱"));
+    function getInternalRiskPoints(build, input) {
+      let risk = 0;
+      risk += partRiskScore(build.parts.board, "board");
+      risk += partRiskScore(build.parts.psu, "psu");
 
-      if (purpose === "办公学习" || purpose === "剪辑设计") return safe || value || builds[0];
+      const safety = build.safety || validateBuild(build);
+      risk += (safety.issues?.length || 0) * 5;
+      risk += (safety.warnings?.length || 0) * 1.5;
 
-      if (value && value.budgetFit && ["fit", "slight-over", "slight-under"].includes(value.budgetFit.level)) {
-        return value;
+      const gpuText = String(build.gpu || "");
+      const boardText = String(build.board || "");
+      const psuText = String(build.psu || "");
+
+      if (/RX 7700 XT|RX 7800 XT|RX 9070|RTX 4070 Ti|RTX 5070/i.test(gpuText) && /B450M|H610M|A520M/i.test(boardText)) {
+        risk += 2.5;
       }
 
-      return value || safe || save || builds[0];
+      if (/RX 7800 XT|RX 9070|RTX 4070 Ti|RTX 5070/i.test(gpuText) && !/750W|850W/i.test(psuText)) {
+        risk += 3;
+      }
+
+      if (/RTX 5060 8/i.test(gpuText) && !/Ti/i.test(gpuText)) {
+        risk += 1.2;
+      }
+
+      if (buildUsesUsedGpu(build)) {
+        risk += input.used === "可接受" ? 1.5 : 4;
+      }
+
+      return Math.max(0, risk);
+    }
+
+    function getPerformancePoints(build, input) {
+      const gpuScore = getGpuScore(build.gpu) || 0;
+      const cpuScore = getCpuScore(build.cpu) || 0;
+      const purpose = input.purpose || "";
+
+      if (purpose === "办公学习") {
+        let score = Math.min(26, cpuScore / 850);
+        if (!hasDedicatedGpu(build)) score += 8;
+        if (String(build.ram || "").includes("32GB")) score += 5;
+        if (String(build.storage || "").includes("1TB")) score += 4;
+        return score;
+      }
+
+      if (purpose === "剪辑设计") {
+        let score = Math.min(28, cpuScore / 900) + Math.min(26, gpuScore / 170);
+        if (String(build.ram || "").includes("32GB")) score += 8;
+        if (String(build.storage || "").includes("1TB")) score += 5;
+        return score;
+      }
+
+      let score = Math.min(42, gpuScore / 115) + Math.min(14, cpuScore / 1500);
+      if (purpose === "3A游戏" && gpuScore < 3500) score -= 10;
+      if (purpose === "网游" && cpuScore < 11000) score -= 5;
+      return score;
+    }
+
+    function getBudgetPoints(build, input) {
+      const hostBudget = build.hostBudget || build.band || input.budget;
+      const diff = hostBudget - build.total;
+      let score = 0;
+
+      if (diff < -400) score -= 90;
+      else if (diff < -250) score -= 45;
+      else if (diff < -100) score -= 18;
+      else if (diff < 0) score -= 6;
+      else if (diff <= 350) score += 25;
+      else if (diff <= 700) score += 15;
+      else if (diff <= 1100) score += String(build.name || "").includes("省钱") ? 8 : -8;
+      else score += String(build.name || "").includes("省钱") ? 4 : -18;
+
+      if (String(build.name || "").includes("省钱") && input.budget <= 4000) score += 8;
+      if (String(build.name || "").includes("稳妥") && (input.purpose === "办公学习" || input.purpose === "剪辑设计")) score += 8;
+
+      return score;
+    }
+
+    function getBuildRecommendationScore(build, input) {
+      let score = 50;
+      score += getPerformancePoints(build, input);
+      score += getBudgetPoints(build, input);
+      score -= getInternalRiskPoints(build, input) * 9;
+
+      if (build.confidence === "高") score += 5;
+      if (build.confidence === "低") score -= 8;
+      if (build.priceVolatility === "高") score -= 6;
+      if (build.secondHandRisk === "高") score -= input.used === "可接受" ? 5 : 18;
+
+      const gpuText = String(build.gpu || "");
+      if (/RTX 5060 8/i.test(gpuText) && !/Ti/i.test(gpuText)) score -= 8;
+      if (/RTX 5060 Ti/i.test(gpuText)) score += 5;
+      if (/RX 6750 GRE|RX 7700 XT|RX 9060 XT/i.test(gpuText) && (input.purpose === "网游" || input.purpose === "3A游戏")) score += 5;
+
+      return Math.round(score);
+    }
+
+    function getRecommendationReason(build, input, builds) {
+      const reasons = [];
+      const hostBudget = build.hostBudget || build.band || input.budget;
+      const diff = Math.round((hostBudget - build.total) / 50) * 50;
+      const risk = getInternalRiskPoints(build, input);
+      const gpuScore = getGpuScore(build.gpu) || 0;
+      const maxGpu = Math.max(...builds.map(item => getGpuScore(item.gpu) || 0));
+      const maxScore = Math.max(...builds.map(item => item.recommendationScore || 0));
+
+      if (build.recommendationScore === maxScore) reasons.push("综合推荐");
+      if (diff >= -150 && diff <= 500) reasons.push("预算贴合");
+      if (diff > 700) reasons.push("留有预算余量");
+      if (gpuScore > 0 && gpuScore >= maxGpu * 0.92 && (input.purpose === "网游" || input.purpose === "3A游戏")) reasons.push("显卡性能靠前");
+      if (risk <= 1.5) reasons.push("基础件风险低");
+      if (risk > 3) reasons.push("基础件需复核");
+      if (buildUsesUsedGpu(build)) reasons.push("二手需验卡");
+      if (/RTX 5060 Ti/i.test(String(build.gpu || ""))) reasons.push("5060Ti 优先级高于 5060");
+      if (/RTX 5060 8/i.test(String(build.gpu || "")) && !/Ti/i.test(String(build.gpu || ""))) reasons.push("5060 仅差价大时考虑");
+
+      return reasons.slice(0, 4).join(" / ") || "作为对比方案保留";
+    }
+
+    function assignRecommendationScores(builds, input) {
+      builds.forEach(build => {
+        build.recommendationScore = getBuildRecommendationScore(build, input);
+      });
+      builds.forEach(build => {
+        build.recommendationSummary = Number(build.recommendationScore) < 60 ? "预算不足：这套只是告诉你差距，建议加预算或降低画质/接受二手" : getRecommendationReason(build, input, builds);
+      });
+    }
+
+    function pickRecommendedBuild(builds, input) {
+      if (!builds || !builds.length) return null;
+      if (!builds.every(build => Number.isFinite(build.recommendationScore))) {
+        assignRecommendationScores(builds, input);
+      }
+
+      const hostBudget = builds[0]?.hostBudget || input.budget;
+      const candidates = builds.filter(build => build.total <= hostBudget + 250 && !(build.safety?.issues?.length));
+      const pool = candidates.length ? candidates : builds.filter(build => !(build.safety?.issues?.length));
+      const finalPool = pool.length ? pool : builds;
+
+      return finalPool.slice().sort((a, b) => {
+        if (b.recommendationScore !== a.recommendationScore) return b.recommendationScore - a.recommendationScore;
+        return Math.abs((a.total || 0) - hostBudget) - Math.abs((b.total || 0) - hostBudget);
+      })[0];
+    }
+
+
+    function finalizeRepairedBuild(original, input, patch, note) {
+      const parts = { ...original.parts, ...patch };
+      parts.cooler = inferCooler(parts.cpu, parts.gpu);
+      const rebuilt = rebuildBuildWithParts(original, parts, [note]);
+      const fixed = {
+        ...rebuilt,
+        index: original.index,
+        bandLabel: original.bandLabel,
+        monitorPlan: original.monitorPlan,
+        userBudget: original.userBudget,
+        hostBudget: original.hostBudget,
+        totalWithMonitor: rebuilt.total + (original.monitorPlan?.price || 0)
+      };
+      fixed.budgetFit = getBudgetFit(fixed);
+      fixed.safety = validateBuild(fixed);
+      fixed.strategyText = getStrategyText(fixed, [fixed], input);
+      fixed.microBudgetAdvice = getMicroBudgetAdvice(fixed, input);
+      fixed.recommendationScore = getBuildRecommendationScore(fixed, input);
+      fixed.recommendationSummary = getRecommendationReason(fixed, input, [fixed]);
+      return fixed;
+    }
+
+    function buildRepairCandidates(build, input) {
+      const candidates = [];
+      const budget = build.hostBudget || input.budget;
+      const gpu = String(build.gpu || "");
+      const board = String(build.board || "");
+      const purpose = input.purpose || "";
+
+      const add = (patch, note) => {
+        try {
+          candidates.push(finalizeRepairedBuild(build, input, patch, note));
+        } catch (error) {
+          console.warn("修复候选生成失败：", error);
+        }
+      };
+
+      if ((purpose === "网游" || purpose === "3A游戏") && build.total > budget + 250) {
+        if (budget <= 3500 && /Ryzen 5 5600/i.test(String(build.cpu || ""))) {
+          add({ cpu: C.r5_5500 }, "低分修复：3000 左右预算不硬上 R5 5600，先退到 R5 5500，把总价压回合理区间。");
+        }
+        if (/RTX 5060 Ti/i.test(gpu)) {
+          add({ gpu: G.rx6750gre, psu: P.p650 }, "低分修复：5060Ti 当前会明显超预算，改为 RX6750GRE，把预算、性能和基础件拉回均衡。");
+          add({ gpu: G.rtx5060, psu: P.p650 }, "低分修复：如果坚持全新 N 卡，先退回 RTX5060 控制预算。");
+        }
+        if (/RX 7700 XT|RX 7800 XT/i.test(gpu)) {
+          add({ gpu: G.rx6750gre, psu: P.p650 }, "低分修复：显卡过高导致预算压力过大，先退到 RX6750GRE 档。");
+        }
+        if (String(build.storage || "").includes("1TB")) {
+          add({ storage: S.ssd500 }, "低分修复：预算吃紧时先用 512GB SSD，后续再加 1TB。");
+        }
+      }
+
+      if (/RTX 5060 8/i.test(gpu) && !/Ti/i.test(gpu) && budget >= 5500) {
+        add({ gpu: G.rtx5060ti8, psu: P.p650 }, "低分修复：5060 和 5060Ti 差价不大时，预算够优先上 5060Ti。");
+      }
+
+      if (/RX 7700 XT|RX 7800 XT/i.test(gpu) && /B450M|H610M|A520M/i.test(board)) {
+        const targetBoard = getCpuPlatform(build.cpu) === "LGA1700" ? (M.b660m || M.b760m) : M.b550m;
+        add({ board: targetBoard }, "低分修复：中高端显卡不默认压丐主板，预算允许时提高主板档位。");
+      }
+
+      if (/Ryzen 5 5600/i.test(String(build.cpu || "")) && /B550M/i.test(board) && !/RX 7700 XT|RX 7800 XT/i.test(gpu) && build.total > budget + 150) {
+        add({ board: M.b450m }, "低分修复：R5 5600 非高显卡方案可退回 B450M，把预算省出来。");
+      }
+
+      return candidates;
+    }
+
+    function optimizeWeakBuilds(builds, input) {
+      assignRecommendationScores(builds, input);
+      const minScore = 65;
+      return builds.map(build => {
+        const budget = build.hostBudget || input.budget;
+        const tooWeak = build.recommendationScore < minScore || build.total > budget + 300;
+        if (!tooWeak) return build;
+
+        const candidates = buildRepairCandidates(build, input)
+          .filter(item => item.total <= budget + 250 && !(item.safety?.issues?.length))
+          .sort((a, b) => {
+            if (b.recommendationScore !== a.recommendationScore) return b.recommendationScore - a.recommendationScore;
+            return Math.abs(a.total - budget) - Math.abs(b.total - budget);
+          });
+
+        if (candidates.length && candidates[0].recommendationScore >= build.recommendationScore + 6) {
+          const fixed = candidates[0];
+          fixed.repairedFromLowScore = true;
+          fixed.recommendationSummary = `已自动避开低分组合：${fixed.recommendationSummary || "预算和基础件更均衡"}`;
+          return fixed;
+        }
+
+        return build;
+      });
     }
 
     function renderDecisionGuide(input, builds) {
@@ -3276,27 +3695,38 @@ function classifyDecisionType(build) {
             <ul class="decision-list">${list}</ul>
           </div>
           <div class="decision-jump-row">
-            ${builds.map((build, index) => `<button type="button" onclick="document.querySelectorAll('.build')[${index}]?.scrollIntoView({block:'start',behavior:'smooth'})">看方案 ${index + 1}</button>`).join("")}
+            ${builds.map((build, index) => {
+              const schemeClass = index === 0 ? "scheme-safe" : (index === 1 ? "scheme-value" : "scheme-save");
+              return `<button type="button" class="jump-build-btn ${schemeClass}" onclick="document.querySelectorAll('.build')[${index}]?.scrollIntoView({block:'start',behavior:'smooth'})">看${build.name}配置</button>`;
+            }).join("")}
           </div>
         </section>
       `;
     }
 
+    function scoreBadgeText(build) {
+      const score = Number(build.recommendationScore);
+      if (!Number.isFinite(score)) return "--";
+      if (score < 60) return "需加预算";
+      return `${score} 分`;
+    }
+
     function renderBuild(build) {
       const displayTotal = build.totalWithMonitor || build.total;
       const rows = [
-        ["CPU", `${compactPartText(build.parts.cpu, "cpu")}（${aboutMoney(build.parts.cpu.price)}）`],
-        ["显卡", `${compactPartText(build.parts.gpu, "gpu")}（${aboutMoney(build.parts.gpu.price)}）`],
-        ["主板", `${compactPartText(build.parts.board, "board")}（${aboutMoney(build.parts.board.price)}）`],
-        ["内存", `${compactPartText(build.parts.ram, "ram")}（${aboutMoney(build.parts.ram.price)}）`],
-        ["硬盘", `${compactPartText(build.parts.storage, "storage")}（${aboutMoney(build.parts.storage.price)}）`],
-        ["电源", `${compactPartText(build.parts.psu, "psu")}（${aboutMoney(build.parts.psu.price)}）`],
-        ["散热", `${compactPartText(build.parts.cooler, "cooler")}（${aboutMoney(build.parts.cooler.price)}）`],
-        ["机箱", `${compactPartText(build.parts.case, "case")}（${aboutMoney(build.parts.case.price)}）`]
+        ["CPU", `${fullPartText(build.parts.cpu, "cpu")}（${aboutMoney(build.parts.cpu.price)}）`],
+        ["显卡", `${fullPartText(build.parts.gpu, "gpu")}（${aboutMoney(build.parts.gpu.price)}）`],
+        ["主板", `${fullPartText(build.parts.board, "board")}（${aboutMoney(build.parts.board.price)}）`],
+        ["内存", `${fullPartText(build.parts.ram, "ram")}（${aboutMoney(build.parts.ram.price)}）`],
+        ["硬盘", `${fullPartText(build.parts.storage, "storage")}（${aboutMoney(build.parts.storage.price)}）`],
+        ["电源", `${fullPartText(build.parts.psu, "psu")}（${aboutMoney(build.parts.psu.price)}）`],
+        ["散热", `${fullPartText(build.parts.cooler, "cooler")}（${aboutMoney(build.parts.cooler.price)}）`],
+        ["机箱", `${fullPartText(build.parts.case, "case")}（${aboutMoney(build.parts.case.price)}）`]
       ];
       const visualTiles = getBuildVisualTiles(build);
       const keyPoints = getBuildKeyPoints(build, window.latestInput || getInput());
       const qcHint = getBuildQualityHint(build);
+      const visualDefaultOpen = !(window.matchMedia && window.matchMedia("(max-width: 760px)").matches) && !document.body.classList.contains("share-mode");
 
       if (build.monitorPlan && build.monitorPlan.price > 0) {
         rows.push(["显示器", `${build.monitorPlan.model}（${aboutMoney(build.monitorPlan.price)}）`]);
@@ -3306,17 +3736,26 @@ function classifyDecisionType(build) {
         <article class="build build-${build.index || 0}">
           <div class="build-header">
             <div class="build-kicker">${build.bandLabel || "装机参考"}</div>
-            <h3>${build.name}${build.isRecommended ? '<span class="recommended-badge">默认推荐</span>' : ''}</h3>
+            <h3>${build.name}${build.isRecommended ? '<span class="recommended-badge">默认推荐</span>' : ''}<span class="recommendation-score ${Number(build.recommendationScore) < 60 ? "low-hidden" : ""}">${scoreBadgeText(build)}</span></h3>
             <div class="total">${aboutMoney(displayTotal)}</div>
           </div>
-          <div class="visual-strip" aria-label="硬件摘要">
-            ${visualTiles.map(tile => `
-              <div class="visual-tile">
-                <span class="visual-icon">${tile.icon}</span>
-                <span class="visual-label">${tile.label}</span>
-                <span class="visual-value">${tile.value}</span>
+          <div class="visual-collapse ${visualDefaultOpen ? "open" : ""}">
+            <button type="button" class="visual-collapse-toggle" onclick="toggleVisualCollapse(this)" aria-label="展开或收起硬件摘要">
+              <span>硬件摘要</span>
+              <span class="toggle-sub">CPU / 显卡 / 散热 / 硬盘</span>
+              <span class="toggle-icon">⌄</span>
+            </button>
+            <div class="visual-collapse-body">
+              <div class="visual-strip" aria-label="硬件摘要">
+                ${visualTiles.map(tile => `
+                  <div class="visual-tile">
+                    <span class="visual-icon">${tile.icon}</span>
+                    <span class="visual-label">${tile.label}</span>
+                    <span class="visual-value">${tile.value}</span>
+                  </div>
+                `).join("")}
               </div>
-            `).join("")}
+            </div>
           </div>
           <ul class="parts">
             ${rows.map((row) => `
@@ -3326,8 +3765,9 @@ function classifyDecisionType(build) {
               </li>
             `).join("")}
           </ul>
-          <div class="parts-compact-note">上面先显示精简型号，具体品牌/系列以下单页面为准。</div>
+          <div class="parts-compact-note">下方直接显示参考品牌/系列，具体下单仍要按商品页型号复核。</div>
           <div class="qc-hint ${qcHint.level}">${qcHint.text}</div>
+          <div class="recommendation-hint ${build.isRecommended ? "best" : ""}"><strong>${build.isRecommended ? "为什么推荐：" : "推荐判断："}</strong>${build.recommendationSummary || "作为对比方案保留"}</div>
           <div class="desc">
             <div class="good-alert"><strong>适合谁：</strong>${build.people}</div>
             <div class="key-points">
@@ -3352,6 +3792,20 @@ function classifyDecisionType(build) {
           </div>
         </article>
       `;
+    }
+
+    function toggleVisualCollapse(button) {
+      const box = button.closest(".visual-collapse");
+      if (!box) return;
+      box.classList.toggle("open");
+    }
+
+    function collapseVisualSummaries() {
+      document.querySelectorAll(".visual-collapse").forEach(box => {
+        if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
+          box.classList.remove("open");
+        }
+      });
     }
 
     function formatSingleBuildText(input, build) {
@@ -3526,7 +3980,12 @@ function classifyDecisionType(build) {
         button.innerHTML = enabled ? "退出截图模式 <span class=\"kbd-hint\">Esc</span>" : "进入截图模式 <span class=\"kbd-hint\">Esc退出</span>";
       }
       if (enabled) {
+        document.querySelectorAll(".visual-collapse").forEach(box => box.classList.remove("open"));
         document.getElementById("result")?.scrollIntoView({ block: "start", behavior: "smooth" });
+      } else {
+        document.querySelectorAll(".visual-collapse").forEach(box => {
+          if (!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches)) box.classList.add("open");
+        });
       }
     }
 

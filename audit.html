@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>配置合理性大调查｜小白电脑配置生成器</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <style>
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif; background:#f6f8fc; color:#0f172a; }
+    .page { width:min(100% - 24px,1120px); margin:0 auto; padding:18px 0 44px; }
+    .hero { border-radius:28px; padding:26px; background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#fff; box-shadow:0 8px 24px rgba(15,23,42,.08); }
+    .hero h1 { margin:0 0 10px; font-size:clamp(30px,5vw,48px); letter-spacing:-.045em; }
+    .hero p { margin:0; color:rgba(239,246,255,.9); line-height:1.75; }
+    .panel { margin-top:14px; background:#fff; border:1px solid #e2e8f0; border-radius:24px; padding:18px; box-shadow:0 8px 24px rgba(15,23,42,.06); overflow:auto; }
+    .ok { color:#047857; font-weight:950; }
+    .warn { color:#92400e; font-weight:950; }
+    .bad { color:#b91c1c; font-weight:950; }
+    table { width:100%; border-collapse:collapse; min-width:760px; }
+    th,td { padding:10px; border-bottom:1px solid #eef2f7; font-size:13px; text-align:left; vertical-align:top; }
+    th { background:#f8fafc; color:#334155; }
+    .site-nav { width:min(100% - 24px,1120px); margin:14px auto 10px; display:flex; flex-wrap:wrap; gap:8px; padding:8px; border:1px solid #e2e8f0; border-radius:999px; background:#fff; }
+    .site-nav a { display:inline-flex; align-items:center; min-height:34px; padding:0 12px; border-radius:999px; text-decoration:none; color:#334155; font-size:13px; font-weight:950; }
+    .site-nav a.active { background:#2563eb; color:#fff; }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="./index.html">生成器</a>
+    <a href="./reference.html">参考表</a>
+    <a href="./strategy.html">装机策略</a>
+    <a href="./core-first.html">核心优先</a>
+    <a href="./preflight.html">自检报告</a>
+    <a class="active" href="./audit.html">合理性调查</a>
+  </nav>
+  <main class="page">
+    <section class="hero">
+      <h1>配置合理性大调查</h1>
+      <p>这页记录 v2.9.5 的自动检查结果：默认推荐是否会乱超预算、核心优先是否有推荐判断、主板/电源/散热/显存是否进入检查。它不能替代真人审核，但能先排掉明显硬伤。</p>
+    </section>
+    <section class="panel">
+      <h2>调查结论</h2>
+      <p><span class="ok">通过：</span>主生成器和核心优先都已加入综合推荐分；默认推荐不再固定中间卡；每张配置卡都有推荐判断；核心优先组合卡有推荐标识和原因。</p>
+      <p><span class="warn">仍需人工维护：</span>行情价不是实时抓取，建议每次收到社区反馈后继续手动校准价格、配置和二手风险。</p>
+    </section>
+    <section class="panel">
+      <h2>检查项</h2>
+      <table>
+        <thead><tr><th>项目</th><th>状态</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>默认推荐</td><td class="ok">通过</td><td>按预算贴合、性能、基础件风险、二手风险和用途权重综合打分</td></tr>
+          <tr><td>主生成器三张卡</td><td class="ok">通过</td><td>每张卡显示推荐分和推荐判断，不只给默认推荐一张贴标签</td></tr>
+          <tr><td>核心优先</td><td class="ok">通过</td><td>组合卡显示推荐标识、分数和原因，结果页提示当前是否为系统首推</td></tr>
+          <tr><td>预算超支</td><td class="ok">通过</td><td>明显超预算方案会大幅降权，默认推荐优先在预算 + 250 内选择</td></tr>
+          <tr><td>5060/5060Ti</td><td class="ok">通过</td><td>RTX5060 降权，差价不大时优先看 5060Ti</td></tr>
+          <tr><td>主板电源</td><td class="ok">通过</td><td>高功耗显卡 + 丐主板/低瓦电源会进入隐藏风控</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
