@@ -1,9 +1,9 @@
 {
-  "version": "2.9.8-rc",
-  "name": "fab-actions-dark-mode",
-  "built_at": "2026-05-19 08:12:34",
+  "version": "2.9.9-rc",
+  "name": "core-recommend-badge-visual-fix",
+  "built_at": "2026-05-19 08:19:18",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "底部快捷操作改为收纳小球；回顶部常驻；新增夜间模式。"
+  "note": "修复核心优先推荐标签显示成绿色长条的问题，改为小徽章。"
 }
