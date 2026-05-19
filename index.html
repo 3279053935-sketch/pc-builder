@@ -3107,7 +3107,7 @@
     </section>
 
     <footer class="site-footer">
-      <strong>提示：</strong>本工具只提供装机参考，行情价不是实时抓取，而是人工维护的参考价；新卡价格主要参考京东/拼多多近期数据。下单前请复核当天价格、店铺售后、具体型号和保修政策。也可以看 <a class="plain-link" href="./reference.html">装机参考表</a> 理解每个价位的取舍。
+      <strong>提示：</strong>本工具只提供装机参考，行情价不是实时抓取，而是人工维护的参考价；新卡价格主要参考京东/拼多多近期数据。下单前请复核当天价格、店铺售后、具体型号和保修政策。也可以看 <a class="plain-link" href="./reference.html">装机参考表</a> 和 理解每个价位的取舍。
     </footer>
   </main>
 
@@ -3783,9 +3783,10 @@
 
     function getCpuPlatform(cpuModel) {
       const model = String(cpuModel || "");
-      if (model.includes("7500F") || model.includes("9600X") || model.includes("7600") || model.includes("7700")) return "AM5";
+      if (/7500F|7600|7700|7800X3D|7900X3D|7950X3D|9600X|9700X|9800X3D|9900X|9900X3D|9950X|9950X3D/i.test(model)) return "AM5";
+      if (/5500|5600|5600X|5700X|5700X3D|5800X3D|5900X|5950X/i.test(model)) return "AM4";
       if (model.includes("Ryzen") || model.includes("AMD")) return "AM4";
-      if (model.includes("Intel") || model.includes("Core") || model.includes("赛扬")) return "LGA1700";
+      if (model.includes("Intel") || model.includes("Core") || model.includes("Ultra") || model.includes("赛扬")) return "LGA1700";
       return "未知";
     }
 
@@ -3984,143 +3985,26 @@
         return "办公学习优先 CPU、内存、SSD 和显示器体验，不应该为了花满预算硬上独显。";
       }
       if (purpose === "3A游戏") {
-        return "3A 游戏优先显卡，其次电源和硬盘；必要时可以压缩平台和外观预算。";
-      }
-      if (purpose === "剪辑设计") {
-        return "剪辑设计优先 CPU、内存、SSD，再考虑显卡加速和电源。";
-      }
-      return "网游优先显卡和帧率稳定，但不需要为了轻度网游盲目堆旗舰配置。";
-    }
-
-    function getStrategyText(build, builds, input) {
-      const strategy = classifyBuildStrategy(build);
-      const reference = builds && builds.length ? builds[0] : null;
-      const points = compareBuildValue(build, reference);
-      const purposeText = getPurposePriorityText(input?.purpose || "");
-
-      if (strategy === "safe") {
-        return `这套走省心路线：配件尽量低风险，电源、主板和兼容性不乱省。${purposeText}`;
-      }
-
-      if (strategy === "value") {
-        const valueSource = points.length ? points.slice(0, 3).join("；") : "主要靠更合理的预算分配，而不是单纯把总价抬高";
-        return `这套走性能/价格路线：不是单纯贵一点就叫性价比，得说清楚强在哪。这里主要强在：${valueSource}。`;
-      }
-
-      if (strategy === "save") {
-        const savingSource = points.length ? points.slice(0, 3).join("；") : "不强行花满预算，保留够用体验";
-        return `这套走够用省钱路线：不是乱缩水，而是明确少花钱。主要省在：${savingSource}。剩下的钱可以先不花。`;
-      }
-
-      return `这套走均衡路线：按当前预算和用途先把大坑避开。${purposeText}`;
-    }
-
-    function getMicroBudgetAdvice(build, input) {
-      if (build.autoUpgradeNotes && build.autoUpgradeNotes.length) {
-        const used = build.autoUpgradeNotes.slice(0, 3).join("；");
-        const hostBudgetNow = build.hostBudget || input?.budget || build.total;
-        const remainNow = Math.round((hostBudgetNow - build.total) / 50) * 50;
-        const tail = remainNow >= 100 ? `剩余约 ${money(remainNow)} 可留给价格波动或后续升级。` : "预算已经比较贴合，不需要为了小钱继续硬改。";
-        return `这笔预算已经补到：${used}。${tail}`;
-      }
-
-      const hostBudget = build.hostBudget || input?.budget || build.total;
-      const remain = Math.round((hostBudget - build.total) / 50) * 50;
-      const purpose = input?.purpose || "";
-
-      if (remain < 100 && remain > -100) {
-        return "预算已经比较贴合，不建议为了几十块反复改配置。";
-      }
-
-      if (remain >= 100 && remain < 300) {
-        return `还剩约 ${money(remain)}，这点钱建议留给价格波动、运费、硅脂、风扇或小配件，不建议硬换大件。`;
-      }
-
-      if (remain >= 300 && remain < 600) {
-        if (purpose === "办公学习" || purpose === "家用娱乐") return `还剩约 ${money(remain)}，办公优先考虑 SSD 容量、内存或显示器体验。`;
-        if (purpose === "3A游戏") return `还剩约 ${money(remain)}，3A 优先考虑 SSD 容量、电源档位或攒到下一档显卡。`;
-        if (purpose === "剪辑设计") return `还剩约 ${money(remain)}，剪辑优先考虑 SSD 容量、内存或更稳的电源。`;
-        return `还剩约 ${money(remain)}，网游可以优先加到 SSD、电源或攒到下一档显卡。`;
-      }
-
-      if (remain >= 600) {
-        if (purpose === "办公学习" || purpose === "家用娱乐") return `还剩约 ${money(remain)}，如果想花在主机上，优先升级 CPU、32GB 内存或 1TB/2TB SSD；否则更建议投显示器。`;
-        if (purpose === "3A游戏") return `还剩约 ${money(remain)}，已经接近能影响大件的余量，优先看显卡能否上一级，电源也要同步跟上。`;
-        if (purpose === "剪辑设计") return `还剩约 ${money(remain)}，可以考虑升级 CPU、32GB 内存、2TB SSD 或更适合创作的显卡。`;
-        return `还剩约 ${money(remain)}，可以检查是否能升级显卡或 CPU；如果只能小修小补，也可以不花满。`;
-      }
-
-      if (remain <= -300) {
-        return `这套约超 ${money(Math.abs(remain))}，严格卡预算时优先降显卡、SSD 或机箱外观。`;
-      }
-
-      return "价格有小幅波动，下单前按当天价格微调即可。";
-    }
-
-    function rebuildBuildWithParts(build, parts, notes) {
-      const total = buildTotal(parts);
-      return {
-        ...build,
-        parts,
-        cpu: parts.cpu.model,
-        gpu: parts.gpu.model,
-        board: parts.board.model,
-        ram: parts.ram.model,
-        storage: parts.storage.model,
-        psu: parts.psu.model,
-        cooler: parts.cooler.model,
-        case: parts.case.model,
-        total,
-        autoUpgradeNotes: [...(build.autoUpgradeNotes || []), ...(notes || [])]
-      };
-    }
-
-    function tryUpgradePart(build, input, patch, note, allowOver = 50) {
-      const nextParts = { ...build.parts, ...patch };
-      const nextTotal = buildTotal(nextParts);
-      const budget = Number(input?.budget || 0);
-
-      if (nextTotal <= budget + allowOver && nextTotal > build.total) {
-        return rebuildBuildWithParts(build, nextParts, [note]);
-      }
-
-      return build;
-    }
-
-    function partModelIncludes(part, keyword) {
-      return String(part?.model || "").includes(keyword);
-    }
-
-    function autoAbsorbBudget(build, input) {
-      // 省钱版就是故意不花满，不强行升级；稳妥/性价比版才自动利用剩余预算。
-      if (String(build.name || "").includes("省钱")) return build;
-
-      let next = { ...build, parts: { ...build.parts }, autoUpgradeNotes: [] };
-      const purpose = input?.purpose || "";
-
-      if (purpose === "办公学习" || purpose === "家用娱乐") {
-        if (partModelIncludes(next.parts.storage, "256GB")) {
-          next = tryUpgradePart(next, input, { storage: S.ssd500 }, "把 256GB SSD 升到 512GB，减少很快不够用的问题");
+        // v2.12.13：3A 高预算必须把钱转成真正的显卡 / 平台体验。
+        if (roleIndex === 0) {
+          if (budget >= 9500) Object.assign(patch, { cpu: safePart(C.r5_9600x) || safePart(C.r7_9700x) || safePart(C.r5_7500f), board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rtx5070 || G.rtx4070super || G.rx9070, storage: S.ssd1t, psu: P.p750 || P.p650 });
+          else if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r5_9600x) || safePart(C.r5_7500f), board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rtx5070 || G.rx9070 || G.rtx4070super, storage: S.ssd1t, psu: P.p750 || P.p650 });
+          else if (budget >= 8000) Object.assign(patch, { cpu: safePart(C.r5_9600x) || safePart(C.r5_7500f), board: M.b650m, ram: R.d5_16, gpu: G.rtx4070 || G.rx7800xt || G.rx7700xt, storage: S.ssd1t, psu: P.p650 });
+          else if (budget >= 7000) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.i5_12600kf), board: C.r5_7500f ? M.b650m : M.b660m, ram: C.r5_7500f ? R.d5_16 : R.d4_16, gpu: G.rx7800xt || G.rx7700xt || G.rtx5060ti8, storage: S.ssd1t, psu: P.p650 });
+          else Object.assign(patch, { cpu: safePart(C.i5_12600kf) || safePart(C.r5_7500f), board: C.r5_7500f && !C.i5_12600kf ? M.b650m : M.b660m, ram: C.r5_7500f && !C.i5_12600kf ? R.d5_16 : R.d4_16, gpu: G.rx7700xt || G.rtx5060ti8 || G.rx7600, storage: S.ssd1t, psu: P.p650 });
+        } else if (roleIndex === 1) {
+          if (budget >= 9500) Object.assign(patch, { cpu: safePart(C.r7_9700x) || safePart(C.r5_9600x), board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rx9070xt || G.rtx5070 || G.rx9070, storage: S.ssd1t, psu: P.p750 || P.p650 });
+          else if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r7_9700x) || safePart(C.r5_9600x), board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rx9070 || G.rtx4070super || G.rx7800xt, storage: S.ssd1t, psu: P.p750 || P.p650 });
+          else if (budget >= 8000) Object.assign(patch, { cpu: safePart(C.r7_9700x) || safePart(C.r5_9600x), board: M.b650m, ram: R.d5_16, gpu: G.rx7800xt || G.rtx4070 || G.rx7700xt, storage: S.ssd1t, psu: P.p650 });
+          else if (budget >= 7000) Object.assign(patch, { cpu: safePart(C.r5_9600x) || safePart(C.r5_7500f), board: M.b650m, ram: R.d5_16, gpu: G.rx7700xt || G.rtx5060ti8 || G.rx7800xt, storage: S.ssd1t, psu: P.p650 });
+          else Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.i5_12600kf), board: C.r5_7500f ? (M.a620m || M.b650m) : M.b660m, ram: C.r5_7500f ? R.d5_16 : R.d4_16, gpu: G.rtx5060ti8 || G.rx7600 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 });
+        } else {
+          if (budget >= 9500) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.r5_9600x), board: M.b650m || M.a620m, ram: R.d5_32 || R.d5_16, gpu: G.rx9070 || G.rx7800xt || G.rtx4070, storage: S.ssd1t, psu: P.p750 || P.p650 });
+          else if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.r5_9600x), board: M.b650m || M.a620m, ram: R.d5_32 || R.d5_16, gpu: G.rx9070 || G.rx7800xt || G.rtx4070, storage: S.ssd1t, psu: P.p750 || P.p650 });
+          else if (budget >= 8000) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.i5_12600kf), board: C.r5_7500f ? (M.b650m || M.a620m) : M.b660m, ram: C.r5_7500f ? R.d5_16 : R.d4_16, gpu: G.rx7700xt || G.rtx5060ti8 || G.rx7800xt, storage: S.ssd1t || S.ssd500, psu: P.p650 });
+          else if (budget >= 7000) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.i5_12600kf), board: C.r5_7500f ? (M.a620m || M.b650m) : M.b660m, ram: C.r5_7500f ? R.d5_16 : R.d4_16, gpu: G.rtx5060ti8 || G.rx7600 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 });
+          else Object.assign(patch, { cpu: safePart(C.i5_12600kf) || safePart(C.r5_5600), board: C.r5_5600 && !C.i5_12600kf ? M.b550m : M.b660m, ram: R.d4_16, gpu: G.rtx5060 || G.rx7600 || G.rtx4060ti, storage: S.ssd1t || S.ssd500, psu: P.p650 || P.p550 });
         }
-        if (partModelIncludes(next.parts.storage, "512GB")) {
-          next = tryUpgradePart(next, input, { storage: S.ssd1t }, "把 SSD 升到 1TB，办公资料/网课/照片更宽裕");
-        }
-
-        // 办公高一点预算，优先 CPU/主板，其次内存和 SSD，而不是独显。
-        if (partModelIncludes(next.parts.cpu, "Core i3-12100")) {
-          next = tryUpgradePart(next, input, { cpu: C.i5_13500, board: M.b760m }, "把 i3 平台升级到 i5-13500 + B760M，多任务更稳");
-        }
-        if (partModelIncludes(next.parts.ram, "16GB DDR4")) {
-          next = tryUpgradePart(next, input, { ram: R.d4_32 }, "把内存升到 32GB，多开网页/软件更舒服");
-        }
-        if (partModelIncludes(next.parts.storage, "1TB 普通")) {
-          next = tryUpgradePart(next, input, { storage: S.ssd1tHigh }, "把 SSD 升到更高性能 1TB，系统和软件响应更好");
-        }
-        if (partModelIncludes(next.parts.storage, "1TB") && !partModelIncludes(next.parts.storage, "高性能")) {
-          next = tryUpgradePart(next, input, { storage: S.ssd2t }, "把 SSD 升到 2TB，资料多的人更省心");
-        }
-
-        return next;
       }
 
       if (purpose === "剪辑设计") {
@@ -4606,6 +4490,270 @@
       });
     }
 
+
+    function normalizeHardwareNameForSignature(value) {
+      return String(value || "")
+        .replace(/\s+/g, " ")
+        .replace(/[（）]/g, m => m === "（" ? "(" : ")")
+        .replace(/约\s*¥?\d+(\.\d+)?/g, "")
+        .replace(/¥\d+(\.\d+)?/g, "")
+        .trim()
+        .toLowerCase();
+    }
+
+    function getPartModelFromBuild(build, key) {
+      return build?.parts?.[key]?.model || build?.[key] || "";
+    }
+
+    function getBuildHardwareSignature(build) {
+      return ["cpu", "gpu", "board", "ram", "storage", "psu", "cooler", "case"]
+        .map(key => normalizeHardwareNameForSignature(getPartModelFromBuild(build, key)))
+        .join("||");
+    }
+
+    function getThreePlanRoleName(index, input) {
+      const purpose = input?.purpose || "";
+      if (purpose === "网游") return index === 0 ? "高帧网游版" : index === 1 ? "均衡省心版" : "省钱够用版";
+      if (purpose === "3A游戏") return index === 0 ? "3A画质版" : index === 1 ? "均衡高性能版" : "省钱画质版";
+      if (purpose === "剪辑设计") return index === 0 ? "剪辑效率版" : index === 1 ? "均衡创作版" : "预算控制版";
+      if (purpose === "办公学习" || purpose === "家用娱乐") return index === 0 ? "舒适省心版" : index === 1 ? "均衡耐用版" : "省钱够用版";
+      return index === 0 ? "推荐方案" : index === 1 ? "均衡方案" : "省钱方案";
+    }
+
+    function safePart(part) {
+      return part || null;
+    }
+
+    function makeVariantPatchForRole(input, roleIndex, baseBuild) {
+      const budget = Number(input?.budget || baseBuild?.hostBudget || 0);
+      const purpose = input?.purpose || "";
+      const patch = {};
+
+      if (purpose === "网游") {
+        if (roleIndex === 0) {
+          if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r7_9800x3d) || safePart(C.r7_7800x3d) || safePart(C.r5_9600x), board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rtx4070 || G.rtx5060ti16 || G.rtx5060ti8, storage: S.ssd1t, psu: P.p650 });
+          else if (budget >= 6500) Object.assign(patch, { cpu: safePart(C.r7_7800x3d) || safePart(C.r5_9600x) || safePart(C.r5_7500f), board: M.b650m, ram: R.d5_16, gpu: G.rtx5060ti8 || G.rtx5060, storage: S.ssd1t, psu: P.p650 });
+          else Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.r5_5600), board: C.r5_7500f ? (M.a620m || M.b650m) : (M.b550m || M.b450m), ram: C.r5_7500f ? R.d5_16 : R.d4_16, gpu: G.rtx5060 || G.rtx4060ti || G.rx7600, storage: S.ssd1t || S.ssd500, psu: P.p650 || P.p550 });
+        } else if (roleIndex === 1) {
+          if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r7_7800x3d) || safePart(C.r5_9600x), board: M.b650m, ram: R.d5_16, gpu: G.rtx5060ti16 || G.rtx4070 || G.rtx5060ti8, storage: S.ssd1t, psu: P.p650 });
+          else if (budget >= 6500) Object.assign(patch, { cpu: safePart(C.r5_9600x) || safePart(C.r5_7500f) || safePart(C.i5_12600kf), board: C.i5_12600kf && !(C.r5_9600x || C.r5_7500f) ? M.b660m : M.b650m, ram: C.i5_12600kf && !(C.r5_9600x || C.r5_7500f) ? R.d4_16 : R.d5_16, gpu: G.rtx5060ti8 || G.rtx5060, storage: S.ssd1t, psu: P.p650 });
+          else Object.assign(patch, { cpu: safePart(C.i5_12600kf) || safePart(C.i5_13400f) || safePart(C.r5_5600), board: C.r5_5600 && !(C.i5_12600kf || C.i5_13400f) ? M.b550m : M.b660m, ram: R.d4_16, gpu: G.rtx5060 || G.rtx4060ti || G.rx7600, storage: S.ssd1t || S.ssd500, psu: P.p650 || P.p550 });
+        } else {
+          if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r5_9600x) || safePart(C.r5_7500f), board: M.b650m || M.a620m, ram: R.d5_16, gpu: G.rtx5060ti16 || G.rtx5060ti8 || G.rtx4070, storage: S.ssd1t, psu: P.p650 });
+          else if (budget >= 6500) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.i5_12600kf), board: C.r5_7500f ? (M.a620m || M.b650m) : M.b660m, ram: C.r5_7500f ? R.d5_16 : R.d4_16, gpu: G.rtx5060 || G.rtx4060ti || G.rx7600, storage: S.ssd1t || S.ssd500, psu: P.p650 || P.p550 });
+          else Object.assign(patch, { cpu: safePart(C.r5_5600) || safePart(C.i5_12400f), board: C.r5_5600 ? M.b450m : M.h610m, ram: R.d4_16, gpu: G.rx7600 || G.rtx4060 || G.rx6650xt, storage: S.ssd500, psu: P.p550 });
+        }
+      }
+
+      if (purpose === "3A游戏") {
+        if (roleIndex === 0) {
+          if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r5_9600x) || safePart(C.r7_9700x) || safePart(C.r5_7500f), board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rtx4070 || G.rtx4070super || G.rx9070 || G.rx7800xt, storage: S.ssd1t, psu: P.p750 || P.p650 });
+          else if (budget >= 7500) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.r5_9600x), board: M.b650m || M.a620m, ram: R.d5_16, gpu: G.rx7800xt || G.rx7700xt || G.rtx5060ti16 || G.rtx4070, storage: S.ssd1t, psu: P.p650 });
+          else Object.assign(patch, { cpu: safePart(C.i5_12600kf) || safePart(C.r5_7500f), board: C.r5_7500f && !C.i5_12600kf ? M.b650m : M.b660m, ram: C.r5_7500f && !C.i5_12600kf ? R.d5_16 : R.d4_16, gpu: G.rx7700xt || G.rtx5060ti8 || G.rx7600, storage: S.ssd1t, psu: P.p650 });
+        } else if (roleIndex === 1) {
+          if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r7_9700x) || safePart(C.r5_9600x), board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rx7800xt || G.rtx4070 || G.rtx5060ti16, storage: S.ssd1t, psu: P.p650 });
+          else if (budget >= 7500) Object.assign(patch, { cpu: safePart(C.r5_9600x) || safePart(C.r5_7500f), board: M.b650m, ram: R.d5_16, gpu: G.rx7700xt || G.rtx5060ti8 || G.rtx5060ti16, storage: S.ssd1t, psu: P.p650 });
+          else Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.i5_12600kf), board: C.r5_7500f ? (M.a620m || M.b650m) : M.b660m, ram: C.r5_7500f ? R.d5_16 : R.d4_16, gpu: G.rtx5060ti8 || G.rx7600 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 });
+        } else {
+          if (budget >= 9000) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.r5_9600x), board: M.a620m || M.b650m, ram: R.d5_16, gpu: G.rx7700xt || G.rx7800xt || G.rtx5060ti8, storage: S.ssd1t || S.ssd500, psu: P.p650 });
+          else if (budget >= 7500) Object.assign(patch, { cpu: safePart(C.r5_7500f) || safePart(C.i5_12600kf), board: C.r5_7500f ? (M.a620m || M.b650m) : M.b660m, ram: C.r5_7500f ? R.d5_16 : R.d4_16, gpu: G.rtx5060ti8 || G.rx7600 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 });
+          else Object.assign(patch, { cpu: safePart(C.i5_12600kf) || safePart(C.r5_5600), board: C.r5_5600 && !C.i5_12600kf ? M.b550m : M.b660m, ram: R.d4_16, gpu: G.rtx5060 || G.rx7600 || G.rtx4060ti, storage: S.ssd1t || S.ssd500, psu: P.p650 || P.p550 });
+        }
+      }
+
+      if (purpose === "剪辑设计") {
+        if (roleIndex === 0) Object.assign(patch, { cpu: budget >= 8500 ? (C.i7_14700kf || C.i7_13700kf || C.i5_14600kf) : (C.i5_14600kf || C.i5_13600kf || C.i5_12600kf), board: M.b760m || M.b660m, ram: R.d4_32 || R.d5_32 || R.d4_16, gpu: budget >= 8500 ? (G.rtx4070 || G.rtx5060ti16) : (G.rtx5060ti16 || G.rtx5060ti8), storage: S.ssd1t, psu: budget >= 8500 ? (P.p750 || P.p650) : P.p650 });
+        else if (roleIndex === 1) Object.assign(patch, { cpu: C.r7_9700x || C.r5_9600x || C.r5_7500f, board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rtx5060ti16 || G.rtx5060ti8 || G.rtx4070, storage: S.ssd1t, psu: P.p650 });
+        else Object.assign(patch, { cpu: C.i5_12600kf || C.i5_13400f || C.r5_7500f, board: C.r5_7500f && !(C.i5_12600kf || C.i5_13400f) ? (M.a620m || M.b650m) : M.b660m, ram: R.d4_32 || R.d5_16 || R.d4_16, gpu: G.rtx5060ti8 || G.rtx5060 || G.rtx4060ti, storage: S.ssd1t || S.ssd500, psu: P.p650 });
+      }
+
+      if (purpose === "办公学习" || purpose === "家用娱乐") {
+        if (roleIndex === 0) Object.assign(patch, { cpu: C.r5_8600g || C.r5_5600g || C.i5_12400, board: C.r5_8600g ? M.a620m : (M.b550m || M.h610m), ram: C.r5_8600g ? R.d5_16 : R.d4_16, gpu: G.igpu, storage: S.ssd1t || S.ssd500, psu: P.p550 || P.p500 });
+        else if (roleIndex === 1) Object.assign(patch, { cpu: C.r5_5600g || C.i3_12100 || C.r5_5600, board: C.r5_5600g ? M.b550m : M.h610m, ram: R.d4_16, gpu: G.igpu, storage: S.ssd1t || S.ssd500, psu: P.p550 || P.p500 });
+        else Object.assign(patch, { cpu: C.r5_5600g || C.i3_12100 || C.r5_5500, board: C.r5_5600g ? M.a520m : M.h610m, ram: R.d4_16, gpu: G.igpu, storage: S.ssd500, psu: P.p500 || P.p550 });
+      }
+
+      return patch;
+    }
+
+
+    function cleanVariantPatch(patch) {
+      const cleaned = {};
+      Object.keys(patch || {}).forEach(key => {
+        if (patch[key]) cleaned[key] = patch[key];
+      });
+      return cleaned;
+    }
+    function buildVariantFromRole(baseBuild, input, roleIndex) {
+      const patch = cleanVariantPatch(makeVariantPatchForRole(input, roleIndex, baseBuild));
+      if (!patch || !Object.keys(patch).length) return null;
+      const fixed = finalizeRepairedBuild(baseBuild, input, patch, "按方案定位生成差异化配置。");
+      fixed.index = roleIndex;
+      fixed.name = getThreePlanRoleName(roleIndex, input);
+      fixed.roleIndex = roleIndex;
+      fixed.budgetFit = getBudgetFit(fixed);
+      fixed.safety = validateBuild(fixed);
+      fixed.recommendationScore = getBuildRecommendationScore(fixed, input);
+      return fixed;
+    }
+
+    function enforceThreeDistinctBuilds(builds, input) {
+      const source = builds && builds.length ? builds : [];
+      const base = source[0] || {};
+      const variants = [0, 1, 2].map(index => buildVariantFromRole(source[index] || base, input, index)).filter(Boolean);
+      const budget = Number(input?.budget || base?.hostBudget || 0);
+      const hardTolerance = isGamingPurpose(input) && budget >= 6000 ? 1000 : 700;
+      const picked = [];
+      const used = new Set();
+
+      function canUse(build) {
+        if (!build) return false;
+        const sig = getBuildHardwareSignature(build);
+        if (used.has(sig)) return false;
+        const total = Number(build.totalWithMonitor || build.total || 0);
+        if (budget > 0 && total > budget + hardTolerance) return false;
+        return true;
+      }
+
+      for (const build of variants) {
+        if (canUse(build)) {
+          picked.push(build);
+          used.add(getBuildHardwareSignature(build));
+        }
+      }
+
+      const fallbackPatches = [
+        { gpu: G.rtx5060ti16 || G.rtx5060ti8 || G.rtx5060 },
+        { gpu: G.rx7700xt || G.rtx5060ti8 || G.rx7600 },
+        { gpu: G.rtx5060ti8 || G.rtx5060 || G.rtx4060ti },
+        { gpu: G.rtx5060 || G.rx7600 || G.rtx4060, storage: S.ssd500 },
+        { cpu: C.r5_7500f || C.i5_12600kf || C.r5_5600 },
+        { cpu: C.r5_9600x || C.r5_7500f || C.i5_12600kf },
+        { cpu: C.i5_12600kf || C.i5_13400f || C.r5_7500f, ram: R.d4_16 || R.d5_16 }
+      ];
+
+      let guard = 0;
+      while (picked.length < 3 && guard < fallbackPatches.length) {
+        const patch = cleanVariantPatch(fallbackPatches[guard++]);
+        const seed = source[picked.length] || base || picked[0];
+        const fixed = finalizeRepairedBuild(seed, input, patch, "用于避免重复方案的候选配置。");
+        fixed.index = picked.length;
+        fixed.name = getThreePlanRoleName(picked.length, input);
+        fixed.roleIndex = picked.length;
+        fixed.budgetFit = getBudgetFit(fixed);
+        fixed.safety = validateBuild(fixed);
+        fixed.recommendationScore = getBuildRecommendationScore(fixed, input);
+        if (canUse(fixed)) {
+          picked.push(fixed);
+          used.add(getBuildHardwareSignature(fixed));
+        }
+      }
+
+      for (const build of source) {
+        if (picked.length >= 3) break;
+        const cloned = { ...build, index: picked.length, name: getThreePlanRoleName(picked.length, input), roleIndex: picked.length };
+        cloned.budgetFit = getBudgetFit(cloned);
+        cloned.safety = validateBuild(cloned);
+        cloned.recommendationScore = getBuildRecommendationScore(cloned, input);
+        if (canUse(cloned)) {
+          picked.push(cloned);
+          used.add(getBuildHardwareSignature(cloned));
+        }
+      }
+
+      return picked.slice(0, 3).map((build, index) => {
+        build.index = index;
+        build.roleIndex = index;
+        build.name = getThreePlanRoleName(index, input);
+        build.recommendationScore = getBuildRecommendationScore(build, input);
+        return build;
+      });
+    }
+
+    function normalizeSameHardwareScores(builds) {
+      const scoreBySig = new Map();
+      builds.forEach(build => {
+        const sig = getBuildHardwareSignature(build);
+        if (!scoreBySig.has(sig)) scoreBySig.set(sig, Number(build.recommendationScore || 0));
+      });
+      builds.forEach(build => {
+        const sig = getBuildHardwareSignature(build);
+        if (scoreBySig.has(sig)) build.recommendationScore = scoreBySig.get(sig);
+      });
+    }
+
+
+    /* v2.12.13 shim：补齐旧版本里被调用但可能缺失的兜底函数 */
+    function autoAbsorbBudget(build, input) {
+      return build;
+    }
+
+    function getStrategyText(build, builds, input) {
+      const purpose = input?.purpose || "";
+      const name = String(build?.name || "");
+      if (name.includes("省钱")) return "省钱取舍：控制总价，但会在性能或扩展上留一点取舍。";
+      if (purpose === "3A游戏") return "3A 思路：优先显卡和 2K 画质表现，同时 CPU 不能拖后腿。";
+      if (purpose === "网游") return "网游思路：优先 CPU、缓存和帧率稳定，显卡够用即可。";
+      if (purpose === "剪辑设计") return "创作思路：优先 N 卡、内存和 SSD，再看 CPU 多核。";
+      return "这套主打均衡，不把预算全部堆到单个配件。";
+    }
+
+    function getMicroBudgetAdvice(build, input) {
+      const budget = Number(input?.budget || build?.hostBudget || 0);
+      const total = Number(build?.totalWithMonitor || build?.total || 0);
+      const diff = budget - total;
+      if (diff > 1200 && !String(build?.name || "").includes("省钱")) return "预算还有明显余量，可以考虑升级显卡、内存或 SSD。";
+      if (diff < -400) return "这套已经明显超预算，建议降低显卡档位或提高预算。";
+      if (diff < 0) return "略超预算，下单前可以从机箱、SSD 或显卡品牌上微调。";
+      return "预算贴合，重点复核当天价格和具体型号。";
+    }
+
+    function rebuildBuildWithParts(original, parts, repairNotes = []) {
+      const rebuilt = makeBuild(original?.name || "配置方案", parts, {
+        confidence: original?.confidence,
+        priceVolatility: original?.priceVolatility,
+        secondHandRisk: original?.secondHandRisk,
+        repairNotes: [...(original?.repairNotes || []), ...repairNotes]
+      });
+      return {
+        ...original,
+        ...rebuilt,
+        parts,
+        total: buildTotal(parts)
+      };
+    }
+
+
+    function enforceHighBudget3AFinalTier(builds, input) {
+      const budget = Number(input?.budget || 0);
+      if (input?.purpose !== "3A游戏" || budget < 9000) return builds;
+
+      const seed = builds && builds.length ? builds[0] : {};
+      const rolePatches = budget >= 9500
+        ? [
+            { cpu: C.r5_9600x || C.r7_9700x || C.r5_7500f, board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rtx5070 || G.rtx4070super || G.rx9070, storage: S.ssd1t, psu: P.p750 },
+            { cpu: C.r7_9700x || C.r5_9600x, board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rx9070xt || G.rtx5070 || G.rx9070, storage: S.ssd1t, psu: P.p750 },
+            { cpu: C.r5_7500f || C.r5_9600x, board: M.b650m || M.a620m, ram: R.d5_32 || R.d5_16, gpu: G.rx9070 || G.rx7800xt || G.rtx4070, storage: S.ssd1t, psu: P.p750 || P.p650 }
+          ]
+        : [
+            { cpu: C.r5_9600x || C.r5_7500f, board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rtx5070 || G.rx9070 || G.rtx4070super, storage: S.ssd1t, psu: P.p750 },
+            { cpu: C.r7_9700x || C.r5_9600x, board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rx9070 || G.rtx4070super || G.rx7800xt, storage: S.ssd1t, psu: P.p750 },
+            { cpu: C.r5_7500f || C.r5_9600x, board: M.b650m || M.a620m, ram: R.d5_32 || R.d5_16, gpu: G.rx9070 || G.rx7800xt || G.rtx4070, storage: S.ssd1t, psu: P.p750 || P.p650 }
+          ];
+
+      return rolePatches.map((patch, index) => {
+        const fixed = finalizeRepairedBuild(builds[index] || seed, input, cleanVariantPatch(patch), "高预算 3A 专用修正：优先把预算转成显卡、32GB 内存和足够电源。");
+        fixed.index = index;
+        fixed.roleIndex = index;
+        fixed.name = getThreePlanRoleName(index, input);
+        fixed.highBudget3AFixed = true;
+        fixed.budgetFit = getBudgetFit(fixed);
+        fixed.safety = validateBuild(fixed);
+        fixed.recommendationScore = getBuildRecommendationScore(fixed, input);
+        return fixed;
+      });
+    }
+
     function generateBuilds() {
       const input = getInput();
       const result = document.getElementById("result");
@@ -4666,15 +4814,11 @@
 
       builds.splice(0, builds.length, ...optimizedBuilds);
       assignRecommendationScores(builds, input);
+      normalizeSameHardwareScores(builds);
 
-      const selectedBuilds = selectThreeBuildsForDisplay(builds, input);
-      const onlineFixedBuilds = enforceOnlineGameFinalTier(selectedBuilds, input);
-      const finalSelectedBuilds = enforceCreativeFinalTier(onlineFixedBuilds, input);
-      builds.splice(0, builds.length, ...finalSelectedBuilds.map((build, index) => ({
-        ...build,
-        index,
-        name: getThreePlanDisplayName(build, input, index)
-      })));
+      const distinctBuilds = enforceThreeDistinctBuilds(builds, input);
+      const highBudget3AFixedBuilds = enforceHighBudget3AFinalTier(distinctBuilds, input);
+      builds.splice(0, builds.length, ...highBudget3AFixedBuilds);
 
       builds.forEach(build => {
         build.strategyText = getStrategyText(build, builds, input);
@@ -4682,7 +4826,7 @@
       });
 
       assignRecommendationScores(builds, input);
-      const recommendedBuild = pickRecommendedBuild(builds, input);
+      const recommendedBuild = pickRecommendedBuildSmart(builds, input);
       builds.forEach(build => {
         build.isRecommended = build === recommendedBuild;
       });
@@ -5461,6 +5605,13 @@ function classifyDecisionType(build) {
       if (/RTX 5060 Ti/i.test(gpuText)) score += 5;
       if (/RX 6750 GRE|RX 7700 XT|RX 9060 XT/i.test(gpuText) && (input.purpose === "网游" || input.purpose === "3A游戏")) score += 5;
 
+      if (build.highBudget3AFixed && input.purpose === "3A游戏") {
+        score += 20;
+        if (build.total >= input.budget * 0.78) score += 8;
+        if (/RTX 5070|RX 9070 XT|RX 9070/i.test(gpuText)) score += 8;
+        if (Number(build.roleIndex) === 2) score -= 35;
+      }
+
       if (isGamingPurpose(input) && input.budget >= 6000 && input.budget <= 10000) {
         if (isNvidiaGpuModel(gpuText)) score += 10;
         if (/RTX 4070 SUPER|RTX 5070|RTX 4070 Ti SUPER/i.test(gpuText)) score += 8;
@@ -5558,6 +5709,50 @@ function classifyDecisionType(build) {
       })[0];
     }
 
+
+
+    function pickRecommendedBuildSmart(builds, input) {
+      const base = pickRecommendedBuild(builds, input);
+      if (!builds || !builds.length) return base;
+
+      const budget = Number(input?.budget || builds[0]?.hostBudget || 0);
+      const purpose = input?.purpose || "";
+      const tolerance = isGamingPurpose(input) && budget >= 6000 ? 600 : 300;
+      const viable = builds.filter(build => {
+        const total = Number(build.totalWithMonitor || build.total || 0);
+        return total <= budget + tolerance && !(build.safety?.issues?.length);
+      });
+
+      if (isGamingPurpose(input) && budget >= 8500 && viable.length) {
+        const notTooCheap = viable.filter(build => Number(build.totalWithMonitor || build.total || 0) >= budget * 0.85);
+        const pool = notTooCheap.length ? notTooCheap : viable;
+        return pool.slice().sort((a, b) => {
+          const totalA = Number(a.totalWithMonitor || a.total || 0);
+          const totalB = Number(b.totalWithMonitor || b.total || 0);
+          let scoreA = Number(a.recommendationScore || 0);
+          let scoreB = Number(b.recommendationScore || 0);
+
+          if (purpose === "网游") {
+            if (/7800X3D|9800X3D/i.test(String(a.cpu || ""))) scoreA += 35;
+            if (/7800X3D|9800X3D/i.test(String(b.cpu || ""))) scoreB += 35;
+            if (/省钱|取舍/i.test(String(a.name || ""))) scoreA -= 18;
+            if (/省钱|取舍/i.test(String(b.name || ""))) scoreB -= 18;
+            if ((getGpuScore(a.gpu) || 0) >= 6500) scoreA -= 8;
+            if ((getGpuScore(b.gpu) || 0) >= 6500) scoreB -= 8;
+          }
+
+          if (purpose === "3A游戏") {
+            scoreA += (getGpuScore(a.gpu) || 0) / 180;
+            scoreB += (getGpuScore(b.gpu) || 0) / 180;
+          }
+
+          if (scoreB !== scoreA) return scoreB - scoreA;
+          return Math.abs(totalA - budget) - Math.abs(totalB - budget);
+        })[0] || base;
+      }
+
+      return base;
+    }
 
     function finalizeRepairedBuild(original, input, patch, note) {
       const parts = { ...original.parts, ...patch };
@@ -5696,7 +5891,7 @@ function classifyDecisionType(build) {
       if (!Number.isFinite(score)) return "--";
       const over = build?.budgetFit?.level === "over";
       if (over && score < 60) return "需加预算";
-      return `${Math.max(60, Math.round(score))} 分`;
+      return `${Math.min(100, Math.max(60, Math.round(score)))} 分`;
     }
 
 

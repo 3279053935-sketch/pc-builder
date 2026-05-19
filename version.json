@@ -1,9 +1,9 @@
 {
-  "version": "2.12.8-rc",
-  "name": "three-plan-reference-core-refresh",
-  "built_at": "2026-05-19 21:15:42",
+  "version": "2.12.13-rc",
+  "name": "fix-high-budget-3a-allocation-and-score",
+  "built_at": "2026-05-19 22:53:55",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "回归三套方案；刷新参考表与核心优先；修正 10000 网游误判需加预算。"
+  "note": "修复 9000–10000 3A 配置过低、默认推荐省钱低配、分数异常低的问题。"
 }

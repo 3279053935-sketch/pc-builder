@@ -17,7 +17,7 @@ window.PC_BUILDER_PARTS = {
         i5_13500: { model: "Intel Core i5-13500（带核显）", price: 1550 },
         r5_9600x: { model: "AMD Ryzen 5 9600X（AM5/DDR5，带基础核显）", price: 1059 },
         i5_12600kf: { model: "Intel Core i5-12600KF（无核显，游戏/多核都不错）", price: 1121 },
-        i5_13600kf: { model: "Intel Core i5-13600KF（无核显，多核较强）", price: 1399 },
+        i5_13600kf: { model: "Intel Core i5-13600KF（无核显，多核较强）", price: 1350 },
         i5_14600kf: { model: "Intel Core i5-14600KF（无核显，13/14 代中高端）", price: 1560 },
         i7_13700kf: { model: "Intel Core i7-13700KF（无核显，高多核）", price: 2099 },
         i7_14700kf: { model: "Intel Core i7-14700KF（无核显，高预算生产力）", price: 2100 },
