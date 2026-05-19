@@ -882,6 +882,17 @@
       document.getElementById("customGpuFields")?.classList.toggle("hidden", !gpuCustom);
     }
 
+    function hasValidBudget() {
+      const raw = document.getElementById("budget")?.value;
+      const value = Number(raw);
+      return Number.isFinite(value) && value >= 1000;
+    }
+
+    function showBudgetRequired() {
+      document.getElementById("comboList").innerHTML = `<div class="combo-card active"><strong>先填预算</strong><span>比如 3000、5000、7000，再点自动推荐。</span><span>没有预算时不会乱算超预算或核心占比。</span></div>`;
+      document.getElementById("coreResult").innerHTML = `<div class="empty-state">先填一个总预算，核心优先才会开始推荐。</div>`;
+    }
+
     function getInput() {
       return {
         budget: Number(document.getElementById("budget").value || 0),
@@ -906,6 +917,40 @@
 
     function isIntelLga1700Cpu(cpu) {
       return /12100|12400|12600|13400|13600|14100|14600|13500|13700|14700/i.test(cpu.model);
+    }
+
+
+    function estimateCpuWatts(cpuText) {
+      const text = String(cpuText || "");
+      if (/i7-|14700|13700|7800X3D|9800X3D/i.test(text)) return 125;
+      if (/13600|14600|9700X|9600X|7700/i.test(text)) return 105;
+      if (/7500F|7600|5600|5500|12400|13400|12100|14100/i.test(text)) return 75;
+      return 85;
+    }
+
+    function estimateGpuWatts(gpuText) {
+      const text = String(gpuText || "");
+      if (/核显|暂不买/i.test(text)) return 25;
+      if (/RX 9070 XT|RTX 5080|RTX 4080|RTX 4090/i.test(text)) return 330;
+      if (/RX 9070|RX 7900|RTX 4070 Ti|RTX 5070/i.test(text)) return 280;
+      if (/RX 7800 XT|RX 6800 XT|RTX 4070 SUPER|RTX 4070/i.test(text)) return 250;
+      if (/RX 7700 XT|RX 6750|RX 6700|RTX 5060 Ti|RTX 4060 Ti/i.test(text)) return 210;
+      if (/RX 9060|RX 7600|RX 6650|RX 6600|RTX 5060|RTX 4060|RTX 3060/i.test(text)) return 165;
+      if (/GTX 1660|RX 580/i.test(text)) return 150;
+      return 180;
+    }
+
+    function estimateSystemWatts(calc) {
+      return estimateCpuWatts(calc.cpu?.model) + estimateGpuWatts(calc.gpu?.model) + 80;
+    }
+
+    function psuWatts(psuText) {
+      const match = String(psuText || "").match(/(\d{3,4})W/i);
+      return match ? Number(match[1]) : 0;
+    }
+
+    function isEntryBoardText(boardText) {
+      return /A520M|B450M|H610M/i.test(String(boardText || ""));
     }
 
     function gpuTier(gpu) {
@@ -1052,6 +1097,8 @@
       const gpuText = String(calc.gpu?.model || "");
       const boardText = String(calc.parts?.board?.model || "");
       const psuText = String(calc.parts?.psu?.model || "");
+      const estimatedWatts = estimateSystemWatts(calc);
+      const currentPsuWatts = psuWatts(psuText);
 
       if (calc.gap < -300) risk += 5;
       else if (calc.gap < 0) risk += 1.5;
@@ -1060,6 +1107,8 @@
       if (/RX 7700 XT|RX 7800 XT|RX 9070|RTX 4070 Ti|RTX 5070/i.test(gpuText) && /B450M|H610M|A520M/i.test(boardText)) risk += 3;
       if (/RX 7800 XT|RX 9070|RTX 4070 Ti|RTX 5070/i.test(gpuText) && !/750W|850W/i.test(psuText)) risk += 3;
       if (/RTX 5060 8/i.test(gpuText) && !/Ti/i.test(gpuText)) risk += 1;
+      if (currentPsuWatts >= 650 && estimatedWatts < 380 && isEntryBoardText(boardText)) risk += 1.5;
+      if (currentPsuWatts && currentPsuWatts < estimatedWatts * 1.35) risk += 2;
       if (String(gpuText).includes("二手")) risk += input.used === "可接受" ? 1.5 : 5;
 
       return Math.max(0, risk);
@@ -1152,6 +1201,10 @@
     }
 
     function renderCombos() {
+      if (!hasValidBudget()) {
+        showBudgetRequired();
+        return;
+      }
       const input = getInput();
       const combos = getCombos(input);
       const list = document.getElementById("comboList");
@@ -1196,14 +1249,15 @@
         ["硬盘", parts.storage.model, parts.storage.price],
         ["电源", parts.psu.model, parts.psu.price],
         ["散热", parts.cooler.model, parts.cooler.price],
-        ["机箱", parts.case.model, parts.case.price]
+        ["机箱", parts.case.model, parts.case.price],
+        ["整机功耗", `估算约 ${estimateCpuWatts(parts.cpu.model) + estimateGpuWatts(parts.gpu.model) + 80}W，仅用于电源档位判断`, 0]
       ];
 
       return `<ul class="parts">${rows.map(row => `
         <li>
           <span class="part-name">${row[0]}</span>
           <span>${row[1]}</span>
-          <span class="part-price">${money(row[2])}</span>
+          <span class="part-price">${row[2] > 0 ? money(row[2]) : ""}</span>
         </li>
       `).join("")}</ul>`;
     }
@@ -1250,6 +1304,10 @@
     }
 
     function generateCoreFirst(scroll = true) {
+      if (!hasValidBudget()) {
+        showBudgetRequired();
+        return;
+      }
       const input = getInput();
       if (!selectedCombo) {
         const combos = getCombos(input);

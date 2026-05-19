@@ -1090,68 +1090,164 @@
     }
 
   
-    .floating-nav {
+    .back-top-float {
       position: fixed;
       right: 18px;
       bottom: 18px;
-      z-index: 30;
-      display: grid;
-      gap: 8px;
-      width: 132px;
-    }
-
-    .floating-nav a,
-    .floating-nav button {
+      z-index: 44;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      min-height: 44px;
+      padding: 0 15px;
+      border: 1px solid rgba(191, 219, 254, 0.95);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      color: #1d4ed8;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 950;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      backdrop-filter: blur(12px);
+    }
+
+    .back-top-float:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.18);
+    }
+
+    .fab-menu {
+      position: fixed;
+      right: 18px;
+      bottom: 76px;
+      z-index: 45;
+      display: grid;
+      justify-items: end;
+      gap: 10px;
+    }
+
+    .fab-ball {
+      width: 54px;
+      height: 54px;
+      border: 0;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,.38), transparent 32%),
+        linear-gradient(135deg, #2563eb, #0f172a);
+      color: #fff;
+      font: inherit;
+      font-size: 22px;
+      font-weight: 950;
+      box-shadow: 0 18px 38px rgba(37, 99, 235, 0.28);
+      cursor: pointer;
+      transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+    }
+
+    .fab-menu.open .fab-ball {
+      transform: rotate(45deg) scale(1.03);
+      filter: brightness(1.05);
+    }
+
+    .fab-options {
+      display: grid;
+      gap: 8px;
+      min-width: 160px;
+      padding: 8px;
+      border: 1px solid rgba(226, 232, 240, 0.86);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+      backdrop-filter: blur(16px);
+      opacity: 0;
+      transform: translateY(10px) scale(.96);
+      pointer-events: none;
+      transition: opacity .2s ease, transform .24s cubic-bezier(.2,.8,.2,1);
+      transform-origin: bottom right;
+    }
+
+    .fab-menu.open .fab-options {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .fab-options a,
+    .fab-options button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       min-height: 42px;
       border: 0;
       border-radius: 999px;
       padding: 0 12px;
-      background: #0f172a;
-      color: #fff;
+      background: #f8fafc;
+      color: #0f172a;
       text-decoration: none;
       font: inherit;
       font-size: 13px;
       font-weight: 950;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
       cursor: pointer;
+      transition: transform .16s ease, background .16s ease, color .16s ease;
     }
 
-    .floating-nav .secondary-float {
-      background: #ffffff;
+    .fab-options a:hover,
+    .fab-options button:hover {
+      transform: translateX(-2px);
+      background: #eff6ff;
       color: #1d4ed8;
-      border: 1px solid #bfdbfe;
+    }
+
+    .fab-icon {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 13px;
+      flex: 0 0 auto;
+    }
+
+    .theme-mode-label::after {
+      content: "夜间模式";
+    }
+
+    body.dark-mode .theme-mode-label::after {
+      content: "日间模式";
     }
 
     @media (max-width: 760px) {
       body {
-        padding-bottom: 76px;
+        padding-bottom: 88px;
       }
 
-      .floating-nav {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        width: auto;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        padding: 8px;
-        border: 1px solid rgba(226, 232, 240, 0.92);
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.96);
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
-      }
-
-      .floating-nav a,
-      .floating-nav button {
+      .back-top-float {
+        right: 14px;
+        bottom: 14px;
         min-height: 44px;
-        box-shadow: none;
+        padding: 0 14px;
+      }
+
+      .fab-menu {
+        right: 14px;
+        bottom: 70px;
+      }
+
+      .fab-ball {
+        width: 56px;
+        height: 56px;
+      }
+
+      .fab-options {
+        min-width: 172px;
       }
     }
 
-  
+
     .helper-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1496,7 +1592,7 @@
     body.share-mode .caution-alert,
     body.share-mode .notice,
     body.share-mode .site-footer,
-    body.share-mode .floating-nav,
+    body.share-mode .fab-menu,
     body.share-mode .decision-jump-row,
     body.share-mode .result-actions,
     body.share-mode .copy-btn {
@@ -2055,6 +2151,127 @@
       color: #b91c1c;
     }
 
+  
+    body.dark-mode {
+      --bg: #0b1120;
+      --surface: #111827;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --line: rgba(148, 163, 184, 0.24);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(37, 99, 235, 0.16), transparent 28%),
+        #0b1120;
+      color: var(--text);
+    }
+
+    body.dark-mode .site-nav,
+    body.dark-mode .panel,
+    body.dark-mode .form-card,
+    body.dark-mode .result-area,
+    body.dark-mode .build,
+    body.dark-mode .modal-card,
+    body.dark-mode .disclaimer-box,
+    body.dark-mode .site-footer {
+      background: rgba(17, 24, 39, 0.94);
+      border-color: rgba(148, 163, 184, 0.24);
+      color: var(--text);
+      box-shadow: 0 14px 34px rgba(0,0,0,.24);
+    }
+
+    body.dark-mode .site-nav a,
+    body.dark-mode .nav-current,
+    body.dark-mode label,
+    body.dark-mode .part-name,
+    body.dark-mode .visual-label,
+    body.dark-mode .desc,
+    body.dark-mode .panel-desc,
+    body.dark-mode .note,
+    body.dark-mode .helper-card,
+    body.dark-mode .parts-compact-note {
+      color: var(--muted);
+    }
+
+    body.dark-mode .site-nav a.active,
+    body.dark-mode .nav-current,
+    body.dark-mode .ai-disclaimer-link {
+      background: rgba(37, 99, 235, .18);
+      color: #bfdbfe;
+    }
+
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background: #0f172a;
+      border-color: rgba(148, 163, 184, .32);
+      color: var(--text);
+    }
+
+    body.dark-mode .build-header,
+    body.dark-mode .parts li,
+    body.dark-mode .visual-collapse,
+    body.dark-mode .visual-strip,
+    body.dark-mode .result-head,
+    body.dark-mode .helper-card,
+    body.dark-mode .visual-tile,
+    body.dark-mode .good-alert,
+    body.dark-mode .notice,
+    body.dark-mode .recommendation-hint,
+    body.dark-mode .detail-panel,
+    body.dark-mode .quick-presets button,
+    body.dark-mode .pill,
+    body.dark-mode .mini-badge {
+      background: rgba(15, 23, 42, 0.88);
+      border-color: rgba(148, 163, 184, 0.22);
+      color: var(--text);
+    }
+
+    body.dark-mode .visual-collapse-toggle,
+    body.dark-mode .detail-toggle {
+      background: rgba(37, 99, 235, .16);
+      border-color: rgba(96, 165, 250, .28);
+      color: #bfdbfe;
+    }
+
+    body.dark-mode .qc-hint.good,
+    body.dark-mode .recommendation-hint.best {
+      background: rgba(5, 150, 105, .15);
+      border-color: rgba(52, 211, 153, .28);
+      color: #86efac;
+    }
+
+    body.dark-mode .fab-options,
+    body.dark-mode .back-top-float {
+      background: rgba(15, 23, 42, 0.94);
+      border-color: rgba(148, 163, 184, 0.28);
+      color: #bfdbfe;
+    }
+
+    body.dark-mode .fab-options a,
+    body.dark-mode .fab-options button {
+      background: rgba(30, 41, 59, 0.92);
+      color: #e5e7eb;
+    }
+
+    body.dark-mode .fab-options a:hover,
+    body.dark-mode .fab-options button:hover {
+      background: rgba(37, 99, 235, .22);
+      color: #bfdbfe;
+    }
+
+    body.dark-mode .fab-icon {
+      background: rgba(96, 165, 250, .18);
+      color: #93c5fd;
+    }
+
+    body.dark-mode .hero {
+      box-shadow: 0 18px 44px rgba(0,0,0,.28);
+    }
+
+    body.dark-mode.share-mode {
+      background: #0b1120;
+    }
+
+
   </style>
   <meta name="description" content="面向小白的电脑配置生成器，按预算、用途、是否接受二手显卡生成办公、网游、3A、剪辑设计装机参考。" />
   <meta name="theme-color" content="#2563eb" />
@@ -2552,9 +2769,11 @@
       if (/RX 7800 XT|RX 9070|RTX 5070|RTX 4070 Ti/i.test(gpuText) && !/750W|850W/i.test(psuText)) risk += 2;
       if (/RX 7700 XT|RX 9060 XT|RTX 4070|RTX 5060 Ti/i.test(gpuText) && /500W|550W/i.test(psuText)) risk += 2;
 
-      if (risk <= 1) return { level: "good", text: "基础件风控：正常，仍需复核具体型号" };
-      if (risk <= 3) return { level: "watch", text: "基础件风控：需复核主板/电源具体型号" };
-      return { level: "care", text: "基础件风控：谨慎，重点查电源/二手/售后" };
+      const watts = estimateSystemWatts(build);
+      const psuW = psuWatts(build.psu);
+      if (risk <= 1) return { level: "good", text: `基础件风控：正常，整机约 ${watts}W，${psuW || "对应"}W 电源需复核具体型号` };
+      if (risk <= 3) return { level: "watch", text: `基础件风控：需复核主板/电源，整机约 ${watts}W` };
+      return { level: "care", text: `基础件风控：谨慎，整机约 ${watts}W，重点查电源/主板/二手` };
     }
 
     function getBuildKeyPoints(build, input) {
@@ -3317,7 +3536,7 @@
         build.microBudgetAdvice = getMicroBudgetAdvice(build, input);
       });
 
-      const optimizedBuilds = optimizeWeakBuilds(builds, input);
+      const optimizedBuilds = optimizeWeakBuilds(builds, input).map(build => alignPsuAndBoard(build, input));
       builds.splice(0, builds.length, ...optimizedBuilds);
       builds.forEach(build => {
         build.strategyText = getStrategyText(build, builds, input);
@@ -3426,6 +3645,91 @@ function classifyDecisionType(build) {
       return `适合想均衡看看的人：配置没有明显偏科。`;
     }
 
+
+    function estimateCpuWatts(cpuText) {
+      const text = String(cpuText || "");
+      if (/i7-|14700|13700|7800X3D|9800X3D/i.test(text)) return 125;
+      if (/13600|14600|9700X|9600X|7700/i.test(text)) return 105;
+      if (/7500F|7600|5600|5500|12400|13400|12100|14100/i.test(text)) return 75;
+      return 85;
+    }
+
+    function estimateGpuWatts(gpuText) {
+      const text = String(gpuText || "");
+      if (/核显|暂不买/i.test(text)) return 25;
+      if (/RX 9070 XT|RTX 5080|RTX 4080|RTX 4090/i.test(text)) return 330;
+      if (/RX 9070|RX 7900|RTX 4070 Ti|RTX 5070/i.test(text)) return 280;
+      if (/RX 7800 XT|RX 6800 XT|RTX 4070 SUPER|RTX 4070/i.test(text)) return 250;
+      if (/RX 7700 XT|RX 6750|RX 6700|RTX 5060 Ti|RTX 4060 Ti/i.test(text)) return 210;
+      if (/RX 9060|RX 7600|RX 6650|RX 6600|RTX 5060|RTX 4060|RTX 3060/i.test(text)) return 165;
+      if (/GTX 1660|RX 580/i.test(text)) return 150;
+      return 180;
+    }
+
+    function estimateSystemWatts(build) {
+      const cpuW = estimateCpuWatts(build.cpu);
+      const gpuW = estimateGpuWatts(build.gpu);
+      return cpuW + gpuW + 80;
+    }
+
+    function psuWatts(psuText) {
+      const match = String(psuText || "").match(/(\d{3,4})W/i);
+      return match ? Number(match[1]) : 0;
+    }
+
+    function isEntryBoard(boardText) {
+      return /A520M|B450M|H610M/i.test(String(boardText || ""));
+    }
+
+    function isMainstreamBoard(boardText) {
+      return /B550M|B660M|B760M|B650M/i.test(String(boardText || ""));
+    }
+
+    function chooseAlignedPsuForBuild(build, input) {
+      const watts = estimateSystemWatts(build);
+      const boardText = String(build.board || "");
+      const gpuText = String(build.gpu || "");
+      const purpose = input.purpose || "";
+
+      if (/RX 9070|RX 7800 XT|RX 7900|RTX 4070 Ti|RTX 5070|RTX 4080|RTX 5080/i.test(gpuText)) return P.p750 || P.p850;
+      if (/RX 7700 XT|RX 6750|RX 6700|RTX 5060 Ti|RX 9060 XT/i.test(gpuText)) {
+        if (isEntryBoard(boardText) && watts < 420 && purpose !== "剪辑设计") return P.p550 || P.p650;
+        return P.p650 || P.p550;
+      }
+      if (watts < 380) return P.p550 || P.p650;
+      return P.p650 || P.p550;
+    }
+
+    function alignPsuAndBoard(build, input) {
+      const currentW = psuWatts(build.psu);
+      const recommendedPsu = chooseAlignedPsuForBuild(build, input);
+      const recommendedW = psuWatts(recommendedPsu?.model);
+      const watts = estimateSystemWatts(build);
+      const boardText = String(build.board || "");
+      const gpuText = String(build.gpu || "");
+      const patch = {};
+      const notes = [];
+
+      if (recommendedPsu && recommendedW && currentW && currentW - recommendedW >= 100) {
+        if (isEntryBoard(boardText) && watts < 420 && !/RX 7800 XT|RX 9070|RTX 4070 Ti|RTX 5070/i.test(gpuText)) {
+          patch.psu = recommendedPsu;
+          notes.push(`电源按整机约 ${watts}W 重新收敛：入门平台不再为了不存在的升级空间硬上 ${currentW}W。`);
+        }
+      }
+
+      if (/RX 7700 XT|RX 7800 XT/i.test(gpuText) && /B450M|H610M|A520M/i.test(boardText)) {
+        const platform = getCpuPlatform(build.cpu);
+        patch.board = platform === "LGA1700" ? (M.b660m || M.b760m) : M.b550m;
+        notes.push("中高端显卡不默认压入门主板，主板和电源的升级空间要保持一致。");
+      }
+
+      if (!Object.keys(patch).length) return build;
+
+      const fixed = finalizeRepairedBuild(build, input, patch, notes.join(" "));
+      fixed.powerAligned = true;
+      return fixed;
+    }
+
     function getInternalRiskPoints(build, input) {
       let risk = 0;
       risk += partRiskScore(build.parts.board, "board");
@@ -3438,6 +3742,8 @@ function classifyDecisionType(build) {
       const gpuText = String(build.gpu || "");
       const boardText = String(build.board || "");
       const psuText = String(build.psu || "");
+      const estimatedWatts = estimateSystemWatts(build);
+      const currentPsuWatts = psuWatts(psuText);
 
       if (/RX 7700 XT|RX 7800 XT|RX 9070|RTX 4070 Ti|RTX 5070/i.test(gpuText) && /B450M|H610M|A520M/i.test(boardText)) {
         risk += 2.5;
@@ -3449,6 +3755,14 @@ function classifyDecisionType(build) {
 
       if (/RTX 5060 8/i.test(gpuText) && !/Ti/i.test(gpuText)) {
         risk += 1.2;
+      }
+
+      if (currentPsuWatts >= 650 && estimatedWatts < 380 && isEntryBoard(boardText)) {
+        risk += 1.5;
+      }
+
+      if (currentPsuWatts && currentPsuWatts < estimatedWatts * 1.35) {
+        risk += 2;
       }
 
       if (buildUsesUsedGpu(build)) {
@@ -3942,10 +4256,17 @@ function classifyDecisionType(build) {
 
   </script>
 
-  <nav class="floating-nav" aria-label="快捷操作">
-    <a href="./reference.html">参考表</a>
-    <button type="button" class="secondary-float" onclick="window.scrollTo({top:0,behavior:'smooth'})">回顶部</button>
-  </nav>
+  <button class="back-top-float" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ 回顶部</button>
+
+  <div class="fab-menu" id="quickFab">
+    <div class="fab-options" role="menu" aria-label="快捷操作">
+      <button type="button" onclick="toggleShareMode(); closeQuickMenu();" role="menuitem"><span class="fab-icon">📸</span><span class="share-action-label">截图模式</span></button>
+      <button type="button" onclick="toggleThemeMode(); closeQuickMenu();" role="menuitem"><span class="fab-icon">🌙</span><span class="theme-mode-label"></span></button>
+      <a href="./reference.html" role="menuitem"><span class="fab-icon">📊</span><span>参考表</span></a>
+      <a href="./core-first.html" role="menuitem"><span class="fab-icon">🎯</span><span>核心优先</span></a>
+    </div>
+    <button class="fab-ball" type="button" onclick="toggleQuickMenu()" aria-label="展开快捷操作" aria-expanded="false">＋</button>
+  </div>
 
   <script>
 
@@ -3970,14 +4291,13 @@ function classifyDecisionType(build) {
     }
   </script>
 
-  <button class="share-mode-toggle" type="button" onclick="toggleShareMode()">进入截图模式 <span class="kbd-hint">Esc退出</span></button>
 
   <script>
     function setShareMode(enabled) {
       document.body.classList.toggle("share-mode", enabled);
-      const button = document.querySelector(".share-mode-toggle");
-      if (button) {
-        button.innerHTML = enabled ? "退出截图模式 <span class=\"kbd-hint\">Esc</span>" : "进入截图模式 <span class=\"kbd-hint\">Esc退出</span>";
+      const label = document.querySelector(".share-action-label");
+      if (label) {
+        label.textContent = enabled ? "退出截图模式" : "截图模式";
       }
       if (enabled) {
         document.querySelectorAll(".visual-collapse").forEach(box => box.classList.remove("open"));
@@ -3999,6 +4319,57 @@ function classifyDecisionType(build) {
       }
     });
   </script>
+
+
+  <script>
+    function toggleQuickMenu() {
+      const menu = document.getElementById("quickFab");
+      if (!menu) return;
+      const open = !menu.classList.contains("open");
+      menu.classList.toggle("open", open);
+      menu.querySelector(".fab-ball")?.setAttribute("aria-expanded", String(open));
+    }
+
+    function closeQuickMenu() {
+      const menu = document.getElementById("quickFab");
+      if (!menu) return;
+      menu.classList.remove("open");
+      menu.querySelector(".fab-ball")?.setAttribute("aria-expanded", "false");
+    }
+
+    function applyThemeMode(mode) {
+      const dark = mode === "dark";
+      document.body.classList.toggle("dark-mode", dark);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#0b1120" : "#2563eb");
+      try { localStorage.setItem("pc_builder_theme_mode", dark ? "dark" : "light"); } catch (error) {}
+    }
+
+    function toggleThemeMode() {
+      applyThemeMode(document.body.classList.contains("dark-mode") ? "light" : "dark");
+    }
+
+    document.addEventListener("click", (event) => {
+      const menu = document.getElementById("quickFab");
+      if (menu && !menu.contains(event.target)) closeQuickMenu();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeQuickMenu();
+    });
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
+        let savedMode = null;
+        try { savedMode = localStorage.getItem("pc_builder_theme_mode"); } catch (error) {}
+        if (savedMode === "dark") applyThemeMode("dark");
+      });
+    } else {
+      let savedMode = null;
+      try { savedMode = localStorage.getItem("pc_builder_theme_mode"); } catch (error) {}
+      if (savedMode === "dark") applyThemeMode("dark");
+    }
+  </script>
+
 
   <div class="disclaimer-mask" id="aiDisclaimer" role="dialog" aria-modal="true" aria-label="入站提示和免责声明">
     <div class="disclaimer-box">
