@@ -80,8 +80,8 @@ window.PC_BUILDER_PARTS = {
         d4_8: { model: "8GB DDR4 2666/3200 单条（极限办公/过渡）", price: 300 },
         d4_16: { model: "16GB DDR4 3200（8Gx2，金百达/光威/英睿达等）", price: 599 },
         d4_32: { model: "32GB DDR4 3200（16Gx2，当前内存高价期）", price: 1200 },
-        d5_16: { model: "16GB DDR5 6000（8Gx2/入门套条，当前偏贵）", price: 1300 },
-        d5_32: { model: "32GB DDR5 6000（16Gx2，当前高价期）", price: 2400 }
+        d5_16: { model: "16GB DDR5 6000 C30/C32 单条（后续可补同型号 16G）", price: 699 },
+        d5_32: { model: "32GB DDR5 6000 C30/C32（16Gx2，预算够再上）", price: 1399 }
       },
       storage: {
         ssd256: { model: "256GB M.2 NVMe SSD（低预算过渡，后续建议加盘）", price: 269 },

@@ -1,9 +1,9 @@
 {
-  "version": "2.10.9-rc",
-  "name": "used-gpu-selection-actually-affects-results",
-  "built_at": "2026-05-19 16:21:12",
+  "version": "2.12.0-rc",
+  "name": "config-audit-rebalance-x3d-purpose-fix",
+  "built_at": "2026-05-19 18:03:09",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "修复二手显卡选项意义不明显的问题：接受二手时性价比/省钱方案会加入二手显卡对比。"
+  "note": "2000–10000 每 500 元配置合理性总审查：网游补 X3D，修低 U 高显、贵主板吃预算、办公/剪辑用途偏科，并加入桌面 GPU SKU 清洗。"
 }

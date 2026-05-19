@@ -1706,6 +1706,51 @@
       }
     }
 
+  
+    /* v2.11.0 收纳/抽屉关闭态修复：关闭后内容不能被点到 */
+    .visual-collapse:not(.open) .visual-collapse-body,
+    .drawer:not(.open) .drawer-body,
+    .collapse:not(.open) .collapse-body,
+    .accordion:not(.open) .accordion-body,
+    .details-panel:not(.open) .details-body {
+      max-height: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
+    }
+
+    .visual-collapse:not(.open) .visual-collapse-body *,
+    .drawer:not(.open) .drawer-body *,
+    .collapse:not(.open) .collapse-body *,
+    .accordion:not(.open) .accordion-body *,
+    .details-panel:not(.open) .details-body * {
+      pointer-events: none !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+
+    .visual-collapse.open .visual-collapse-body,
+    .drawer.open .drawer-body,
+    .collapse.open .collapse-body,
+    .accordion.open .accordion-body,
+    .details-panel.open .details-body {
+      pointer-events: auto !important;
+      visibility: visible !important;
+    }
+
+    .global-fab-root:not(.open) .global-fab-menu,
+    .global-fab-root:not(.open) .global-fab-menu * {
+      pointer-events: none !important;
+      visibility: hidden !important;
+    }
+
+    .global-fab-root.open .global-fab-menu,
+    .global-fab-root.open .global-fab-menu * {
+      visibility: visible !important;
+    }
+
   </style>
 </head>
 <body>
@@ -1717,7 +1762,8 @@
     <span class="nav-spacer"></span>
     <button class="ai-disclaimer-link" type="button" onclick="showDisclaimer(true)">免责声明</button>
     <span class="nav-current">当前：装机参考表</span>
-  </nav>
+        <a href="./updates.html">更新公告</a>
+    </nav>
 
 
   <aside class="side-ladder left" aria-label="显卡天梯速查">
@@ -1795,7 +1841,7 @@
       <h2>先看懂四个大件</h2>
       <p class="panel-desc">手机端文字太多会累，所以这里用轻量图标做硬件速记，不放真实商品图，避免图片体积和版权问题。</p>
       <div class="icon-guide">
-        <div class="icon-guide-card"><span class="big-icon">🧠</span><strong>CPU</strong>影响多开、网游低帧、剪辑导出和系统响应。</div>
+        <div class="icon-guide-card"><span class="big-icon">⚙️</span><strong>CPU</strong>影响多开、网游低帧、剪辑导出和系统响应。</div>
         <div class="icon-guide-card"><span class="big-icon">🎮</span><strong>显卡</strong>游戏画质和 3A 帧数主要看它，预算别乱花到外观上。</div>
         <div class="icon-guide-card"><span class="big-icon">📦</span><strong>内存</strong>16GB 能用，32GB 更适合多开、剪辑和长期使用。</div>
         <div class="icon-guide-card"><span class="big-icon">💾</span><strong>SSD</strong>容量不够会很烦，游戏多优先 1TB 起步。</div>
@@ -2523,8 +2569,9 @@
         <button class="global-fab-action" type="button" data-action="dark"><span class="ico">🌙</span><span data-dark-label>夜间模式</span></button>
         <a class="global-fab-action" href="./index.html"><span class="ico">🧩</span><span>生成器</span></a>
         <a class="global-fab-action" href="./reference.html"><span class="ico">📊</span><span>参考表</span></a>
-        <a class="global-fab-action" href="./strategy.html"><span class="ico">🧠</span><span>装机策略</span></a>
+        <a class="global-fab-action" href="./strategy.html"><span class="ico">⚙️</span><span>装机策略</span></a>
         <a class="global-fab-action" href="./core-first.html"><span class="ico">🎯</span><span>核心优先</span></a>
+        <a class="global-fab-action" href="./updates.html"><span class="ico">📝</span><span>更新公告</span></a>
       </div>
       <button class="global-top-action" type="button" data-action="top" aria-label="回到顶部"></button>
       <button class="global-fab-main" type="button" aria-label="打开快捷菜单">＋</button>
