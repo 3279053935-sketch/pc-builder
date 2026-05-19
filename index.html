@@ -2629,6 +2629,138 @@
       border-color: #3b82f6 !important;
     }
 
+  
+    /* v2.10.3 快捷小球重叠修复：清掉旧底部按钮，只保留全局小球 */
+    .bottom-actions,
+    .sticky-actions,
+    .page-actions,
+    .quick-actions,
+    .mobile-actions,
+    .floating-actions,
+    .footer-actions,
+    .fixed-actions,
+    .strategy-actions,
+    .hero-actions,
+    .cta-actions,
+    .safe-bottom-actions,
+    .bottom-nav-actions,
+    .screenshot-actions,
+    .share-actions,
+    .legacy-actions,
+    .old-floating-actions,
+    .fab-root:not(.global-fab-root),
+    .quick-fab:not(.global-fab-root),
+    .floating-fab:not(.global-fab-root) {
+      display: none !important;
+      pointer-events: none !important;
+    }
+
+    body {
+      padding-bottom: max(112px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .global-fab-root {
+      right: max(18px, env(safe-area-inset-right)) !important;
+      bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .global-fab-root .global-fab-main {
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    .global-fab-root .global-top-action {
+      position: absolute !important;
+      right: 78px !important;
+      bottom: 9px !important;
+      min-width: 104px !important;
+      min-height: 44px !important;
+      z-index: 1 !important;
+    }
+
+    .global-fab-root .global-fab-menu {
+      right: 0 !important;
+      bottom: 76px !important;
+      z-index: 3 !important;
+    }
+
+    .global-fab-root.open .global-top-action {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateX(8px) !important;
+    }
+
+    @media (max-width: 760px) {
+      .global-fab-root {
+        right: max(16px, env(safe-area-inset-right)) !important;
+        bottom: max(16px, env(safe-area-inset-bottom)) !important;
+      }
+
+      .global-fab-root .global-top-action {
+        right: 74px !important;
+        bottom: 9px !important;
+      }
+
+      .global-fab-root .global-fab-menu {
+        bottom: 74px !important;
+      }
+    }
+
+    body.share-mode .global-fab-root {
+      display: none !important;
+    }
+
+  
+    /* v2.10.4 旧底部按钮已物理删除，只保留全站统一快捷小球 */
+    body {
+      padding-bottom: max(112px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .global-fab-root {
+      right: max(18px, env(safe-area-inset-right)) !important;
+      bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .global-fab-root .global-fab-main {
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    .global-fab-root .global-top-action {
+      position: absolute !important;
+      right: 78px !important;
+      bottom: 9px !important;
+      z-index: 1 !important;
+    }
+
+    .global-fab-root .global-fab-menu {
+      right: 0 !important;
+      bottom: 76px !important;
+      z-index: 3 !important;
+    }
+
+    .global-fab-root.open .global-top-action {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateX(8px) !important;
+    }
+
+    @media (max-width: 760px) {
+      .global-fab-root {
+        right: max(16px, env(safe-area-inset-right)) !important;
+        bottom: max(16px, env(safe-area-inset-bottom)) !important;
+      }
+
+      .global-fab-root .global-top-action {
+        right: 74px !important;
+        bottom: 9px !important;
+      }
+
+      .global-fab-root .global-fab-menu {
+        bottom: 74px !important;
+      }
+    }
+
   </style>
   <meta name="description" content="面向小白的电脑配置生成器，按预算、用途、是否接受二手显卡生成办公、网游、3A、剪辑设计装机参考。" />
   <meta name="theme-color" content="#2563eb" />
@@ -4612,20 +4744,7 @@ function classifyDecisionType(build) {
     }
 
   </script>
-
-  <button class="back-top-float" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ 回顶部</button>
-
-  <div class="fab-menu" id="quickFab">
-    <div class="fab-options" role="menu" aria-label="快捷操作">
-      <button type="button" onclick="toggleShareMode(); closeQuickMenu();" role="menuitem"><span class="fab-icon">📸</span><span class="share-action-label">截图模式</span></button>
-      <button type="button" onclick="toggleThemeMode(); closeQuickMenu();" role="menuitem"><span class="fab-icon">🌙</span><span class="theme-mode-label"></span></button>
-      <a href="./reference.html" role="menuitem"><span class="fab-icon">📊</span><span>参考表</span></a>
-      <a href="./core-first.html" role="menuitem"><span class="fab-icon">🎯</span><span>核心优先</span></a>
-    </div>
-    <button class="fab-ball" type="button" onclick="toggleQuickMenu()" aria-label="展开快捷操作" aria-expanded="false">＋</button>
-  </div>
-
-  <script>
+<script>
 
     function bindEnterToGenerate() {
       ["budget", "purpose", "monitor", "used"].forEach((id) => {
@@ -4649,83 +4768,12 @@ function classifyDecisionType(build) {
   </script>
 
 
-  <script>
-    function setShareMode(enabled) {
-      document.body.classList.toggle("share-mode", enabled);
-      const label = document.querySelector(".share-action-label");
-      if (label) {
-        label.textContent = enabled ? "退出截图模式" : "截图模式";
-      }
-      if (enabled) {
-        document.querySelectorAll(".visual-collapse").forEach(box => box.classList.remove("open"));
-        document.getElementById("result")?.scrollIntoView({ block: "start", behavior: "smooth" });
-      } else {
-        document.querySelectorAll(".visual-collapse").forEach(box => {
-          if (!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches)) box.classList.add("open");
-        });
-      }
-    }
-
-    function toggleShareMode() {
-      setShareMode(!document.body.classList.contains("share-mode"));
-    }
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && document.body.classList.contains("share-mode")) {
-        setShareMode(false);
-      }
-    });
-  </script>
+  
 
 
-  <script>
-    function toggleQuickMenu() {
-      const menu = document.getElementById("quickFab");
-      if (!menu) return;
-      const open = !menu.classList.contains("open");
-      menu.classList.toggle("open", open);
-      menu.querySelector(".fab-ball")?.setAttribute("aria-expanded", String(open));
-    }
 
-    function closeQuickMenu() {
-      const menu = document.getElementById("quickFab");
-      if (!menu) return;
-      menu.classList.remove("open");
-      menu.querySelector(".fab-ball")?.setAttribute("aria-expanded", "false");
-    }
+  
 
-    function applyThemeMode(mode) {
-      const dark = mode === "dark";
-      document.body.classList.toggle("dark-mode", dark);
-      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#0b1120" : "#2563eb");
-      try { localStorage.setItem("pc_builder_theme_mode", dark ? "dark" : "light"); } catch (error) {}
-    }
-
-    function toggleThemeMode() {
-      applyThemeMode(document.body.classList.contains("dark-mode") ? "light" : "dark");
-    }
-
-    document.addEventListener("click", (event) => {
-      const menu = document.getElementById("quickFab");
-      if (menu && !menu.contains(event.target)) closeQuickMenu();
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeQuickMenu();
-    });
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => {
-        let savedMode = null;
-        try { savedMode = localStorage.getItem("pc_builder_theme_mode"); } catch (error) {}
-        if (savedMode === "dark") applyThemeMode("dark");
-      });
-    } else {
-      let savedMode = null;
-      try { savedMode = localStorage.getItem("pc_builder_theme_mode"); } catch (error) {}
-      if (savedMode === "dark") applyThemeMode("dark");
-    }
-  </script>
 
 
   <div class="disclaimer-mask" id="aiDisclaimer" role="dialog" aria-modal="true" aria-label="入站提示和免责声明">

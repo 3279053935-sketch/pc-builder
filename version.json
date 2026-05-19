@@ -1,9 +1,9 @@
 {
-  "version": "2.10.2-rc",
-  "name": "top-button-focus-visual-fix",
-  "built_at": "2026-05-19 08:43:09",
+  "version": "2.10.4-rc",
+  "name": "remove-legacy-floating-buttons",
+  "built_at": "2026-05-19 08:56:21",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "修复移动端点击回顶部后按钮变成纯蓝色、文字消失的问题。"
+  "note": "物理删除旧版回生成器/回顶部/quickFab/floating-nav 按钮与旧 quickFab 脚本，只保留全局快捷小球。"
 }

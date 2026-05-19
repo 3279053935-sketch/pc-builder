@@ -426,17 +426,148 @@
       border-color: #3b82f6 !important;
     }
 
+  
+    /* v2.10.3 快捷小球重叠修复：清掉旧底部按钮，只保留全局小球 */
+    .bottom-actions,
+    .sticky-actions,
+    .page-actions,
+    .quick-actions,
+    .mobile-actions,
+    .floating-actions,
+    .footer-actions,
+    .fixed-actions,
+    .strategy-actions,
+    .hero-actions,
+    .cta-actions,
+    .safe-bottom-actions,
+    .bottom-nav-actions,
+    .screenshot-actions,
+    .share-actions,
+    .legacy-actions,
+    .old-floating-actions,
+    .fab-root:not(.global-fab-root),
+    .quick-fab:not(.global-fab-root),
+    .floating-fab:not(.global-fab-root) {
+      display: none !important;
+      pointer-events: none !important;
+    }
+
+    body {
+      padding-bottom: max(112px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .global-fab-root {
+      right: max(18px, env(safe-area-inset-right)) !important;
+      bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .global-fab-root .global-fab-main {
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    .global-fab-root .global-top-action {
+      position: absolute !important;
+      right: 78px !important;
+      bottom: 9px !important;
+      min-width: 104px !important;
+      min-height: 44px !important;
+      z-index: 1 !important;
+    }
+
+    .global-fab-root .global-fab-menu {
+      right: 0 !important;
+      bottom: 76px !important;
+      z-index: 3 !important;
+    }
+
+    .global-fab-root.open .global-top-action {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateX(8px) !important;
+    }
+
+    @media (max-width: 760px) {
+      .global-fab-root {
+        right: max(16px, env(safe-area-inset-right)) !important;
+        bottom: max(16px, env(safe-area-inset-bottom)) !important;
+      }
+
+      .global-fab-root .global-top-action {
+        right: 74px !important;
+        bottom: 9px !important;
+      }
+
+      .global-fab-root .global-fab-menu {
+        bottom: 74px !important;
+      }
+    }
+
+    body.share-mode .global-fab-root {
+      display: none !important;
+    }
+
+  
+    /* v2.10.4 旧底部按钮已物理删除，只保留全站统一快捷小球 */
+    body {
+      padding-bottom: max(112px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .global-fab-root {
+      right: max(18px, env(safe-area-inset-right)) !important;
+      bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .global-fab-root .global-fab-main {
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    .global-fab-root .global-top-action {
+      position: absolute !important;
+      right: 78px !important;
+      bottom: 9px !important;
+      z-index: 1 !important;
+    }
+
+    .global-fab-root .global-fab-menu {
+      right: 0 !important;
+      bottom: 76px !important;
+      z-index: 3 !important;
+    }
+
+    .global-fab-root.open .global-top-action {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateX(8px) !important;
+    }
+
+    @media (max-width: 760px) {
+      .global-fab-root {
+        right: max(16px, env(safe-area-inset-right)) !important;
+        bottom: max(16px, env(safe-area-inset-bottom)) !important;
+      }
+
+      .global-fab-root .global-top-action {
+        right: 74px !important;
+        bottom: 9px !important;
+      }
+
+      .global-fab-root .global-fab-menu {
+        bottom: 74px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
   <main class="card">
     <span class="tag">404</span>
     <h1>这个页面没找到。</h1>
-    <p>可能是链接写错了，或者部署时没有把 public 文件夹完整上传。先回生成器或打开自检报告看看。</p>
+    <p>可能是链接写错了，或者部署时没有把 public 文件夹完整上传。先回生成器看看。</p>
     <div class="links">
       <a href="./index.html">回生成器</a>
-      <a class="secondary" href="./preflight.html">看自检报告</a>
-      <a class="secondary" href="./reference.html">看参考表</a>
+<a class="secondary" href="./reference.html">看参考表</a>
     </div>
   </main>
 
