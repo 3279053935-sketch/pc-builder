@@ -2935,10 +2935,10 @@
           <label for="used"><span class="step-dot">4</span>是否接受二手显卡？</label>
           <select id="used">
             <option value="不接受">不接受</option>
-            <option value="接受">接受</option>
-            <option value="只接受显卡二手">只接受显卡二手</option>
+            <option value="接受">可以接受，拿一套二手卡作对比</option>
+            <option value="只接受显卡二手">优先二手显卡，其他配件仍按新件</option>
           </select>
-          <div class="note">不接受二手时，会自动避开二手显卡方案。</div>
+          <div class="note">不接受会避开二手卡；可以接受时，性价比/省钱方案会加入二手显卡对比。</div>
         </div>
       </div>
 
@@ -3115,6 +3115,113 @@
       };
     }
 
+
+    function isUsedGpuAllowed(input) {
+      return input && input.used !== "不接受";
+    }
+
+    function isUsedGpuPreferred(input) {
+      return input && input.used === "只接受显卡二手";
+    }
+
+    function chooseUsedGpuPatch(build, input, band) {
+      const purpose = input?.purpose || "";
+      if (purpose !== "网游" && purpose !== "3A游戏") return null;
+      if (!isUsedGpuAllowed(input)) return null;
+      if (buildUsesUsedGpu(build)) return null;
+
+      const name = String(build.name || "");
+      const preferred = isUsedGpuPreferred(input);
+      const isValue = name.includes("性价比");
+      const isSave = name.includes("省钱");
+      if (!isValue && !(preferred && isSave)) return null;
+
+      const platform = getCpuPlatform(build.cpu);
+      const boardMain = platform === "LGA1700" ? (M.b660m || M.b760m) : (M.b550m || M.b450m);
+      const boardBudget = platform === "LGA1700" ? (M.h610m || M.b660m) : (M.b450m || M.a520m);
+
+      if (band >= 6500 && isValue) {
+        return {
+          patch: { gpu: G.rx6800xtUsed, board: boardMain, psu: P.p750 },
+          meta: {
+            confidence: "中",
+            priceVolatility: "高",
+            secondHandRisk: "高",
+            people: "接受二手显卡，想把预算尽量换成显卡性能的人。",
+            reason: "你选择了可以接受二手显卡，所以性价比版会拿二手 RX6800XT 这类高性能卡做对比；性能更强，但验卡和售后更重要。",
+            risk: "二手高功耗卡一定要验机，重点看拆修、温度、噪音、接口、烤机稳定性和卖家售后。"
+          }
+        };
+      }
+
+      if (band >= 5000 && isValue) {
+        return {
+          patch: { gpu: G.rx6800Used, board: boardMain, psu: P.p650 },
+          meta: {
+            confidence: "中",
+            priceVolatility: "高",
+            secondHandRisk: "中",
+            people: "接受二手显卡，想在 5000 档拿到更强游戏性能的人。",
+            reason: "你选择了可以接受二手显卡，所以性价比版会加入二手 RX6800 16G 这种对比方案；它比全新 RX6750GRE 更偏性能和大显存，但需要验卡。",
+            risk: "二手显卡要复核成色、拆修、温度、噪音和剩余保修；不会验卡的人仍建议看稳妥全新版。"
+          }
+        };
+      }
+
+      if (band >= 4000 && isValue) {
+        return {
+          patch: { gpu: G.rx6700xtUsed, board: boardBudget, psu: P.p650 },
+          meta: {
+            confidence: "中",
+            priceVolatility: "高",
+            secondHandRisk: "中",
+            people: "接受二手显卡，想在 4000 档冲更强 1080P/2K 入门表现的人。",
+            reason: "二手 RX6700XT 12G 在 4000 左右有明显性能和显存优势，比只看全新入门卡更有对比意义。",
+            risk: "二手中端卡要看矿卡、拆修、烤机和售后；如果只想省心，还是看稳妥全新版。"
+          }
+        };
+      }
+
+      if (preferred && isSave && band >= 4500) {
+        return {
+          patch: { gpu: G.rx6700xtUsed, board: boardBudget, psu: P.p650 },
+          meta: {
+            confidence: "中",
+            priceVolatility: "高",
+            secondHandRisk: "中",
+            people: "优先二手显卡，想少花钱但保留不错网游性能的人。",
+            reason: "优先二手显卡时，省钱版会用二手 RX6700XT / 同级卡压低总价，把钱留给显示器或后续加 SSD。",
+            risk: "省钱来自二手显卡，省下的钱不是白捡，验卡和售后要自己确认。"
+          }
+        };
+      }
+
+      if (preferred && isSave && band >= 3000) {
+        return {
+          patch: { gpu: G.rx6650xtUsed, board: boardBudget, psu: P.p550 },
+          meta: {
+            confidence: "中",
+            priceVolatility: "高",
+            secondHandRisk: "中",
+            people: "预算不高但优先二手显卡，主要玩 1080P 网游的人。",
+            reason: "二手 RX6650XT 这类卡能把低预算更多换成帧数，但要接受验卡和售后不确定性。",
+            risk: "低价二手卡要警惕翻新、维修和异常温度。"
+          }
+        };
+      }
+
+      return null;
+    }
+
+    function adaptBuildForUsedOpportunity(build, input, band) {
+      const choice = chooseUsedGpuPatch(build, input, band);
+      if (!choice) return build;
+      const parts = { ...build.parts, ...choice.patch };
+      parts.cooler = inferCooler(parts.cpu, parts.gpu);
+      return rebuildWithParts(build, parts, choice.meta);
+    }
+
+
     function buildUsesUsedGpu(build) {
       return String(build?.parts?.gpu?.model || "").includes("二手");
     }
@@ -3188,6 +3295,10 @@
 
       if (input.used === "不接受" && input.budget < 3500 && (input.purpose === "网游" || input.purpose === "3A游戏")) {
         notices.push('<div class="caution-alert">你选择了“不接受二手显卡”，低预算游戏主机会更吃紧。系统会优先给全新显卡思路，但可能牺牲部分性能或略微超出理想预算。</div>');
+      }
+
+      if (isUsedGpuAllowed(input) && (input.purpose === "网游" || input.purpose === "3A游戏")) {
+        notices.push('<div class="caution-alert">已开启二手显卡对比：稳妥版仍偏全新省心，性价比版/省钱版会尝试二手显卡。二手卡只提供参考，下单前一定要验卡和确认售后。</div>');
       }
 
       return notices.join("");
@@ -4064,7 +4175,8 @@
       const noticesHtml = buildNoticeHtml(templateInput);
       const builds = selection.template.builds.map((build, index) => {
         const adjustedBuild = adaptBuildForUsedPreference(build, templateInput, selection.band);
-        const budgetAbsorbedBuild = autoAbsorbBudget(adjustedBuild, templateInput);
+        const usedOpportunityBuild = adaptBuildForUsedOpportunity(adjustedBuild, templateInput, selection.band);
+        const budgetAbsorbedBuild = autoAbsorbBudget(usedOpportunityBuild, templateInput);
         const decorated = decorateBuild({ ...budgetAbsorbedBuild, index }, selection.band, selection.template.label);
         const buildWithBudget = {
           ...decorated,
@@ -4182,12 +4294,14 @@ function classifyDecisionType(build) {
       }
 
       if (type === "性能") {
+        if (buildUsesUsedGpu(build)) return `适合愿意验二手卡的人：用二手显卡换更强性能/显存。`;
         return purpose === "办公学习"
           ? `适合想把预算花在流畅度上的人：优先 CPU、内存和 SSD。`
           : `适合想要更高帧数的人：预算更多压到显卡和性能上。`;
       }
 
       if (type === "省钱") {
+        if (buildUsesUsedGpu(build)) return `适合愿意验二手卡、想少花钱保留游戏性能的人。`;
         return `适合不想花满预算的人：能用但会保留一些后续升级空间。`;
       }
 
@@ -4315,7 +4429,7 @@ function classifyDecisionType(build) {
       }
 
       if (buildUsesUsedGpu(build)) {
-        risk += input.used === "可接受" ? 1.5 : 4;
+        risk += isUsedGpuAllowed(input) ? 1.5 : 4;
       }
 
       return Math.max(0, risk);
@@ -4376,7 +4490,7 @@ function classifyDecisionType(build) {
       if (build.confidence === "高") score += 5;
       if (build.confidence === "低") score -= 8;
       if (build.priceVolatility === "高") score -= 6;
-      if (build.secondHandRisk === "高") score -= input.used === "可接受" ? 5 : 18;
+      if (build.secondHandRisk === "高") score -= isUsedGpuAllowed(input) ? 5 : 18;
 
       const gpuText = String(build.gpu || "");
       if (/RTX 5060 8/i.test(gpuText) && !/Ti/i.test(gpuText)) score -= 8;

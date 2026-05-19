@@ -1,9 +1,9 @@
 {
-  "version": "2.10.8-rc",
-  "name": "config-flow-cleanup",
-  "built_at": "2026-05-19 16:02:16",
+  "version": "2.10.9-rc",
+  "name": "used-gpu-selection-actually-affects-results",
+  "built_at": "2026-05-19 16:21:12",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "主页面先显示三张配置卡，再显示三套怎么选；硬件摘要把散热换成内存；配置卡底部说明合并，减少碎框。"
+  "note": "修复二手显卡选项意义不明显的问题：接受二手时性价比/省钱方案会加入二手显卡对比。"
 }
