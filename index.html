@@ -2928,6 +2928,44 @@
   border-color: #fecaca;
 }
 
+
+/* v2.12.8：三套方案回归，桌面端三卡等宽居中，不再出现两卡右侧大空白 */
+.builds,
+.builds-grid,
+.result-builds,
+.build-list,
+#result .builds,
+#result .build-grid {
+  grid-template-columns: repeat(3, minmax(280px, 1fr)) !important;
+  max-width: 1160px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  justify-content: center !important;
+  align-items: start !important;
+}
+@media (max-width: 1040px) {
+  .builds,
+  .builds-grid,
+  .result-builds,
+  .build-list,
+  #result .builds,
+  #result .build-grid {
+    grid-template-columns: repeat(2, minmax(280px, 1fr)) !important;
+    max-width: 760px !important;
+  }
+}
+@media (max-width: 760px) {
+  .builds,
+  .builds-grid,
+  .result-builds,
+  .build-list,
+  #result .builds,
+  #result .build-grid {
+    grid-template-columns: 1fr !important;
+    max-width: 100% !important;
+  }
+}
+
 </style>
   <meta name="description" content="面向小白的电脑配置生成器，按预算、用途、是否接受二手显卡生成办公、网游、3A、剪辑设计装机参考。" />
   <meta name="theme-color" content="#2563eb" />
@@ -3059,13 +3097,13 @@
       <div class="note quick-presets-note">上面的按钮只切用途，不代表最低预算。预算还是按你填的来；太低就会给过渡或风险提醒。</div>
 
       <div class="actions">
-        <button class="primary-generate" type="button" onclick="generateBuilds()">生成两套装机单</button>
+        <button class="primary-generate" type="button" onclick="generateBuilds()">生成三套装机单</button>
         <div class="button-help">生成后会显示：配件价格、这版取舍、钱花到哪了、预算有没有浪费。价格只当参考，下单前仍要复核当天价。</div>
       </div>
     </section>
 
     <section id="result" class="panel">
-      <div class="empty">点击“生成两套配置”后，这里会显示推荐方案和对比方案。</div>
+      <div class="empty">点击“生成三套配置”后，这里会显示推荐方案、均衡方案和取舍方案。</div>
     </section>
 
     <footer class="site-footer">
@@ -4339,9 +4377,9 @@
           patch.psu = P.p650;
           note = "3A 中高预算给显卡上台阶，同时 CPU 不能拖后腿。";
         } else if (budget >= 9000) {
-          patch.cpu = C.i5_13600kf || C.r5_7500f;
-          patch.board = patch.cpu === C.r5_7500f ? M.b650m : M.b760m;
-          patch.ram = patch.cpu === C.r5_7500f ? (R.d5_32 || R.d5_16) : (R.d4_32 || R.d4_16);
+          patch.cpu = C.r7_9700x || C.i5_14600kf || C.i5_13600kf || C.r5_7500f;
+          patch.board = /Ryzen/i.test(patch.cpu?.model || "") ? M.b650m : M.b760m;
+          patch.ram = /Ryzen/i.test(patch.cpu?.model || "") ? (R.d5_32 || R.d5_16) : (R.d4_32 || R.d4_16);
           patch.gpu = budget >= 9800 ? (G.rtx5070 || G.rtx4070super || build.parts?.gpu) : (G.rtx4070super || G.rtx5070 || build.parts?.gpu);
           patch.storage = S.ssd1t;
           patch.psu = P.p750;
@@ -4376,13 +4414,13 @@
       });
     }
 
-    function getTwoPlanDisplayName(build, input, index) {
+    function getThreePlanDisplayName(build, input, index) {
       const purpose = input?.purpose || "";
-      if (purpose === "网游") return index === 0 ? "高帧网游版" : "均衡省心版";
-      if (purpose === "3A游戏") return index === 0 ? "3A均衡高性能版" : "性价比画质版";
-      if (purpose === "剪辑设计") return index === 0 ? "剪辑均衡版" : "预算控制版";
-      if (purpose === "办公学习" || purpose === "家用娱乐") return index === 0 ? "舒适办公版" : "省钱够用版";
-      return index === 0 ? "推荐方案" : "对比方案";
+      if (purpose === "网游") return ["高帧网游版", "均衡省心版", "省钱取舍版"][index] || "网游对比版";
+      if (purpose === "3A游戏") return ["3A画质版", "均衡高性能版", "省钱画质版"][index] || "3A对比版";
+      if (purpose === "剪辑设计") return ["剪辑均衡版", "显存增强版", "预算控制版"][index] || "剪辑对比版";
+      if (purpose === "办公学习" || purpose === "家用娱乐") return ["舒适办公版", "容量优先版", "省钱够用版"][index] || "办公对比版";
+      return ["推荐方案", "对比方案", "省钱方案"][index] || "参考方案";
     }
 
     function pickPrimaryBuildForTwoPlans(builds, input) {
@@ -4443,17 +4481,32 @@
       return scored[0]?.build || rest[0];
     }
 
-    function selectTwoBuildsForDisplay(builds, input) {
-      if (!builds || builds.length <= 2) return builds || [];
+    function selectThreeBuildsForDisplay(builds, input) {
+      if (!builds || builds.length <= 3) return builds || [];
       const primary = pickPrimaryBuildForTwoPlans(builds, input);
       const secondary = pickSecondaryBuildForTwoPlans(builds, input, primary);
-      const picked = [primary, secondary].filter(Boolean);
+      const rest = builds.filter(build => build !== primary && build !== secondary);
+      const budget = Number(input?.budget || 0);
+      const purpose = input?.purpose || "";
+      const thirdScored = rest.map(build => {
+        let score = Number(build.recommendationScore || 0);
+        const cheaper = Math.max(0, (primary?.total || 0) - (build.total || 0));
+        const gpuScore = getBuildGpuScoreSafe(build);
+        if (cheaper >= 500) score += 18;
+        if (purpose === "网游") {
+          if (isX3DCpu(primary?.cpu) !== isX3DCpu(build.cpu)) score += 10;
+          if (/RX 7800 XT|RX 9070|RX 9070 XT/i.test(String(build.gpu || "")) && budget < 8500) score -= 28;
+        }
+        if (purpose === "3A游戏" && gpuScore >= 5000) score += 12;
+        return { build, score };
+      }).sort((a,b)=>b.score-a.score);
+      const picked = [primary, secondary, thirdScored[0]?.build].filter(Boolean);
       const seen = new Set();
       return picked.filter(build => {
         if (seen.has(build)) return false;
         seen.add(build);
         return true;
-      }).slice(0, 2);
+      }).slice(0, 3);
     }
 
 
@@ -4472,6 +4525,8 @@
 
       if (purpose === "网游") {
         if (isX3DCpu(build.cpu)) score += 12;
+        if (/7800X3D|9800X3D/i.test(String(build.cpu || ""))) score += 10;
+        if (/5800X3D/i.test(String(build.cpu || ""))) score -= 22; // 5800X3D 当前价格偏高，不作默认优选
         if (/i5-12600KF|i5-13400F|i5-14400F|Ryzen 5 7500F|Ryzen 5 9600X/i.test(String(build.cpu || ""))) score += 6;
         if (budget >= 6000 && gpuScore >= 6500) score -= 12;
         if (budget >= 6000 && gpuScore < 3700) score -= 15;
@@ -4612,13 +4667,13 @@
       builds.splice(0, builds.length, ...optimizedBuilds);
       assignRecommendationScores(builds, input);
 
-      const selectedBuilds = selectTwoBuildsForDisplay(builds, input);
+      const selectedBuilds = selectThreeBuildsForDisplay(builds, input);
       const onlineFixedBuilds = enforceOnlineGameFinalTier(selectedBuilds, input);
       const finalSelectedBuilds = enforceCreativeFinalTier(onlineFixedBuilds, input);
       builds.splice(0, builds.length, ...finalSelectedBuilds.map((build, index) => ({
         ...build,
         index,
-        name: getTwoPlanDisplayName(build, input, index)
+        name: getThreePlanDisplayName(build, input, index)
       })));
 
       builds.forEach(build => {
@@ -4644,10 +4699,10 @@
 
       result.innerHTML = `
         ${noticesHtml}
-        <div class="share-mode-note">截图模式会隐藏表单、说明、复制按钮和详细折叠内容，只保留两套配置卡片，适合发给朋友看。</div>
+        <div class="share-mode-note">截图模式会隐藏表单、说明、复制按钮和详细折叠内容，只保留三套配置卡片，适合发给朋友看。</div>
         <div class="result-head">
           <div class="result-head-left">
-            <h2>为你生成的两套方案</h2>
+            <h2>为你生成的三套方案</h2>
             <span class="pill">总预算 ${money(input.budget)} · 主机预算 ${money(hostBudget)}</span>
             <span class="pill">二手显卡：${input.used}</span>
             <span class="pill">选用 ${selection.template.label} 模板</span>
@@ -4660,7 +4715,7 @@
         </div>
 
         <div class="share-hint">
-          下面先看两张配置卡；结论和取舍放在卡片后面。
+          下面先看三张配置卡；结论和取舍放在卡片后面。
         </div>
 
         <div class="builds">
@@ -4676,7 +4731,7 @@
 
         <div class="caution-alert">
           <strong>方案策略说明：</strong>
-          两套方案不是按价格硬排：第一套给更适合直接抄的推荐，第二套用于对比取舍。
+          三套方案不是硬凑数量：第一套默认推荐，另外两套用于对比取舍；质量不足会直接标“不推荐”。
         </div>
 
         <div class="caution-alert current-market-alert">
@@ -4884,30 +4939,30 @@ function classifyDecisionType(build) {
       const isSave = name.includes("省钱") || name.includes("对比") || name.includes("性价比");
 
       if (purpose === "网游") {
-        if (budget >= 9800) return isSave ? ["rtx5060ti16", "rtx4070super", "rx7700xt"] : ["rtx4070super", "rtx5060ti16", "rtx5070"];
-        if (budget >= 8500) return isSave ? ["rtx5060ti16", "rtx5060ti8", "rx7700xt"] : ["rtx5060ti16", "rtx4070super", "rtx5060ti8"];
-        if (budget >= 7000) return isSave ? ["rtx5060ti8", "rtx5060", "rtx5060ti16"] : ["rtx5060ti8", "rtx5060ti16", "rtx5060"];
-        if (budget >= 6000) return ["rtx5060ti8", "rtx5060", "rtx4060ti"];
-        return ["rtx5060", "rtx4060", "rx6650xt"];
+        if (budget >= 9000) return isSave ? ["rtx5060ti16", "rtx4070", "rx7700xt"] : ["rtx4070", "rtx4070super", "rtx5060ti16"];
+        if (budget >= 7500) return isSave ? ["rtx5060ti8", "rtx5060", "rx7700xt"] : ["rtx5060ti8", "rtx5060ti16", "rtx4070"];
+        if (budget >= 6500) return ["rtx5060ti8", "rtx5060", "rtx4060ti"];
+        if (budget >= 5500) return ["rtx5060", "rtx4060ti", "rx7600xt"];
+        return ["rtx4060", "rx7600", "rx6650xt"];
       }
 
       if (purpose === "3A游戏") {
-        if (budget >= 9800) return isSave ? ["rx9070", "rtx4070super", "rx7800xt"] : ["rtx5070", "rtx4070super", "rx9070"];
-        if (budget >= 8500) return isSave ? ["rx7800xt", "rtx4070super", "rx7700xt"] : ["rtx4070super", "rx9070", "rtx5060ti16"];
-        if (budget >= 7000) return isSave ? ["rx7700xt", "rtx5060ti16", "rx7800xt"] : ["rtx5060ti16", "rtx4070super", "rx7700xt"];
-        if (budget >= 6000) return ["rtx5060ti8", "rtx5060ti16", "rx7600xt"];
+        if (budget >= 9500) return isSave ? ["rx9070", "rx7800xt", "rtx4070"] : ["rtx5070", "rx9070", "rtx4070super"];
+        if (budget >= 8000) return isSave ? ["rx7800xt", "rx7700xt", "rtx4070"] : ["rx7800xt", "rtx4070", "rtx4070super"];
+        if (budget >= 6500) return isSave ? ["rx7700xt", "rx7800xt", "rtx5060ti8"] : ["rx7700xt", "rtx5060ti8", "rx7800xt"];
+        if (budget >= 5500) return ["rx7600xt", "rtx5060", "rtx4060ti"];
       }
 
       if (purpose === "剪辑设计") {
-        if (budget >= 9000) return ["rtx4070super", "rtx5070", "rtx5060ti16"];
-        if (budget >= 7000) return ["rtx5060ti16", "rtx4070super", "rtx5060ti8"];
+        if (budget >= 9000) return ["rtx4070", "rtx4070super", "rtx5060ti16"];
+        if (budget >= 7000) return ["rtx5060ti16", "rtx5060ti8", "rtx4070"];
         return ["rtx5060ti8", "rtx5060", "rtx4060ti"];
       }
 
-      if (budget >= 9000) return ["rtx4070super", "rtx5070", "rx9070"];
-      if (budget >= 7000) return ["rtx5060ti16", "rtx5060ti8", "rtx4070super"];
-      if (budget >= 6000) return ["rtx5060ti8", "rtx5060", "rtx4060ti"];
-      return ["rtx4060", "rx6650xt", "rtx5060"];
+      if (budget >= 9000) return ["rtx4070", "rtx4070super", "rx9070"];
+      if (budget >= 7000) return ["rtx5060ti8", "rx7700xt", "rtx5060ti16"];
+      if (budget >= 6000) return ["rtx5060ti8", "rtx5060", "rx7600xt"];
+      return ["rtx4060", "rx7600", "rx6650xt"];
     }
 
     function makeHighBudgetCandidateParts(build, input, gpuKey, mode = "balanced") {
@@ -5094,16 +5149,15 @@ function classifyDecisionType(build) {
 
 
     function chooseOnlineGameX3DParts(budget, preferTop = false) {
-      if (budget >= 9800 && preferTop && C.r7_9800x3d) {
+      if (budget >= 9000 && preferTop && C.r7_9800x3d) {
         return { cpu: C.r7_9800x3d, board: M.b650m, ram: R.d5_32 || R.d5_16 };
       }
-      if (budget >= 7000 && C.r7_7800x3d) {
+      // 7800X3D 手查价约 1750，网游价值很高，6500+ 就可以进入主线
+      if (budget >= 6500 && C.r7_7800x3d) {
         return { cpu: C.r7_7800x3d, board: M.b650m, ram: budget >= 9000 ? (R.d5_32 || R.d5_16) : R.d5_16 };
       }
-      if (budget >= 6200 && C.r7_5800x3d) {
-        return { cpu: C.r7_5800x3d, board: M.b550m || M.b450m, ram: R.d4_16 };
-      }
-      if (budget >= 5200 && C.r7_5700x3d) {
+      // 5700X3D 当前价 1799，已经不比 7800X3D 划算，主要留作 AM4 参考
+      if (budget >= 5200 && budget < 6500 && C.r7_5700x3d) {
         return { cpu: C.r7_5700x3d, board: M.b550m || M.b450m, ram: R.d4_16 };
       }
       return null;
@@ -5111,34 +5165,32 @@ function classifyDecisionType(build) {
 
     function chooseOnlineGameCpuTierPatch(budget, index) {
       const main = index === 0;
-      if (budget >= 5800 && budget < 7000) {
-        if (main) {
-          const x3d = chooseOnlineGameX3DParts(budget, false);
-          if (x3d) return { ...x3d, gpu: G.rtx5060ti8 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 };
-        }
-        return { cpu: C.r5_7500f, board: M.a620m || M.b650m, ram: R.d5_16, gpu: G.rtx5060ti8 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 };
+      const second = index === 1;
+
+      if (budget >= 5800 && budget < 6500) {
+        if (main) return { cpu: C.r5_9600x || C.r5_7500f, board: M.b650m || M.a620m, ram: R.d5_16, gpu: G.rtx5060 || G.rtx4060ti, storage: S.ssd1t || S.ssd500, psu: P.p650 };
+        if (second) return { cpu: C.r5_7500f, board: M.a620m || M.b650m, ram: R.d5_16, gpu: G.rtx5060ti8 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 };
+        return { cpu: C.r5_5600, board: M.b550m || M.b450m, ram: R.d4_16, gpu: G.rx7700xt || G.rtx5060, storage: S.ssd500, psu: P.p650 };
       }
-      if (budget >= 7000 && budget < 8500) {
-        if (main) {
-          const x3d = chooseOnlineGameX3DParts(budget, false);
-          if (x3d) return { ...x3d, gpu: G.rtx5060ti8 || G.rtx5060ti16 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 };
-        }
-        return { cpu: C.r5_9600x || C.r5_7500f, board: M.b650m || M.a620m, ram: R.d5_16, gpu: G.rtx5060ti16 || G.rtx5060ti8 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 };
+
+      if (budget >= 6500 && budget < 7500) {
+        if (main) return { cpu: C.r7_7800x3d || C.r5_9600x, board: M.b650m, ram: R.d5_16, gpu: G.rtx4060ti || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 };
+        if (second) return { cpu: C.r5_9600x || C.r5_7500f, board: M.b650m || M.a620m, ram: R.d5_16, gpu: G.rtx5060ti8 || G.rtx5060, storage: S.ssd1t || S.ssd500, psu: P.p650 };
+        return { cpu: C.r5_7500f, board: M.a620m || M.b650m, ram: R.d5_16, gpu: G.rx7700xt || G.rtx5060ti8, storage: S.ssd1t || S.ssd500, psu: P.p650 };
       }
-      if (budget >= 8500 && budget < 9800) {
-        if (main) {
-          const x3d = chooseOnlineGameX3DParts(budget, false);
-          if (x3d) return { ...x3d, gpu: G.rtx5060ti16 || G.rtx4070super || G.rtx5060ti8, storage: S.ssd1t, psu: P.p650 };
-        }
-        return { cpu: C.r5_9600x || C.r5_7500f, board: M.b650m, ram: R.d5_16, gpu: G.rtx4070super || G.rtx5060ti16, storage: S.ssd1t, psu: P.p650 };
+
+      if (budget >= 7500 && budget < 9000) {
+        if (main) return { cpu: C.r7_7800x3d || C.r5_9600x, board: M.b650m, ram: R.d5_16, gpu: G.rtx5060ti8 || G.rtx5060, storage: S.ssd1t, psu: P.p650 };
+        if (second) return { cpu: C.r5_9600x || C.r5_7500f, board: M.b650m, ram: R.d5_16, gpu: G.rtx5060ti16 || G.rtx4070 || G.rtx5060ti8, storage: S.ssd1t, psu: P.p650 };
+        return { cpu: C.r5_7500f, board: M.a620m || M.b650m, ram: R.d5_16, gpu: G.rx7700xt || G.rtx5060ti8, storage: S.ssd1t, psu: P.p650 };
       }
-      if (budget >= 9800) {
-        if (main) {
-          const x3d = chooseOnlineGameX3DParts(budget, true);
-          if (x3d) return { ...x3d, gpu: G.rtx4070super || G.rtx5060ti16, storage: S.ssd1t, psu: P.p650 };
-        }
-        return { cpu: C.r7_7800x3d || C.r5_9600x, board: M.b650m, ram: R.d5_32 || R.d5_16, gpu: G.rtx5060ti16 || G.rtx4070super, storage: S.ssd1t, psu: P.p650 };
+
+      if (budget >= 9000) {
+        if (main) return { cpu: C.r7_9800x3d || C.r7_7800x3d, board: M.b650m, ram: budget >= 10000 ? (R.d5_32 || R.d5_16) : R.d5_16, gpu: G.rtx4070 || G.rtx5060ti16, storage: S.ssd1t, psu: P.p650 };
+        if (second) return { cpu: C.r7_7800x3d || C.r5_9600x, board: M.b650m, ram: R.d5_16, gpu: G.rtx4070super || G.rtx4070 || G.rtx5060ti16, storage: S.ssd1t, psu: P.p650 };
+        return { cpu: C.r5_9600x || C.r5_7500f, board: M.b650m, ram: R.d5_16, gpu: G.rtx5060ti16 || G.rtx4070, storage: S.ssd1t, psu: P.p650 };
       }
+
       return null;
     }
 
@@ -5608,7 +5660,7 @@ function classifyDecisionType(build) {
 
       const pickTotal = aboutMoney(pick.totalWithMonitor || pick.total);
       const list = builds.map((build, index) => {
-        const type = index === 0 ? "推荐" : "对比";
+        const type = index === 0 ? "推荐" : (index === 1 ? "对比" : "取舍");
         const total = aboutMoney(build.totalWithMonitor || build.total);
         return `
           <li>
@@ -5619,19 +5671,19 @@ function classifyDecisionType(build) {
       }).join("");
 
       return `
-        <section class="decision-panel" aria-label="两套方案选择建议">
-          <h3>看完配置后：两套怎么选</h3>
+        <section class="decision-panel" aria-label="三套方案选择建议">
+          <h3>看完配置后：三套怎么选</h3>
           <div class="decision-main">
             <div class="decision-pick">
               <strong>默认更推荐：${pick.name} · ${pickTotal}</strong>
               ${getDecisionOneLine(pick, input)}
-              <br>第一套适合直接参考，第二套用来对比取舍；不再硬凑第三套，避免信息太杂。
+              <br>第一套适合直接参考；另外两套用来对比取舍，质量不足会直接标“不推荐”。
             </div>
             <ul class="decision-list">${list}</ul>
           </div>
           <div class="decision-jump-row">
             ${builds.map((build, index) => {
-              const schemeClass = index === 0 ? "scheme-safe" : "scheme-value";
+              const schemeClass = index === 0 ? "scheme-safe" : (index === 1 ? "scheme-value" : "scheme-save");
               return `<button type="button" class="jump-build-btn ${schemeClass}" onclick="document.querySelectorAll('.build')[${index}]?.scrollIntoView({block:'start',behavior:'smooth'})">回看${build.name}配置</button>`;
             }).join("")}
           </div>
@@ -5642,8 +5694,9 @@ function classifyDecisionType(build) {
     function scoreBadgeText(build) {
       const score = Number(build.recommendationScore);
       if (!Number.isFinite(score)) return "--";
-      if (score < 60) return "需加预算";
-      return `${score} 分`;
+      const over = build?.budgetFit?.level === "over";
+      if (over && score < 60) return "需加预算";
+      return `${Math.max(60, Math.round(score))} 分`;
     }
 
 

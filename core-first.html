@@ -1373,9 +1373,9 @@
       ["i5_14600kf", "Intel Core i5-14600KF", C.i5_14600kf, "中高端"],
       ["r5_7500f", "AMD Ryzen 5 7500F", C.r5_7500f, "AM5 新平台"],
       ["r5_7600", "AMD Ryzen 5 7600", C.r5_7600, "AM5 带核显"],
-      ["r5_9600x", "AMD Ryzen 5 9600X", C.r5_9600x, "高预算 AM5"],
+      ["r5_9600x", "AMD Ryzen 5 9600X", C.r5_9600x, "AM5 性价比"],
       ["r7_7700", "AMD Ryzen 7 7700", C.r7_7700, "8 核均衡"],
-      ["r7_7800x3d", "AMD Ryzen 7 7800X3D", C.r7_7800x3d, "游戏强"],
+      ["r7_7800x3d", "AMD Ryzen 7 7800X3D", C.r7_7800x3d, "高刷网游强"],
       ["r7_9700x", "AMD Ryzen 7 9700X", C.r7_9700x, "新 8 核"],
       ["r7_9800x3d", "AMD Ryzen 7 9800X3D", C.r7_9800x3d, "高端游戏"],
       ["i7_13700kf", "Intel Core i7-13700KF", C.i7_13700kf, "高多核"],
@@ -1402,7 +1402,7 @@
       ["rtx5060ti8", "RTX 5060 Ti 8G", G.rtx5060ti8, "差价小时优先", false],
       ["rtx5060ti16", "RTX 5060 Ti 16G", G.rtx5060ti16, "大显存", false],
       ["rx7700xt", "RX 7700 XT 12G", G.rx7700xt, "2K 入门/中端", false],
-      ["rx7800xt", "RX 7800 XT 16G", G.rx7800xt, "2K 性能", false],
+      ["rx7800xt", "RX 7800 XT 16G", G.rx7800xt, "3A 性价比", false],
       ["rtx4070", "RTX 4070 12G", G.rtx4070, "2K N 卡", false],
       ["rtx4070super", "RTX 4070 SUPER 12G", G.rtx4070super, "2K 甜点", false],
       ["rtx4070ti", "RTX 4070 Ti 12G", G.rtx4070ti, "性能强/显存谨慎", false],
@@ -1610,9 +1610,9 @@
       const seeds = [];
 
       if (purpose === "办公学习") {
-        seeds.push(["i3_12100f", "igpu", "核显办公", "不硬塞独显，把钱留给内存和 SSD"]);
-        seeds.push(["r5_5500", usedOk ? "rx580Used" : "rx6600New", "轻娱乐", usedOk ? "低预算二手独显过渡" : "全新入门独显"]);
-        seeds.push(["i5_13400f", "igpu", "多开办公", "CPU 优先，适合多任务"]);
+        seeds.push(["i3_12100", "igpu", "核显办公", "不硬塞独显，把钱留给内存和 SSD"]);
+        seeds.push(["r5_5600g", "igpu", "舒适核显", "轻娱乐和办公都更舒服"]);
+        seeds.push(["i5_13400f", usedOk ? "rx6600Used" : "igpu", "多开办公", "CPU 优先，独显不是办公刚需"]);
         return seeds;
       }
 
@@ -1624,36 +1624,58 @@
       }
 
       if (b < 4000) {
-        seeds.push(["r5_5500", "rx6600New", "全新入门", "1080P 网游入门更稳"]);
-        seeds.push(["r5_5500", "rx6650xt", "显卡优先", "帧数更好，但基础件会紧"]);
-        seeds.push(["r5_5600", usedOk ? "rx6600Used" : "rx6600New", "CPU 稳一点", "适合 CS2/网游低帧"]);
+        seeds.push(["r5_5500", "rx7600", "全新入门", "RX7600 手查价较低，1080P 网游更稳"]);
+        seeds.push(["r5_5600", "rx6650xt", "CPU 稳一点", "适合 CS2/网游低帧"]);
+        seeds.push(["r5_5500", usedOk ? "rx6600Used" : "rx6600New", "省钱够用", "低预算别硬上贵平台"]);
         return seeds;
       }
 
       if (b < 5500) {
-        seeds.push(["i5_12400f", "rtx5060", "全新 N 卡", "DLSS/低功耗/驱动生态"]);
-        seeds.push(["r5_5600", "rx6750gre", "显卡更强", "更偏 1080P 高画质/2K 入门"]);
-        seeds.push(["r5_5600", "rx6650xt", "稳妥省钱", "预算留给 SSD/电源"]);
+        seeds.push(["r5_5600", "rx6750gre", "网游性价比", "RX6750GRE 价格低时比 4060 更适合游戏"]);
+        seeds.push(["i5_13400f", "rtx4060ti", "N 卡省心", "看重 DLSS/低功耗可选"]);
+        seeds.push(["r5_7500f", "rx7600", "AM5 入门", "7500F 手查价很香，平台更新"]);
         return seeds;
       }
 
       if (b < 7200) {
-        seeds.push(["r5_5600", "rx7700xt", "显卡优先", "AM4 压平台但不硬拉到 7800XT"]);
-        seeds.push(["r5_7500f", "rx6750gre", "AM5 均衡", "平台更新，显卡略保守"]);
-        seeds.push(["i5_12400f", "rx9060xt16", "大显存新卡", "16G 显存，价格要复核"]);
+        if (purpose === "网游") {
+          seeds.push(["r7_7800x3d", "rtx4060ti", "X3D 高刷", "7800X3D 手查价低，网游优先级很高"]);
+          seeds.push(["r5_9600x", "rtx5060ti8", "均衡省心", "9600X 价格合理，适合网游和轻 3A"]);
+          seeds.push(["r5_7500f", "rx7700xt", "省钱取舍", "显卡更强，但网游不一定比 X3D 更稳"]);
+        } else {
+          seeds.push(["r5_7500f", "rx7700xt", "3A 性价比", "RX7700XT 手查价很强"]);
+          seeds.push(["r5_9600x", "rtx5060ti8", "N 卡均衡", "更看重 DLSS/创作生态"]);
+          seeds.push(["r5_5600", "rx7800xt", "压平台画质", "显卡很强但平台偏旧，需人工复核"]);
+        }
         return seeds;
       }
 
       if (b < 9000) {
-        seeds.push(["r5_7500f", "rx7800xt", "AM5 + 2K", "更像 7000+ 主流思路"]);
-        seeds.push(["r5_7500f", "rx9070gre", "显卡上探", "价格波动大，适合复核当天价"]);
-        seeds.push(["r5_9600x", "rx7800xt", "CPU 更强", "网游低帧和平台更舒服"]);
+        if (purpose === "网游") {
+          seeds.push(["r7_7800x3d", "rtx5060ti8", "X3D 高刷", "网游优先 CPU/缓存/1% Low"]);
+          seeds.push(["r5_9600x", "rtx5060ti16", "均衡省心", "兼顾显存和平台"]);
+          seeds.push(["r5_7500f", "rx7800xt", "3A 取舍", "更偏 3A 画质，不是纯网游首选"]);
+        } else {
+          seeds.push(["r5_9600x", "rx7800xt", "3A 画质", "RX7800XT 手查价下降，3A 很有性价比"]);
+          seeds.push(["r7_9700x", "rtx4070", "均衡 N 卡", "CPU 和 N 卡生态更均衡"]);
+          seeds.push(["r5_7500f", "rx7700xt", "省钱画质", "预算更稳，后续可补内存"]);
+        }
         return seeds;
       }
 
-      seeds.push(["r5_9600x", "rx9070", "高预算均衡", "平台、显卡都上一个台阶"]);
-      seeds.push(["r7_7700", "rtx4070super", "N 卡 2K", "兼顾游戏和创作"]);
-      seeds.push(["r5_9600x", "rtx5070", "高预算 N 卡", "适合偏 N 卡生态"]);
+      if (purpose === "网游") {
+        seeds.push(["r7_9800x3d", "rtx4070", "顶级网游", "10000 档可压进预算，不该再显示需加预算"]);
+        seeds.push(["r7_7800x3d", "rtx4070super", "高刷省心", "CPU 强，显卡也够 2K 网游"]);
+        seeds.push(["r5_9600x", "rtx5060ti16", "省钱均衡", "不追极限高刷时更省钱"]);
+      } else if (purpose === "剪辑设计") {
+        seeds.push(["i7_14700kf", "rtx5060ti16", "剪辑多核", "多核、N 卡和显存优先"]);
+        seeds.push(["r7_9700x", "rtx4070", "AM5 均衡", "新平台兼顾游戏和创作"]);
+        seeds.push(["i5_14600kf", "rtx4070", "预算控制", "比 i7 更省，性能仍够强"]);
+      } else {
+        seeds.push(["r7_9700x", "rx9070", "3A 均衡", "CPU 和显卡都上一个台阶"]);
+        seeds.push(["r5_9600x", "rx7800xt", "3A 性价比", "RX7800XT 手查价低，画质性价比高"]);
+        seeds.push(["r7_9700x", "rtx5070", "高预算 N 卡", "适合偏 N 卡生态"]);
+      }
       return seeds;
     }
 

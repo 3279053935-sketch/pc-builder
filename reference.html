@@ -2201,6 +2201,70 @@
       renderLadder("mobileCpuLadder", cpuLadder);
     }
 
+    
+    // v2.12.8：预算档位表按手查价格基准刷新，避免继续展示旧的 12400F/5600 低U高显思路。
+    const referenceBuildOverrides = {
+      game: {
+        6000: { label: "6000 网游", builds: [
+          { name: "高帧网游版", total: 6150, cpu: "R5 9600X", gpu: "RTX 5060 8G", board: "B650M / A620M", ram: "16GB DDR5 6000", storage: "1TB NVMe", psu: "650W" },
+          { name: "均衡省心版", total: 6200, cpu: "R5 7500F", gpu: "RTX 5060 Ti 8G", board: "A620M / B650M", ram: "16GB DDR5 6000", storage: "1TB NVMe", psu: "650W" },
+          { name: "省钱取舍版", total: 5700, cpu: "R5 5600", gpu: "RX 7700 XT 12G", board: "B550M", ram: "16GB DDR4", storage: "512GB/1TB NVMe", psu: "650W" }
+        ]},
+        6500: { label: "6500 高刷网游", builds: [
+          { name: "高帧网游版", total: 6700, cpu: "R7 7800X3D", gpu: "RTX 4060 Ti / RTX 5060", board: "B650M", ram: "16GB DDR5 6000", storage: "1TB NVMe", psu: "650W" },
+          { name: "均衡省心版", total: 6600, cpu: "R5 9600X", gpu: "RTX 5060 Ti 8G", board: "B650M", ram: "16GB DDR5 6000", storage: "1TB NVMe", psu: "650W" },
+          { name: "省钱取舍版", total: 6000, cpu: "R5 7500F", gpu: "RX 7700 XT 12G", board: "A620M / B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" }
+        ]},
+        7000: { label: "7000 高刷网游", builds: [
+          { name: "高帧网游版", total: 7000, cpu: "R7 7800X3D", gpu: "RTX 5060 / 4060 Ti", board: "B650M", ram: "16GB DDR5 6000", storage: "1TB NVMe", psu: "650W" },
+          { name: "均衡省心版", total: 7200, cpu: "R5 9600X", gpu: "RTX 5060 Ti 8G", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "省钱取舍版", total: 6200, cpu: "R5 7500F", gpu: "RX 7700 XT 12G", board: "A620M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" }
+        ]},
+        8000: { label: "8000 网游", builds: [
+          { name: "高帧网游版", total: 7600, cpu: "R7 7800X3D", gpu: "RTX 5060 Ti 8G", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "均衡省心版", total: 8200, cpu: "R5 9600X", gpu: "RTX 5060 Ti 16G / RTX 4070", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "省钱取舍版", total: 6800, cpu: "R5 7500F", gpu: "RX 7700 XT", board: "A620M/B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" }
+        ]},
+        9000: { label: "9000 高刷网游", builds: [
+          { name: "高帧网游版", total: 8950, cpu: "R7 9800X3D", gpu: "RTX 4070 12G", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "均衡省心版", total: 9150, cpu: "R7 7800X3D", gpu: "RTX 4070 Super", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "省钱取舍版", total: 8200, cpu: "R5 9600X", gpu: "RTX 5060 Ti 16G", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" }
+        ]},
+        10000: { label: "10000 高刷网游", builds: [
+          { name: "高帧网游版", total: 9650, cpu: "R7 9800X3D", gpu: "RTX 4070 12G", board: "B650M", ram: "32GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "均衡省心版", total: 9450, cpu: "R7 7800X3D", gpu: "RTX 4070 Super", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "省钱取舍版", total: 8700, cpu: "R5 9600X", gpu: "RTX 4070 / RTX 5060 Ti 16G", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" }
+        ]}
+      },
+      game3a: {
+        6500: { label: "6500 3A 入门", builds: [
+          { name: "3A画质版", total: 6500, cpu: "R5 7500F", gpu: "RX 7700 XT 12G", board: "A620M/B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "均衡高性能版", total: 6800, cpu: "R5 9600X", gpu: "RTX 5060 Ti 8G", board: "B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "650W" },
+          { name: "省钱画质版", total: 5900, cpu: "R5 5600", gpu: "RX 7700 XT", board: "B550M", ram: "16GB DDR4", storage: "512GB/1TB", psu: "650W" }
+        ]},
+        7000: { label: "7000 3A", builds: [
+          { name: "3A画质版", total: 7050, cpu: "R5 7500F", gpu: "RX 7800 XT 16G", board: "A620M/B650M", ram: "16GB DDR5", storage: "1TB NVMe", psu: "750W" },
+          { name: "均衡高性能版", total: 7000, cpu: "R5 9600X", gpu: "RX 7700 XT / RTX 5060 Ti", board: "B650M", ram: "16GB DDR5", storage: "1TB", psu: "650W" },
+          { name: "省钱画质版", total: 6400, cpu: "R5 7500F", gpu: "RX 7700 XT", board: "A620M", ram: "16GB DDR5", storage: "1TB", psu: "650W" }
+        ]},
+        8000: { label: "8000 3A", builds: [
+          { name: "3A画质版", total: 7900, cpu: "R5 9600X", gpu: "RX 7800 XT 16G", board: "B650M", ram: "16GB DDR5", storage: "1TB", psu: "750W" },
+          { name: "均衡高性能版", total: 8200, cpu: "R7 9700X", gpu: "RTX 4070 12G", board: "B650M", ram: "16GB DDR5", storage: "1TB", psu: "650W" },
+          { name: "省钱画质版", total: 7100, cpu: "R5 7500F", gpu: "RX 7800 XT", board: "A620M", ram: "16GB DDR5", storage: "1TB", psu: "750W" }
+        ]},
+        9000: { label: "9000 3A", builds: [
+          { name: "3A画质版", total: 9100, cpu: "R7 9700X", gpu: "RX 9070 16G", board: "B650M", ram: "16GB/32GB DDR5", storage: "1TB", psu: "750W" },
+          { name: "均衡高性能版", total: 9000, cpu: "R5 9600X", gpu: "RTX 4070 Super", board: "B650M", ram: "16GB DDR5", storage: "1TB", psu: "650W" },
+          { name: "省钱画质版", total: 8000, cpu: "R5 7500F", gpu: "RX 7800 XT", board: "A620M/B650M", ram: "16GB DDR5", storage: "1TB", psu: "750W" }
+        ]},
+        10000: { label: "10000 3A", builds: [
+          { name: "3A画质版", total: 9950, cpu: "R7 9700X", gpu: "RTX 5070 / RX 9070", board: "B650M", ram: "32GB DDR5", storage: "1TB", psu: "750W" },
+          { name: "均衡高性能版", total: 9300, cpu: "R5 9600X", gpu: "RX 9070", board: "B650M", ram: "16GB DDR5", storage: "1TB", psu: "750W" },
+          { name: "省钱画质版", total: 8500, cpu: "R5 7500F", gpu: "RX 7800 XT / RTX 4070", board: "A620M/B650M", ram: "16GB DDR5", storage: "1TB", psu: "750W" }
+        ]}
+      }
+    };
+
     const purposeMap = [
       ["game", "网游"],
       ["game3a", "3A游戏"],
@@ -2224,7 +2288,7 @@
     }
 
     function renderBudgetTabs() {
-      const allBands = Object.keys(templates[currentPurpose]).map(Number).sort((a,b) => a-b);
+      const allBands = Object.keys(referenceBuildOverrides[currentPurpose] || templates[currentPurpose]).map(Number).sort((a,b) => a-b);
       const filter = referenceBandFilter[currentPurpose] || allBands;
       const bands = allBands.filter(band => filter.includes(band));
       if (!bands.includes(currentBudget)) currentBudget = bands[Math.min(2, bands.length - 1)];
@@ -2235,7 +2299,7 @@
 
     function setPurpose(key) {
       currentPurpose = key;
-      const allBands = Object.keys(templates[currentPurpose]).map(Number).sort((a,b) => a-b);
+      const allBands = Object.keys(referenceBuildOverrides[currentPurpose] || templates[currentPurpose]).map(Number).sort((a,b) => a-b);
       const filter = referenceBandFilter[currentPurpose] || allBands;
       const bands = allBands.filter(band => filter.includes(band));
       currentBudget = bands.includes(currentBudget) ? currentBudget : bands[Math.min(2, bands.length - 1)];
@@ -2248,7 +2312,7 @@
     }
 
     function renderBuildCards() {
-      const template = templates[currentPurpose][currentBudget];
+      const template = (referenceBuildOverrides[currentPurpose] && referenceBuildOverrides[currentPurpose][currentBudget]) || templates[currentPurpose][currentBudget];
       document.getElementById("buildCards").innerHTML = template.builds.map((build) => {
         const rows = [
           ["CPU", build.cpu],
@@ -2278,8 +2342,8 @@
 
     function getBandNote(purpose, budget) {
       if (purpose === "office") return `${budget} 办公学习：优先 CPU、内存、SSD 和安静稳定，不建议为了花满预算硬塞独显。`;
-      if (purpose === "game3a") return `${budget} 3A：先看显卡和电源，SSD 不能太小，CPU 够用就行。`;
-      return `${budget} 网游：先保证显卡和帧率稳定，再看 SSD、内存和平台。预算不够时别把钱花在外观上。`;
+      if (purpose === "game3a") return `${budget} 3A：CPU 和显卡要一起均衡，RX7700XT / RX7800XT 降价后很有参考价值，N 卡则看 DLSS/创作生态。`;
+      return `${budget} 网游：CPU、缓存和 1% Low 更重要，显卡保持均衡即可；7000+ 可以认真看 7800X3D，10000 档看 9800X3D。`;
     }
 
     const budgetPerfData = {
@@ -2355,9 +2419,9 @@
       },
       b6000: {
         label: "6000 性能",
-        cpu: "R5 5600",
-        gpu: "RX 7800 XT",
-        note: "把预算明显转成显卡性能，适合 1080P 高画质和 2K 入门。",
+        cpu: "R5 9600X / R5 7500F",
+        gpu: "RTX 5060 Ti / RX 7700 XT",
+        note: "手查价格后，6000 档更适合高 CPU + 均衡显卡，不建议继续 R5 5600 硬顶大卡。",
         rows: [
           ["无畏契约", "1080P 高 / 竞技", "300–430", "210–300", "多数时候 CPU 先到瓶颈，显卡不是唯一决定因素"],
           ["CS2", "1080P 中低 / 竞技", "170–255", "110–165", "R5 5600 会先卡上限，显卡再强也不一定上 300+"],
@@ -2369,9 +2433,9 @@
       },
       b7000: {
         label: "7000 2K",
-        cpu: "R5 7500F",
-        gpu: "RX 7800 XT",
-        note: "7000 档开始转向 AM5 平台，不再用 R5 5600 代表主流高预算搭配。",
+        cpu: "R7 7800X3D / R5 9600X",
+        gpu: "RTX 5060 Ti / RX 7700 XT",
+        note: "7800X3D 手查约 1750，7000 网游已经有意义；3A 则可以看 RX7700XT/RX7800XT。",
         rows: [
           ["无畏契约", "1080P 高 / 竞技", "340–480", "240–330", "CPU 平台更好，低帧更稳"],
           ["CS2", "1080P 中低 / 竞技", "220–330", "145–220", "AM5 平台低帧更稳，但仍受地图/烟雾影响"],
