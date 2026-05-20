@@ -3015,8 +3015,9 @@
     }
 
   </style>
+  <link rel="stylesheet" href="./rebirth-site.css" />
 </head>
-<body>
+<body class="updates-page">
   <nav class="site-nav">
     <a href="./index.html">生成器</a>
     <a href="./reference.html">参考表</a>
@@ -3051,6 +3052,36 @@
         
         
         
+
+        <article class="update-card">
+          <div class="update-meta"><span class="update-version">v2.12.19</span><span class="update-date">2026.05.21</span></div>
+          <h2>装机策略和核心优先对比度修复</h2>
+          <ul>
+            <li>修复装机策略页主板 AMD / Intel 卡片仍残留白底、白字难读的问题</li>
+            <li>修复核心优先结果区“核心优先结果 / 自动补齐配置”头部白底白字的问题</li>
+            <li>重新整理核心优先结果表格、预算标签、进度条和提示卡片的深色主题样式</li>
+            <li>继续保留原配置逻辑，只做页面观感和可读性修复</li>
+          </ul>
+        </article>
+        <article class="update-card">
+          <div class="update-meta"><span class="update-version">v2.12.18</span><span class="update-date">2026.05.21</span></div>
+          <h2>参考页和核心优先二次修复</h2>
+          <ul>
+            <li>参考表取消左右固定天梯，改成正文里的硬件天梯速查</li>
+            <li>修复深色主题下白色卡片文字发白、难以阅读的问题</li>
+            <li>优化核心优先计算器布局、推荐卡片和手动指定入口</li>
+          </ul>
+        </article>
+        <article class="update-card">
+          <div class="update-meta"><span class="update-version">v2.12.17</span><span class="update-date">2026.05.21</span></div>
+          <h2>Rebirth 全站视觉合并</h2>
+          <ul>
+            <li>首页套入 Rebirth 新设计，同时保留原来的配置生成逻辑</li>
+            <li>移除首页无实际用途的预算硬件预览面板，表单和推荐配置更靠前</li>
+            <li>参考表、装机策略、核心优先、免责声明和 404 统一到深色视觉系统</li>
+            <li>更新公告改成最近更新 + 历史版本折叠，避免一次显示太长</li>
+          </ul>
+        </article>
         <article class="update-card">
           <div class="update-meta"><span class="update-version">v2.12.16</span><span class="update-date">2026.05.21</span></div>
           <h2>精简用途和入口</h2>
@@ -3284,5 +3315,6 @@
   }
 })();
 </script>
+  <script src="./rebirth-ui.js"></script>
 </body>
 </html>
