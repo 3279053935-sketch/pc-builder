@@ -1,11 +1,9 @@
 {
-  "version": "2.12.19-rebirth-contrast-repair",
+  "version": "2.12.16-rc",
   "name": "remove-ambiguous-purpose-quickbuttons-copy-fix",
-  "built_at": "2026-05-21 00:00:00",
+  "built_at": "2026-05-20 09:28:00",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "删除容易混淆的用途和用途快捷按钮，修正各用途替代文案，优化手机端表单布局。",
-  "date": "2026-05-21",
-  "notes": "修复装机策略主板卡片和核心优先结果区残留白底白字；更新公告续到 v2.12.19；未改配置核心逻辑。"
+  "note": "删除容易混淆的用途和用途快捷按钮，修正各用途替代文案，优化手机端表单布局。"
 }
