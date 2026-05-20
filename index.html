@@ -326,27 +326,7 @@
       font-size: 13px;
       line-height: 1.6;
     }
-
-    .quick-presets {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .quick-presets button {
-      width: auto;
-      min-height: 36px;
-      padding: 0 12px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #3730a3;
-      box-shadow: none;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .actions {
+.actions {
       display: grid;
       grid-template-columns: minmax(210px, 320px) 1fr;
       gap: 12px;
@@ -717,18 +697,7 @@
       .actions button {
         width: 100%;
       }
-
-      .quick-presets {
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        padding-bottom: 4px;
-      }
-
-      .quick-presets button {
-        flex: 0 0 auto;
-      }
-
-      .result-head {
+.result-head {
         display: block;
       }
 
@@ -885,14 +854,7 @@
     .build:nth-child(3) .strategy-box strong {
       color: #c2410c;
     }
-
-  
-    .quick-presets-note {
-      margin-top: 8px;
-    }
-
-  
-    .top-links {
+.top-links {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -1057,22 +1019,7 @@
       .page {
         overflow-x: hidden;
       }
-
-      .quick-presets {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        overflow: visible;
-        flex-wrap: initial;
-        padding-bottom: 0;
-      }
-
-      .quick-presets button {
-        width: 100%;
-        min-width: 0;
-        white-space: normal;
-      }
-
-      .result-actions {
+.result-actions {
         grid-template-columns: 1fr;
       }
 
@@ -1082,15 +1029,7 @@
         white-space: normal;
       }
     }
-
-    @media (max-width: 420px) {
-      .quick-presets {
-        grid-template-columns: 1fr;
-      }
-    }
-
-  
-    .back-top-float {
+.back-top-float {
       position: fixed;
       right: 18px;
       bottom: 18px;
@@ -2217,7 +2156,6 @@
     body.dark-mode .notice,
     body.dark-mode .recommendation-hint,
     body.dark-mode .detail-panel,
-    body.dark-mode .quick-presets button,
     body.dark-mode .pill,
     body.dark-mode .mini-badge {
       background: rgba(15, 23, 42, 0.88);
@@ -2966,6 +2904,23 @@
   }
 }
 
+
+/* v2.12.15：详情区减负，避免三张卡重复大段提醒 */
+.detail-toggle summary {
+  cursor: pointer;
+}
+.detail-body {
+  display: grid;
+  gap: 10px;
+}
+.detail-body .strategy-box {
+  padding: 12px 14px;
+}
+.detail-body p {
+  margin: 4px 0;
+  line-height: 1.75;
+}
+
 </style>
   <meta name="description" content="面向小白的电脑配置生成器，按预算、用途、是否接受二手显卡生成办公、网游、3A、剪辑设计装机参考。" />
   <meta name="theme-color" content="#2563eb" />
@@ -3060,7 +3015,6 @@
             <option value="3A游戏">3A游戏</option>
             <option value="办公学习">办公学习</option>
             <option value="剪辑设计">剪辑设计</option>
-            <option value="家用娱乐">家用娱乐</option>
           </select>
           <div class="note">不同用途会影响显卡、CPU、内存和硬盘优先级。</div>
         </div>
@@ -3088,14 +3042,6 @@
         </div>
       </div>
 
-      <div class="quick-presets" aria-label="快速切换用途">
-        <button type="button" onclick="applyPurpose('网游')">网游</button>
-        <button type="button" onclick="applyPurpose('3A游戏')">3A游戏</button>
-        <button type="button" onclick="applyPurpose('办公学习')">办公学习</button>
-        <button type="button" onclick="applyPurpose('剪辑设计')">剪辑设计</button>
-      </div>
-      <div class="note quick-presets-note">上面的按钮只切用途，不代表最低预算。预算还是按你填的来；太低就会给过渡或风险提醒。</div>
-
       <div class="actions">
         <button class="primary-generate" type="button" onclick="generateBuilds()">生成三套装机单</button>
         <div class="button-help">生成后会显示：配件价格、这版取舍、钱花到哪了、预算有没有浪费。价格只当参考，下单前仍要复核当天价。</div>
@@ -3116,10 +3062,14 @@
   <script>
     const db = window.PC_BUILDER_PARTS;
 
+    function normalizePurpose(value) {
+      return value === "办公学习" ? "办公学习" : value;
+    }
+
     function getInput() {
       return {
         budget: Number(document.getElementById("budget").value),
-        purpose: document.getElementById("purpose").value,
+        purpose: normalizePurpose(document.getElementById("purpose").value),
         monitor: document.getElementById("monitor").value,
         used: document.getElementById("used").value
       };
@@ -3204,7 +3154,7 @@
     }
 
     function getPurposeFamily(purpose) {
-      if (purpose === "办公学习" || purpose === "家用娱乐") return "office";
+      if (purpose === "办公学习") return "office";
       if (purpose === "网游") return "game";
       if (purpose === "3A游戏") return "game3a";
       if (purpose === "剪辑设计") return "creator";
@@ -3609,12 +3559,12 @@
       else if (gpu.includes("RTX 5060")) points.push("RTX5060：只有差价明显低于 5060Ti 时才更值得考虑。");
       else if (gpu.includes("RX 7800 XT")) points.push("RX7800XT：2K 游戏性能强，但电源和机箱风道要跟上。");
       else if (gpu.includes("RX 6650 XT")) points.push("RX6650XT：1080P 网游性价比卡。");
-      else if (gpu.includes("核显")) points.push("核显：适合办公过渡，不是正经游戏主机。");
+      else if (gpu.includes("核显")) points.push("核显：适合办公学习和临时过渡，不建议当游戏主力。");
 
       if (cpu.includes("7500F")) points.push("R5 7500F：AM5 新平台，后续升级空间更好。");
       else if (cpu.includes("5600") && board.includes("B550")) points.push("R5 5600：AM4 成熟便宜，但高预算不当主流新平台。");
 
-      if (storage.includes("512GB") || storage.includes("256GB")) points.push("硬盘偏小：游戏/资料多，后续优先加 1TB SSD。");
+      if (storage.includes("512GB") || storage.includes("256GB")) points.push("硬盘偏小：资料多就优先 1TB SSD，不够再加硬盘。");
       if (ram.includes("16GB") && (purpose === "剪辑设计" || purpose === "办公学习")) points.push("16GB 可用，但多开/剪辑更建议 32GB。");
 
       return points.slice(0, 3);
@@ -3636,43 +3586,25 @@
 
     function buildPlainTalk(build) {
       const label = String(build.bandLabel || "");
-      const ramPrice = build.parts.ram.price;
-      const storagePrice = build.parts.storage.price;
-      const gpuPrice = build.parts.gpu.price;
-      const cpuPrice = build.parts.cpu.price;
+      const gpuText = String(build.gpu || "");
+      const storageText = String(build.storage || "");
+      const ramText = String(build.ram || "");
       const notes = [];
 
-      if (label.includes("办公")) {
-        if (build.parts.ram.price >= 1000 || build.parts.storage.price >= 1000 || build.parts.cpu.price >= 1200) {
-          notes.push("这套是高预算办公学习思路，重点不是游戏显卡，而是 CPU、内存、硬盘容量和长期流畅度。");
-        } else {
-          notes.push("这套没有把钱往花哨配置上堆，重点是稳定、够用和好上手。");
-        }
-      } else if (String(build.gpu || "").includes("核显")) {
-        notes.push("这套是核显过渡方案，能开机、办公和轻度网游，但不要把它当成正经独显游戏主机。");
-      } else if (label.includes("低预算网游")) {
-        notes.push("这套核心思路是把有限预算尽量用到独显上，让 2500 左右也能有基础游戏性能。");
+      if (label.includes("办公") || gpuText.includes("核显")) {
+        notes.push("这套偏日常和稳定，不是为了游戏显卡堆料。");
       } else if (label.includes("网游")) {
-        notes.push(gpuPrice >= cpuPrice ? "这套主要把钱花在显卡上，适合玩网游。" : "这套会先保证基础流畅，再兼顾网游体验。");
+        notes.push("这套优先帧率稳定和日常好用，显卡按预算控制。");
       } else if (label.includes("3A")) {
-        notes.push("这套会更重视显卡和内存，适合玩 3A 游戏。" );
+        notes.push("这套优先显卡和画质表现，同时避免 CPU 明显拖后腿。");
       } else if (label.includes("剪辑")) {
-        notes.push("这套更看重 CPU、内存和硬盘容量，适合剪辑和设计。" );
+        notes.push("这套优先 N 卡、内存和 SSD，再兼顾 CPU 多核。");
       } else {
-        notes.push("这套是偏均衡的思路，兼顾日常使用和后续升级。" );
+        notes.push("这套走均衡路线，不把预算全部压到单个配件。");
       }
 
-      if (ramPrice >= 650) {
-        notes.push("现在内存价格偏高，所以没有为了 32GB 强行挤掉别的预算。");
-      }
-
-      if (String(build.storage).includes("1TB 普通")) {
-        notes.push("现在 SSD 偏贵，所以这套先用普通 1TB，而不是高端 1TB 盘。");
-      } else if (String(build.storage).includes("500GB")) {
-        notes.push("硬盘是省钱过渡思路，后续游戏多了建议再加 1TB。");
-      } else if (String(build.storage).includes("高性能")) {
-        notes.push("这套用了高性能 SSD，但低预算用户不建议优先这样花钱。");
-      }
+      if (storageText.includes("512GB")) notes.push("512GB 偏过渡，游戏多建议后续加 1TB。");
+      if (/16GB/.test(ramText) && /DDR5/.test(ramText)) notes.push("16GB DDR5 够入门，长期多开可后续补到 32GB。");
 
       return notes.join(" ");
     }
@@ -3981,7 +3913,7 @@
     }
 
     function getPurposePriorityText(purpose) {
-      if (purpose === "办公学习" || purpose === "家用娱乐") {
+      if (purpose === "办公学习") {
         return "办公学习优先 CPU、内存、SSD 和显示器体验，不应该为了花满预算硬上独显。";
       }
       if (purpose === "3A游戏") {
@@ -4058,50 +3990,34 @@
     function getAlternativeAdvice(build, input) {
       const safeInput = input || getInput();
       const text = [build.cpu, build.gpu, build.board, build.ram, build.storage, build.psu, build.case].join(" ");
-      const purpose = safeInput?.purpose || "";
-      const tips = [];
+      const purpose = normalizePurpose(safeInput?.purpose || "");
+
+      if (purpose === "网游") {
+        if (text.includes("核显")) return ["这套只适合过渡和轻网游；想稳定玩网游，建议提高预算上独显。"];
+        if (/RTX 5060 Ti|RTX 5060|RX 7600|RX 7700 XT|RX 7800 XT|RX 9070/.test(text)) return ["预算紧张就换同级低价独显；不建议退到核显。"];
+        return ["网游别把显卡退到核显；优先保留独显，再从品牌和硬盘上省。"];
+      }
+
+      if (purpose === "3A游戏") {
+        if (text.includes("RTX 5070")) return ["RTX5070 适合 2K 3A；如果当天涨价明显，可对比 RX9070 / RX9070XT。"];
+        if (text.includes("RX 9070 XT")) return ["RX9070XT 适合重 3A 画质；更看重 DLSS / CUDA 时再回看 RTX5070。"];
+        if (text.includes("RX 9070")) return ["RX9070 是 3A 性价比路线；同价位可对比 RTX4070 / RTX5070。"];
+        if (text.includes("RX 7800 XT")) return ["RX7800XT 主打 2K 性价比；涨价时优先看 RX7700XT / RX9070。"];
+        if (text.includes("RX 7700 XT")) return ["RX7700XT 更适合省钱 2K 入门；预算够再上 RX7800XT / RX9070。"];
+        return ["3A 优先保留显卡档位；预算紧张时换同级低价型号，不要大幅降显卡。"];
+      }
+
+      if (purpose === "剪辑设计") {
+        if (/RTX 5060 Ti|RTX 4070|RTX 5070/.test(text)) return ["剪辑优先保留 N 卡、内存和 SSD；预算紧张先降外观和机箱。"];
+        return ["剪辑别只看显卡，内存和 SSD 也要留预算。"];
+      }
 
       if (purpose === "办公学习") {
-        tips.push("办公高预算不要硬塞独显：优先 CPU、32GB 内存、1TB/2TB SSD、安静和售后。");
+        if (text.includes("核显")) return ["办公学习可以先用核显；后续有游戏需求，再单独加独显。"];
+        return ["办公学习优先稳定、内存和 SSD；不建议为了看着强行加独显。"];
       }
 
-      if (text.includes("RX 9070 GRE")) {
-        tips.push("RX9070GRE 价格波动大：涨价就退 RX7800XT，想要 N 卡生态再看 RTX5070。");
-      } else if (text.includes("RX 7800 XT")) {
-        tips.push("RX7800XT 如果涨价太多：可看 RX9070GRE / RTX5060Ti 16G；只玩网游也可以退 RTX5060 省钱。");
-      } else if (text.includes("RTX 5060 Ti 16GB")) {
-        tips.push("RTX5060Ti 16G 适合大显存/N 卡生态；纯游戏不刚需 16GB 时，也可对比 RX7800XT / RX9070GRE。");
-      } else if (text.includes("RTX 5060")) {
-        tips.push("RTX5060 贵了就对比 RX6750XT / RX7600；需要 DLSS、低功耗和 N 卡生态再保留 RTX5060。");
-      } else if (text.includes("RX 6750")) {
-        tips.push("RX6750 系列看当天价格：接近 RTX5060 就要对比功耗、售后和你玩的游戏。");
-      } else if (text.includes("RX 6650 XT")) {
-        tips.push("RX6650XT 是 1080P 性价比卡；如果只玩轻网游可退 RX6600，想更稳可上 RTX5060。");
-      } else if (text.includes("核显")) {
-        tips.push("核显办公机不建议乱加廉价独显；真要玩游戏，直接看网游预算档更清楚。");
-      }
-
-      if (text.includes("512GB") || text.includes("256GB")) {
-        tips.push("硬盘小不是大坑，但游戏多/资料多的人优先加 1TB SSD，别先加机箱灯效。");
-      }
-
-      if (text.includes("16GB DDR5")) {
-        tips.push("16GB DDR5 是入门过渡；多开、剪辑、长期使用建议后续补到 32GB。");
-      }
-
-      if (text.includes("A620M")) {
-        tips.push("A620M 够用但扩展一般；预算够、想长期用，可以加钱换 B650M。");
-      }
-
-      tips.push("显卡别只看型号，也要看显存版本；同名显卡可能有 8G/16G 等不同版本。");
-      tips.push("R5 5600 配 B450M 已经够用，想省钱可看 A520M；B550M 主要买扩展和更好供电。");
-      tips.push("RX9060XT / RX7700XT 这类中端卡价格波动大，重点对比 RX6750GRE、RX7800XT 和 RTX5060Ti。");
-
-      if (!tips.length) {
-        tips.push("这套没有明显必须替换的大件；下单时主要复核当天价格、售后和具体品牌型号。");
-      }
-
-      return tips.slice(0, 3);
+      return ["预算紧张时优先换同级低价型号，不要牺牲关键体验。"];
     }
 
     function getOfficeProfileAdvice(input) {
@@ -4119,16 +4035,9 @@
 
     function getBuyCheckTips(build) {
       const text = [build.cpu, build.gpu, build.board, build.ram, build.storage, build.psu, build.case].join(" ");
-      const tips = [];
-
-      tips.push("复核当天价格和店铺售后，别只看配置单总价。");
-      tips.push("确认显卡显存容量，别把 8G/16G 版本买错。");
-      if (text.includes("电源")) tips.push("电源看具体型号和售后，别只看瓦数。");
-      tips.push("散热器看 CPU 功耗和机箱高度，别漏买或买了装不下。");
-      if (text.includes("B650") || text.includes("A620")) tips.push("AM5 平台注意主板 BIOS、内存兼容和售后。");
-      if (text.includes("二手")) tips.push("二手显卡必须验温度、噪音、接口、烤机和退换。");
-      if (text.includes("RX 9070") || text.includes("RTX 5070")) tips.push("高价显卡下单前复核当天价，别追涨。");
-
+      const tips = ["复核当天价格、显存版本和店铺售后。"];
+      if (text.includes("电源")) tips.push("电源看具体型号，别只看瓦数。");
+      if (text.includes("二手")) tips.push("二手显卡必须验温度、噪音和退换。");
       return tips.slice(0, 2);
     }
 
@@ -4196,7 +4105,7 @@
       return notes.join(" ");
     }
     function applyPurpose(purpose) {
-      document.getElementById("purpose").value = purpose;
+      document.getElementById("purpose").value = normalizePurpose(purpose);
       generateBuilds();
       document.getElementById("result").scrollIntoView({ block: "start" });
     }
@@ -4204,7 +4113,7 @@
     function applyPreset(budget, purpose) {
       // 保留给旧版本/调试用；用户页面的快捷按钮不再调用它，避免固定预算误导。
       document.getElementById("budget").value = budget;
-      document.getElementById("purpose").value = purpose;
+      document.getElementById("purpose").value = normalizePurpose(purpose);
       document.getElementById("monitor").value = "hostOnly";
       document.getElementById("used").value = "不接受";
       generateBuilds();
@@ -4303,7 +4212,7 @@
       if (purpose === "网游") return ["高帧网游版", "均衡省心版", "省钱取舍版"][index] || "网游对比版";
       if (purpose === "3A游戏") return ["3A画质版", "均衡高性能版", "省钱画质版"][index] || "3A对比版";
       if (purpose === "剪辑设计") return ["剪辑均衡版", "显存增强版", "预算控制版"][index] || "剪辑对比版";
-      if (purpose === "办公学习" || purpose === "家用娱乐") return ["舒适办公版", "容量优先版", "省钱够用版"][index] || "办公对比版";
+      if (purpose === "办公学习") return ["舒适办公版", "容量优先版", "省钱够用版"][index] || "办公对比版";
       return ["推荐方案", "对比方案", "省钱方案"][index] || "参考方案";
     }
 
@@ -4326,7 +4235,7 @@
           if (isNvidiaGpuModel(build.gpu)) score += 20;
           if (/32GB/i.test(String(build.ram || ""))) score += 14;
           if (/1TB|2TB/i.test(String(build.storage || ""))) score += 8;
-        } else if (purpose === "办公学习" || purpose === "家用娱乐") {
+        } else if (purpose === "办公学习") {
           if (/核显/i.test(String(build.gpu || ""))) score += 25;
           score += cpuScore / 1200;
         }
@@ -4408,6 +4317,7 @@
       else if (total > budget + 400) score -= 10;
 
       if (purpose === "网游") {
+        if (build.midBudgetOnlineFixed) score += 20;
         if (isX3DCpu(build.cpu)) score += 12;
         if (/7800X3D|9800X3D/i.test(String(build.cpu || ""))) score += 10;
         if (/5800X3D/i.test(String(build.cpu || ""))) score -= 22; // 5800X3D 当前价格偏高，不作默认优选
@@ -4431,7 +4341,7 @@
         if (!/1TB|2TB/i.test(String(build.storage || ""))) score -= 12;
       }
 
-      if (purpose === "办公学习" || purpose === "家用娱乐") {
+      if (purpose === "办公学习") {
         if (budget >= 5000 && !/核显/i.test(String(build.gpu || ""))) score -= 22;
       }
 
@@ -4516,7 +4426,7 @@
       if (purpose === "网游") return index === 0 ? "高帧网游版" : index === 1 ? "均衡省心版" : "省钱够用版";
       if (purpose === "3A游戏") return index === 0 ? "3A画质版" : index === 1 ? "均衡高性能版" : "省钱画质版";
       if (purpose === "剪辑设计") return index === 0 ? "剪辑效率版" : index === 1 ? "均衡创作版" : "预算控制版";
-      if (purpose === "办公学习" || purpose === "家用娱乐") return index === 0 ? "舒适省心版" : index === 1 ? "均衡耐用版" : "省钱够用版";
+      if (purpose === "办公学习") return index === 0 ? "舒适省心版" : index === 1 ? "均衡耐用版" : "省钱够用版";
       return index === 0 ? "推荐方案" : index === 1 ? "均衡方案" : "省钱方案";
     }
 
@@ -4567,7 +4477,7 @@
         else Object.assign(patch, { cpu: C.i5_12600kf || C.i5_13400f || C.r5_7500f, board: C.r5_7500f && !(C.i5_12600kf || C.i5_13400f) ? (M.a620m || M.b650m) : M.b660m, ram: R.d4_32 || R.d5_16 || R.d4_16, gpu: G.rtx5060ti8 || G.rtx5060 || G.rtx4060ti, storage: S.ssd1t || S.ssd500, psu: P.p650 });
       }
 
-      if (purpose === "办公学习" || purpose === "家用娱乐") {
+      if (purpose === "办公学习") {
         if (roleIndex === 0) Object.assign(patch, { cpu: C.r5_8600g || C.r5_5600g || C.i5_12400, board: C.r5_8600g ? M.a620m : (M.b550m || M.h610m), ram: C.r5_8600g ? R.d5_16 : R.d4_16, gpu: G.igpu, storage: S.ssd1t || S.ssd500, psu: P.p550 || P.p500 });
         else if (roleIndex === 1) Object.assign(patch, { cpu: C.r5_5600g || C.i3_12100 || C.r5_5600, board: C.r5_5600g ? M.b550m : M.h610m, ram: R.d4_16, gpu: G.igpu, storage: S.ssd1t || S.ssd500, psu: P.p550 || P.p500 });
         else Object.assign(patch, { cpu: C.r5_5600g || C.i3_12100 || C.r5_5500, board: C.r5_5600g ? M.a520m : M.h610m, ram: R.d4_16, gpu: G.igpu, storage: S.ssd500, psu: P.p500 || P.p550 });
@@ -4754,6 +4664,37 @@
       });
     }
 
+
+    function enforceMidBudgetOnlineFinalTier(builds, input) {
+      const budget = Number(input?.budget || 0);
+      if (input?.purpose !== "网游" || budget < 4300 || budget > 5600) return builds;
+
+      const seed = builds && builds.length ? builds[0] : {};
+      const rolePatches = budget >= 5200
+        ? [
+            { cpu: C.r5_5600 || C.i5_12400f, board: M.b550m || M.b450m, ram: R.d4_16, gpu: G.rtx5060 || G.rtx4060 || G.rx7600, storage: S.ssd500, psu: P.p550 },
+            { cpu: C.i5_12600kf || C.r5_5600, board: C.i5_12600kf ? M.b660m : (M.b550m || M.b450m), ram: R.d4_16, gpu: G.rx7700xt || G.rx6750gre || G.rtx4060, storage: S.ssd500, psu: P.p650 || P.p550 },
+            { cpu: C.r5_5600 || C.i5_12400f, board: M.b450m || M.b550m, ram: R.d4_16, gpu: G.rx7600 || G.rx6650xt || G.rtx4060, storage: S.ssd500, psu: P.p550 }
+          ]
+        : [
+            { cpu: C.r5_5600 || C.i5_12400f, board: M.b450m || M.b550m, ram: R.d4_16, gpu: G.rx6750gre || G.rtx4060 || G.rx7600, storage: S.ssd500, psu: P.p650 || P.p550 },
+            { cpu: C.r5_5600 || C.i5_12600kf, board: M.b450m || M.b550m, ram: R.d4_16, gpu: G.rtx4060 || G.rx7600 || G.rx6650xt, storage: S.ssd500, psu: P.p550 },
+            { cpu: C.r5_5600 || C.i5_12400f, board: M.b450m || M.b550m, ram: R.d4_16, gpu: G.rx7600 || G.rx6650xt || G.rtx4060, storage: S.ssd500, psu: P.p550 }
+          ];
+
+      return rolePatches.map((patch, index) => {
+        const fixed = finalizeRepairedBuild(builds[index] || seed, input, cleanVariantPatch(patch), "5000 网游专用修正：不为了凑第三套强行超预算。");
+        fixed.index = index;
+        fixed.roleIndex = index;
+        fixed.name = getThreePlanRoleName(index, input);
+        fixed.midBudgetOnlineFixed = true;
+        fixed.budgetFit = getBudgetFit(fixed);
+        fixed.safety = validateBuild(fixed);
+        fixed.recommendationScore = getBuildRecommendationScore(fixed, input) + (index === 0 ? 8 : 0) - (index === 2 ? 6 : 0);
+        return fixed;
+      });
+    }
+
     function generateBuilds() {
       const input = getInput();
       const result = document.getElementById("result");
@@ -4818,7 +4759,8 @@
 
       const distinctBuilds = enforceThreeDistinctBuilds(builds, input);
       const highBudget3AFixedBuilds = enforceHighBudget3AFinalTier(distinctBuilds, input);
-      builds.splice(0, builds.length, ...highBudget3AFixedBuilds);
+      const midBudgetOnlineFixedBuilds = enforceMidBudgetOnlineFinalTier(highBudget3AFixedBuilds, input);
+      builds.splice(0, builds.length, ...midBudgetOnlineFixedBuilds);
 
       builds.forEach(build => {
         build.strategyText = getStrategyText(build, builds, input);
@@ -4853,7 +4795,6 @@
             <span class="pill">价格更新时间：2026.05 京东/拼多多参考</span>
             <div class="result-actions">
               <button type="button" onclick="copyAllBuilds(this)" data-original-text="复制全部方案">复制全部方案</button>
-              <button type="button" class="secondary-action" onclick="copySharePrompt(this)" data-original-text="复制提问文案">复制提问文案</button>
             </div>
           </div>
         </div>
@@ -5374,7 +5315,7 @@ function classifyDecisionType(build) {
       }
 
       // 办公学习：高预算不硬塞独显，预算优先给 CPU、内存、SSD、显示器体验
-      if ((purpose === "办公学习" || purpose === "家用娱乐") && budget >= 5000) {
+      if ((purpose === "办公学习") && budget >= 5000) {
         if (!/核显/i.test(gpuText)) {
           patch.gpu = G.igpu;
           patch.cpu = budget >= 7000 ? C.r5_9600x : C.i5_13500;
@@ -5625,7 +5566,7 @@ function classifyDecisionType(build) {
         if (/i5-13400F|i5-12400F/i.test(String(build.cpu || "")) && /B760M DDR5/i.test(String(build.board || ""))) score -= 14;
       }
 
-      if ((input.purpose === "办公学习" || input.purpose === "家用娱乐") && input.budget >= 5000 && !/核显/i.test(gpuText)) score -= 22;
+      if (input.purpose === "办公学习" && input.budget >= 5000 && !/核显/i.test(gpuText)) score -= 22;
       if (input.purpose === "剪辑设计" && input.budget >= 6000) {
         if (isNvidiaGpuModel(gpuText)) score += 12;
         if (/32GB/i.test(String(build.ram || ""))) score += 10;
@@ -5849,37 +5790,67 @@ function classifyDecisionType(build) {
       });
     }
 
+    function getDecisionReason(build, input, index) {
+      const purpose = input?.purpose || "";
+      const name = String(build?.name || "");
+      const gpu = compactPartText(build.parts?.gpu || build.gpu, "gpu");
+      const cpu = compactPartText(build.parts?.cpu || build.cpu, "cpu");
+      const total = Number(build.totalWithMonitor || build.total || 0);
+      const budget = Number(input?.budget || 0);
+      const isOver = budget && total > budget + 300;
+      const lowSpend = budget && total < budget * 0.72 && !name.includes("省钱");
+
+      if (isOver) return `略超预算，除非当天价格能压下来，否则别优先抄。`;
+      if (purpose === "3A游戏") {
+        if (name.includes("省钱")) return `少花钱对比：${gpu} 能玩，但画质/寿命空间不如前两套。`;
+        if (index === 0) return `画质优先：核心看 ${gpu}，适合更在意 2K/3A 表现。`;
+        return `均衡优先：${cpu} + ${gpu}，平台和显卡都不明显短板。`;
+      }
+      if (purpose === "网游") {
+        if (name.includes("省钱")) return `省钱对比：预算压得低，适合 1080P 网游够用党。`;
+        if (index === 0) return `帧率优先：更看 CPU 和稳定性，显卡不过度堆。`;
+        return `均衡对比：价格、帧率和后续升级空间更折中。`;
+      }
+      if (purpose === "剪辑设计") {
+        if (name.includes("预算") || name.includes("省钱")) return `预算控制：能做轻剪，但大工程优先加内存/SSD。`;
+        return `创作优先：重点看 N 卡、内存、SSD 和 CPU 多核。`;
+      }
+      if (name.includes("省钱")) return `省钱对比：够用优先，不追求花满预算。`;
+      if (lowSpend) return `这套花费偏低，适合不想把预算用满的人。`;
+      return `主推对比：预算利用和基础体验比较稳。`;
+    }
+
     function renderDecisionGuide(input, builds) {
-      const pick = pickRecommendedBuild(builds, input);
+      const pick = builds.find(build => build.isRecommended) || pickRecommendedBuildSmart(builds, input) || pickRecommendedBuild(builds, input);
       if (!pick) return "";
 
       const pickTotal = aboutMoney(pick.totalWithMonitor || pick.total);
       const list = builds.map((build, index) => {
-        const type = index === 0 ? "推荐" : (index === 1 ? "对比" : "取舍");
+        const type = build === pick ? "推荐" : (index === 1 ? "对比" : "取舍");
         const total = aboutMoney(build.totalWithMonitor || build.total);
         return `
           <li>
             <span class="decision-mini-label">${type}</span>
-            <span><b>${build.name} ${total}</b><br>${getDecisionOneLine(build, input)}</span>
+            <span><b>${build.name} ${total}</b><br>${getDecisionReason(build, input, index)}</span>
           </li>
         `;
       }).join("");
 
       return `
         <section class="decision-panel" aria-label="三套方案选择建议">
-          <h3>看完配置后：三套怎么选</h3>
+          <h3>三套怎么选</h3>
           <div class="decision-main">
             <div class="decision-pick">
-              <strong>默认更推荐：${pick.name} · ${pickTotal}</strong>
-              ${getDecisionOneLine(pick, input)}
-              <br>第一套适合直接参考；另外两套用来对比取舍，质量不足会直接标“不推荐”。
+              <strong>默认推荐：${pick.name} · ${pickTotal}</strong>
+              ${getDecisionReason(pick, input, builds.indexOf(pick))}
+              <br>第一眼先看默认推荐；另外两套只用来比较“更强 / 更省 / 更均衡”的取舍。
             </div>
             <ul class="decision-list">${list}</ul>
           </div>
           <div class="decision-jump-row">
             ${builds.map((build, index) => {
               const schemeClass = index === 0 ? "scheme-safe" : (index === 1 ? "scheme-value" : "scheme-save");
-              return `<button type="button" class="jump-build-btn ${schemeClass}" onclick="document.querySelectorAll('.build')[${index}]?.scrollIntoView({block:'start',behavior:'smooth'})">回看${build.name}配置</button>`;
+              return `<button type="button" class="jump-build-btn ${schemeClass}" onclick="document.querySelectorAll('.build')[${index}]?.scrollIntoView({block:'start',behavior:'smooth'})">回看${build.name}</button>`;
             }).join("")}
           </div>
         </section>
@@ -6011,18 +5982,14 @@ function classifyDecisionType(build) {
               ${keyPoints.map(point => `<div class="key-point">${point}</div>`).join("")}
             </div>
             <details class="detail-toggle">
-              <summary>展开详细解释、替代和注意事项</summary>
+              <summary>展开详细解释</summary>
               <div class="detail-body">
                 <div class="strategy-box"><strong>这版取舍</strong>${build.strategyText || "按当前预算和用途做均衡参考。"}</div>
-                ${build.autoUpgradeNotes && build.autoUpgradeNotes.length ? `<div class="strategy-box"><strong>钱花到哪了</strong>${build.autoUpgradeNotes.slice(0, 3).join("；")}</div>` : ""}
-                <div class="strategy-box"><strong>同价替代</strong>${getAlternativeAdvice(build, window.latestInput || getInput()).join("；")}</div>
-                <div class="strategy-box"><strong>下单前看一眼</strong>${getBuyCheckTips(build).join("；")}</div>
+                ${build.autoUpgradeNotes && build.autoUpgradeNotes.length ? `<div class="strategy-box"><strong>钱花到哪了</strong>${build.autoUpgradeNotes.slice(0, 2).join("；")}</div>` : ""}
+                <div class="strategy-box"><strong>可替代</strong>${getAlternativeAdvice(build, window.latestInput || getInput()).slice(0, 1).join("；")}</div>
                 <p><strong>我的理解：</strong>${buildPlainTalk(build)}</p>
                 <p><strong>性能参考：</strong>${buildPerformanceText(build)}</p>
                 <p><strong>预算匹配：</strong>${build.budgetFit ? build.budgetFit.text : "按当前模板估算。"}</p>
-                <p><strong>预算微调：</strong>${build.microBudgetAdvice || "价格有小幅波动，下单前按当天价格微调即可。"}</p>
-                <p><strong>可以怎么调整：</strong>${build.budgetFit ? build.budgetFit.advice : "下单前复核当天价格。"}</p>
-                <p><strong>注意事项：</strong>${shortAttentionText(build)}</p>
               </div>
             </details>
             <button type="button" class="copy-btn" onclick="copySingleBuild(this, ${build.index})">复制这套</button>
@@ -6068,15 +6035,11 @@ function classifyDecisionType(build) {
       lines.push(
         `适合谁：${build.people}`,
         `这版取舍：${build.strategyText || "按当前预算和用途做均衡参考。"}`,
-        `${build.autoUpgradeNotes && build.autoUpgradeNotes.length ? `钱花到哪了：${build.autoUpgradeNotes.slice(0, 3).join("；")}` : "钱花到哪了：无需强行改动"}`,
-        `同价替代：${getAlternativeAdvice(build, input).join("；")}`,
-        `下单前看一眼：${getBuyCheckTips(build).join("；")}`,
+        `${build.autoUpgradeNotes && build.autoUpgradeNotes.length ? `钱花到哪了：${build.autoUpgradeNotes.slice(0, 2).join("；")}` : "钱花到哪了：无需强行改动"}`,
+        `可替代：${getAlternativeAdvice(build, input).slice(0, 1).join("；")}`,
         `我的理解：${buildPlainTalk(build)}`,
         `性能参考：${buildPerformanceText(build)}`,
-        `预算匹配：${build.budgetFit ? build.budgetFit.text : "按当前模板估算。"}`,
-        `预算微调：${build.microBudgetAdvice || "价格有小幅波动，下单前按当天价格微调即可。"}`,
-        `可以怎么调整：${build.budgetFit ? build.budgetFit.advice : "下单前复核当天价格。"}`,
-        `注意事项：${buildAttentionText(build)}`
+        `预算匹配：${build.budgetFit ? build.budgetFit.text : "按当前模板估算。"}`
       );
 
       return lines.join("\n");
@@ -6085,7 +6048,7 @@ function classifyDecisionType(build) {
       const header = [
         "【小白电脑配置生成器】",
         `预算：${money(input.budget)}｜用途：${input.purpose}｜二手显卡：${input.used}`,
-        "下面是生成的两套参考方案：",
+        "下面是生成的三套参考方案：",
         ""
       ];
 

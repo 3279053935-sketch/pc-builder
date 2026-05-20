@@ -1,9 +1,9 @@
 {
-  "version": "2.12.13-rc",
-  "name": "fix-high-budget-3a-allocation-and-score",
-  "built_at": "2026-05-19 22:53:55",
+  "version": "2.12.16-rc",
+  "name": "remove-ambiguous-purpose-quickbuttons-copy-fix",
+  "built_at": "2026-05-20 09:28:00",
   "status": "release-candidate",
   "entry": "index.html",
   "preflight": "preflight.html",
-  "note": "修复 9000–10000 3A 配置过低、默认推荐省钱低配、分数异常低的问题。"
+  "note": "删除容易混淆的用途和用途快捷按钮，修正各用途替代文案，优化手机端表单布局。"
 }

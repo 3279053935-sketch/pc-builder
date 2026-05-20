@@ -10,7 +10,7 @@ window.createPcBuilderTemplates = function({ C, G, M, R, S, P, X, makeParts, mak
           }),
           makeBuild("性价比版", makeParts(C.r5_5600g, G.igpu, M.a520m, R.d4_16, S.ssd256, P.p500, X.black), {
             confidence: "高", priceVolatility: "中", secondHandRisk: "低",
-            people: "办公学习、网课、轻度网游和家用娱乐。",
+            people: "办公学习、网课、轻度网游和轻度日常。",
             reason: "5600G 带核显，比纯办公 U 更适合轻度游戏过渡。",
             risk: "核显不是独显，别指望高画质游戏。"
           }),
@@ -30,7 +30,7 @@ window.createPcBuilderTemplates = function({ C, G, M, R, S, P, X, makeParts, mak
           }),
           makeBuild("性价比版", makeParts(C.r5_5600g, G.igpu, M.a520m, R.d4_16, S.ssd1t, P.p500, X.black), {
             confidence: "高", priceVolatility: "中", secondHandRisk: "低",
-            people: "想要更顺一点的办公、轻度网游和家用娱乐。",
+            people: "想要更顺一点的办公、轻度网游和轻度日常。",
             reason: "5600G 带核显，配 16GB 内存和 1TB SSD，比 2000 档更舒服。",
             risk: "核显只是过渡，别按独显游戏主机预期。"
           }),
